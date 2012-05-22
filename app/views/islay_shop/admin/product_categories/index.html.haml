@@ -1,0 +1,5 @@
+= render :partial => 'islay_shop/admin/shop/nav'
+
+= content do
+  %ul
+    = render :partial => 'category', :collection => @product_categories

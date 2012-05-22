@@ -4,7 +4,7 @@ module IslayShop
       header('Shop')
 
       def index
-
+        @products = Product.all
       end
     end
   end

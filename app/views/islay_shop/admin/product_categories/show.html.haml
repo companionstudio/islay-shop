@@ -1,0 +1,7 @@
+- sub_header("Category", @product_category.name)
+- control('Product', path(:new, :product), :new)
+- control('Edit', path(:edit, @product_category), :edit)
+- control('Delete', path(:delete, @product_category), :delete)
+
+= content do
+  = simple_format(@product_category.description)

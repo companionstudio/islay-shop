@@ -1,0 +1,6 @@
+%li
+  %strong= link_to(category.name, path(category))
+  %span.count= category.products.count
+  - unless category.children.empty?
+    %ul
+      = render :partial => 'category', :collection => category.children

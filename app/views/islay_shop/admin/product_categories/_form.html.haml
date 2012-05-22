@@ -1,0 +1,9 @@
+= resource_form(@product_category) do |f|
+  = content do
+    = f.input(:name)
+    = f.input(:description, :as => 'text')
+    = f.input(:product_category_id, :collection => @product_categories, :label => 'Parent Category')
+    = f.input(:asset_id, :collection => @assets, :label => 'Image')
+
+  = footer do
+    = f.submit 'Save'
