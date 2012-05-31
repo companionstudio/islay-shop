@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   has_many   :assets,   :through => :product_assets
   has_many   :skus
   has_many   :sku_assets, :through => :skus, :through => :assets
+  has_many   :variants, :class_name => 'ProductVariant', :order => 'position ASC'
 
   attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status
 
