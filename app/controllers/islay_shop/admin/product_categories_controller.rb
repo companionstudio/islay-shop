@@ -13,9 +13,9 @@ module IslayShop
       def dependencies
         @assets = ImageAsset.order('name')
         @product_categories = if params[:id]
-          ProductCategory.where("id != ?", params[:id]).order('position')
+          ProductCategory.where("product_category_id IS NULL AND id != ?", params[:id]).order('position')
         else
-          ProductCategory.order('position')
+          ProductCategory.where("product_category_id IS NULL").order('position')
         end
       end
     end

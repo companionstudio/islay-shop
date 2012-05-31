@@ -1,9 +1,46 @@
 = resource_form(@product_category) do |f|
   = content do
-    = f.input(:name)
-    = f.input(:description, :as => 'text')
-    = f.input(:product_category_id, :collection => @product_categories, :label => 'Parent Category')
-    = f.input(:asset_id, :collection => @assets, :label => 'Image')
+    = f.fieldset(:class => 'primary') do
+      = f.input(:name)
+      = f.input(:published)
+
+    = f.fieldset do
+      = f.input(:description, :as => 'text')
+      = f.input(:description, :as => 'radio_buttons', :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
+      = f.input(:product_category_id, :multiple => true, :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
+      = f.input(:description, :as => 'check_boxes', :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
+      = f.input(:product_category_id, :collection => @product_categories, :label => 'Category', :include_blank => false)
+      / = f.input(:asset_id, :collection => @assets, :label => 'Image')
+
+    %fieldset.member-tree.field
+      %legend Category
+
+      %ul.top
+        %li
+          %label
+            %input(type='radio')
+            Wines
+          %ul
+            %li
+              %label
+                %input(type='radio')
+                Red
+            %li
+              %label
+                %input(type='radio')
+                White
+            %li
+              %label
+                %input(type='radio')
+                Bubbles
+        %li
+          %label
+            %input(type='radio')
+            Jams and Pickles
+        %li
+          %label
+            %input(type='radio')
+            Dry Goods
 
   = footer do
-    = f.submit 'Save'
+    %button Save
