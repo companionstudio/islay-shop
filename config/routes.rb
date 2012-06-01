@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   scope :module => 'islay_shop' do
     namespace :admin do
-      scope :path => 'shop' do
-        get '/' => 'shop#index', :as => 'shop'
+      scope :path => 'catalogue' do
+        get '/' => 'shop#index', :as => 'catalogue'
 
         resources :products, :path => 'categories/products' do
           get :delete, :on => :member
@@ -21,7 +21,11 @@ Rails.application.routes.draw do
           get :delete, :on => :member
         end
 
-      end # scope
+      end
+
+      scope :path => 'orders' do
+        get '/' => 'orders#index', :as => 'orders'
+      end #scop
     end # namespace
   end # scope
 end # draw
