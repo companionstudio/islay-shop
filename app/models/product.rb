@@ -1,4 +1,6 @@
 class Product < ActiveRecord::Base
+  include IslayShop::MetaData
+
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
   has_many   :product_assets

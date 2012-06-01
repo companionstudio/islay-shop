@@ -1,4 +1,6 @@
 class Sku < ActiveRecord::Base
+  include IslayShop::MetaData
+
   belongs_to :product
   has_many :sku_assets,                       :order => 'position ASC'
   has_many :assets, :through => :sku_assets,  :order => 'sku_assets.position ASC'

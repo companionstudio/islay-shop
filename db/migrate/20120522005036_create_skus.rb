@@ -5,8 +5,7 @@ class CreateSkus < ActiveRecord::Migration
       t.integer     :product_variant_id,  :null => true, :on_delete => :set_null
       t.integer     :position,            :null => false, :limit => 3, :default => 1
       t.string      :description,         :null => true,  :limit => 200
-      t.string      :unit,                :null => false, :limit => 5
-      t.integer     :size,                :null => false, :limit => 5
+      t.hstore      :metadata,            :null => true
       t.integer     :price,               :null => false, :precision => 7, :scale => 2
       t.integer     :stock_level,         :null => false, :limit => 5, :default => 1
       t.boolean     :published,           :null => false, :default => false

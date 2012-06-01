@@ -1,0 +1,135 @@
+module IslayShop
+  module MetaData
+    def self.included(klass)
+      klass.class_eval do
+        include InstanceMethods
+        extend ClassMethods
+
+        class_attribute :_metadata
+      end
+    end
+
+    module InstanceMethods
+      def data_column
+        self[_metadata.col] ||= {}
+      end
+
+      def metadata_attributes
+        _metadata.attributes
+      end
+    end
+
+    module ClassMethods
+      def metadata(col, &blk)
+        self._metadata = Attributes.new(self, col, &blk)
+      end
+    end
+
+    class ExistingAttributeError < StandardError
+      def initialize(col, model)
+        @message = "Attribute :#{col} is already defined on the model #{model.to_s}"
+      end
+
+      def to_s
+        @message
+      end
+    end
+
+    class Attributes
+      attr_reader :col, :attributes
+
+      def initialize(model, col, &blk)
+        @col        = col
+        @model      = model
+        @attributes = {}
+
+        instance_eval(&blk)
+      end
+
+      def enum(name, opts = {})
+        define_attribute(name, :enum, opts)
+      end
+
+      def string(name, opts = {})
+        define_attribute(name, :string, opts)
+      end
+
+      def boolean(name, opts = {})
+        define_attribute(name, :boolean, opts)
+      end
+
+      def integer(name, opts = {})
+        define_attribute(name, :integer, opts)
+      end
+
+      def float(name, opts = {})
+        define_attribute(name, :float, opts)
+      end
+
+      def coerce_enum(v)
+        v.to_s
+      end
+
+      def coerce_string(v)
+        v.to_s
+      end
+
+      def coerce_boolean(v)
+        case v
+        when 0, "0", "f", "false", false  then false
+        when 1, "1", "t", "true", true    then true
+        end
+      end
+
+      def coerce_integer(v)
+        v.to_i
+      end
+
+      def coerce_float(v)
+        v.to_f
+      end
+
+      private
+
+      def define_validations(name, opts)
+        if opts[:required]
+          @model.validates_presence_of(name)
+        end
+
+        if opts[:format]
+          @model.validates_format_of(name, opts[:format])
+        end
+
+        if opts[:length]
+          @model.validates_length_of(name, opts[:length])
+        end
+
+        if opts[:values]
+          values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
+          @model.validates_inclusion_of(name, :in => values)
+        end
+      end
+
+      def define_attribute(name, type, opts)
+        raise ExistingAttributeError.new(name, @model) if column_names.include?(name)
+
+        @model.class_eval %{
+          def #{name}
+            data_column[:#{name}]
+          end
+
+          def #{name}=(v)
+            data_column[:#{name}] = _metadata.coerce_#{type}(v)
+          end
+        }
+
+        define_validations(name, opts)
+        @attributes[name] = opts.merge!(:type => type)
+      end
+
+      def column_names
+        @column_names ||= @model.columns.map {|c| c.name.to_sym}
+      end
+    end # Attributes
+  end # MetaData
+end #IslayShop
