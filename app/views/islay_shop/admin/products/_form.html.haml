@@ -5,7 +5,7 @@
       = f.input(:published, :col => 'inline')
       = f.input(:status, :collection => @product.statuses, :col => 'inline', :as => 'radio_buttons')
 
-    = f.fieldset('Product') do
+    = f.fieldset('Product', :class => 'tab') do
       = f.input(:description, :as => 'text')
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
@@ -13,6 +13,15 @@
       - if @product.has_metadata?
         - @product.metadata_attributes.each do |name, opts|
           = f.metadata_input(name, opts)
+
+    = f.fieldset('SKUs', :class => 'tab') do
+      = f.input(:description, :as => 'text')
+
+    = f.fieldset('Variants', :class => 'tab') do
+      = f.input(:description, :as => 'text')
+
+    = f.fieldset('Stock', :class => 'tab') do
+      = f.input(:description, :as => 'text')
 
   = footer do
     %button Save
