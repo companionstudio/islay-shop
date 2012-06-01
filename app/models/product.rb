@@ -12,4 +12,14 @@ class Product < ActiveRecord::Base
   attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status
 
   track_user_edits
+
+  STATUSES = {
+    'For Sale'      => 'for_sale',
+    'Not for Sale'  => 'not_for_sale',
+    'Discontinued'  => 'discontinued'
+  }
+
+  def statuses
+    STATUSES
+  end
 end

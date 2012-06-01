@@ -2,7 +2,8 @@
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
-      = f.input(:published)
+      = f.input(:published, :col => 'inline')
+      = f.input(:status, :collection => @product.statuses, :col => 'inline', :as => 'radio_buttons')
 
     = f.fieldset('Product') do
       = f.input(:description, :as => 'text')
