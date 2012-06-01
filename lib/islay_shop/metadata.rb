@@ -11,11 +11,15 @@ module IslayShop
 
     module InstanceMethods
       def data_column
-        self[_metadata.col] ||= {}
+        @data_column = self[_metadata.col] || {}
       end
 
       def metadata_attributes
         _metadata.attributes
+      end
+
+      def has_metadata?
+        !!_metadata
       end
     end
 
@@ -47,27 +51,23 @@ module IslayShop
       end
 
       def enum(name, opts = {})
-        define_attribute(name, :enum, opts)
+        define_attribute(name, :enum, :string, opts)
       end
 
       def string(name, opts = {})
-        define_attribute(name, :string, opts)
+        define_attribute(name, :string, :string, opts)
       end
 
       def boolean(name, opts = {})
-        define_attribute(name, :boolean, opts)
+        define_attribute(name, :boolean, :boolean, opts)
       end
 
       def integer(name, opts = {})
-        define_attribute(name, :integer, opts)
+        define_attribute(name, :integer, :integer, opts)
       end
 
       def float(name, opts = {})
-        define_attribute(name, :float, opts)
-      end
-
-      def coerce_enum(v)
-        v.to_s
+        define_attribute(name, :float, :float, opts)
       end
 
       def coerce_string(v)
@@ -106,20 +106,21 @@ module IslayShop
 
         if opts[:values]
           values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
-          @model.validates_inclusion_of(name, :in => values)
+          @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
         end
       end
 
-      def define_attribute(name, type, opts)
+      def define_attribute(name, type, primitive, opts)
         raise ExistingAttributeError.new(name, @model) if column_names.include?(name)
 
+        @model.attr_accessible name
         @model.class_eval %{
           def #{name}
-            data_column[:#{name}]
+            data_column['#{name}']
           end
 
           def #{name}=(v)
-            data_column[:#{name}] = _metadata.coerce_#{type}(v)
+            self[_metadata.col] = data_column.merge('#{name}' => _metadata.coerce_#{primitive}(v))
           end
         }
 

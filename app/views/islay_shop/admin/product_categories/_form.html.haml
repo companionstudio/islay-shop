@@ -6,9 +6,7 @@
 
     = f.fieldset do
       = f.input(:description, :as => 'text')
-      = f.input(:description, :as => 'radio_buttons', :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
       = f.input(:product_category_id, :multiple => true, :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
-      = f.input(:description, :as => 'check_boxes', :collection => ['For Sale', 'Not for Sale', 'Discontinued'])
       = f.input(:product_category_id, :collection => @product_categories, :label => 'Category', :include_blank => false)
       / = f.input(:asset_id, :collection => @assets, :label => 'Image')
 
