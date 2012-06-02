@@ -14,6 +14,12 @@ class Product < ActiveRecord::Base
 
   track_user_edits
 
-  accepts_nested_attributes_for :skus, :allow_destroy => true
+  accepts_nested_attributes_for :skus, :allow_destroy => true, :reject_if => :new_sku?
   validates_associated :skus
+
+  private
+
+  def new_sku?(params)
+    is_new = params.delete(:template) == "true"
+  end
 end

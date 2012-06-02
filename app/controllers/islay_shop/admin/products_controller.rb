@@ -4,13 +4,19 @@ module IslayShop
       resourceful :product
       header('Products')
 
+      before_filter :add_templates, :except => [:index, :delete, :destroy]
+
       def show
-        @product = Product.find(params[:id])
         dependencies
         render :edit
       end
 
       private
+
+      def add_templates
+        @product ||= Product.find(params[:id])
+        @product.skus.build(:template => true)
+      end
 
       def dependencies
         @categories = ProductCategory.all
