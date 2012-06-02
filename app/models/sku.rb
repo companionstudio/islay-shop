@@ -1,5 +1,6 @@
 class Sku < ActiveRecord::Base
   include IslayShop::MetaData
+  include IslayShop::Statuses
 
   belongs_to :product
   has_many :sku_assets,                       :order => 'position ASC'
@@ -7,7 +8,11 @@ class Sku < ActiveRecord::Base
   has_many :stock_logs, :class_name => 'SkuStockLog', :order => 'created_at DESC'
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
 
-  attr_accessible :product_id, :description, :unit, :amount, :price, :stock_level
+  attr_accessible :product_id, :description, :unit, :amount, :price, :stock_level, :published
 
   track_user_edits
+
+  metadata(:metadata) do
+    enum :color, :values => %w(red green blue yellow), :kind => :short
+  end
 end

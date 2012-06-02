@@ -1,5 +1,6 @@
 class Product < ActiveRecord::Base
   include IslayShop::MetaData
+  include IslayShop::Statuses
 
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
@@ -9,17 +10,10 @@ class Product < ActiveRecord::Base
   has_many   :sku_assets, :through => :skus, :through => :assets
   has_many   :variants, :class_name => 'ProductVariant', :order => 'position ASC'
 
-  attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status
+  attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status, :skus_attributes
 
   track_user_edits
 
-  STATUSES = {
-    'For Sale'      => 'for_sale',
-    'Not for Sale'  => 'not_for_sale',
-    'Discontinued'  => 'discontinued'
-  }
-
-  def statuses
-    STATUSES
-  end
+  accepts_nested_attributes_for :skus, :allow_destroy => true
+  validates_associated :skus
 end

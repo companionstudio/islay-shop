@@ -10,18 +10,26 @@
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
 
-      - if @product.has_metadata?
-        - @product.metadata_attributes.each do |name, opts|
+      - f.metadata do |attrs|
+        - attrs.each do |name, opts|
           = f.metadata_input(name, opts)
 
     = f.fieldset('SKUs', :class => 'tab') do
-      = f.input(:description, :as => 'text')
+      %div.sub-form
+        = f.fields_for(:skus) do |sf|
+          = sf.input(:price, :col => 'inline', :class => 'small')
+          = sf.input(:stock_level, :col => 'inline', :class => 'small')
+          = sf.input(:published, :col => 'inline')
+          - sf.metadata do |attrs|
+            - attrs.each do |name, opts|
+              = sf.metadata_input(name, opts)
+          = sf.input(:_destroy, :as => 'boolean')
 
-    = f.fieldset('Variants', :class => 'tab') do
-      = f.input(:description, :as => 'text')
+    / = f.fieldset('Variants', :class => 'tab') do
+    /   = f.input(:description, :as => 'text')
 
-    = f.fieldset('Stock', :class => 'tab') do
-      = f.input(:description, :as => 'text')
+    / = f.fieldset('Stock', :class => 'tab') do
+    /   = f.input(:description, :as => 'text')
 
   = footer do
     %button Save
