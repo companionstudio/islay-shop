@@ -2,7 +2,7 @@
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
-      = f.input(:published, :col => 'inline')
+      = f.input(:published, :col => 'first-inline')
       = f.input(:status, :collection => @product.statuses, :col => 'inline', :as => 'radio_buttons')
 
     = f.fieldset('Product', :class => 'tab') do
@@ -14,16 +14,17 @@
         - attrs.each do |name, opts|
           = f.metadata_input(name, opts)
 
-    = f.fieldset('SKUs', :class => 'tab', :id => 'product-skus') do
+    = f.fieldset('SKUs', :class => 'tab association', :id => 'product-skus') do
       = f.fields_for(:skus) do |sf|
         %fieldset(class='associated template-#{sf.object.template}')
-          = sf.input(:price, :col => 'inline', :class => 'small')
+          = sf.input(:_destroy, :as => 'boolean')
+          = sf.input(:position, :class => 'small')
+          = sf.input(:price, :col => 'first-inline', :class => 'small')
           = sf.input(:stock_level, :col => 'inline', :class => 'small')
           = sf.input(:published, :col => 'inline')
           - sf.metadata do |attrs|
             - attrs.each do |name, opts|
               = sf.metadata_input(name, opts)
-          = sf.input(:_destroy, :as => 'boolean')
           = sf.hidden_field(:template)
 
     = f.fieldset('Variants', :class => 'tab') do
