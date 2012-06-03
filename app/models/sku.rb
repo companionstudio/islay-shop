@@ -11,6 +11,7 @@ class Sku < ActiveRecord::Base
   attr_accessible :product_id, :description, :unit, :amount, :price, :stock_level, :published, :template, :position
 
   track_user_edits
+  validations_from_schema
 
   attr_accessor :template
 

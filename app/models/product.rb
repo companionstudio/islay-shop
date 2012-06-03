@@ -13,6 +13,7 @@ class Product < ActiveRecord::Base
   attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status, :skus_attributes
 
   track_user_edits
+  validations_from_schema
 
   accepts_nested_attributes_for :skus, :allow_destroy => true, :reject_if => :new_sku?
   validates_associated :skus
