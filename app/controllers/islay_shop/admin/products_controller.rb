@@ -4,18 +4,28 @@ module IslayShop
       resourceful :product
       header('Products')
 
-      before_filter :add_templates, :except => [:index, :delete, :destroy]
-
       def show
         dependencies
+        @product = find_record
         render :edit
       end
 
       private
 
-      def add_templates
-        @product ||= Product.find(params[:id])
+      def invalid_record
         @product.skus.build(:template => true)
+      end
+
+      def new_record
+        Product.new.tap {|p| p.skus.build(:template => true)}
+      end
+
+      def find_record
+        if params[:action] == 'show'
+          Product.find(params[:id]).tap {|p| p.skus.build(:template => true)}
+        else
+          Product.find(params[:id])
+        end
       end
 
       def dependencies

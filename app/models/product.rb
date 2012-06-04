@@ -21,6 +21,6 @@ class Product < ActiveRecord::Base
   private
 
   def new_sku?(params)
-    is_new = params.delete(:template) == "true"
+    params.delete(:template) == "true"
   end
 end
