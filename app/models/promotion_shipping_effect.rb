@@ -1,0 +1,3 @@
+class PromotionShippingEffect < PromotionEffect
+
+end
