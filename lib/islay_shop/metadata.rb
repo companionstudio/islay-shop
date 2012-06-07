@@ -40,6 +40,8 @@ module IslayShop
     end
 
     class Attributes
+      include Islay::Coercion
+
       attr_reader :col, :attributes
 
       def initialize(model, col, &blk)
@@ -68,25 +70,6 @@ module IslayShop
 
       def float(name, opts = {})
         define_attribute(name, :float, :float, opts)
-      end
-
-      def coerce_string(v)
-        v.to_s
-      end
-
-      def coerce_boolean(v)
-        case v
-        when 0, "0", "f", "false", false  then false
-        when 1, "1", "t", "true", true    then true
-        end
-      end
-
-      def coerce_integer(v)
-        v.to_i
-      end
-
-      def coerce_float(v)
-        v.to_f
       end
 
       private

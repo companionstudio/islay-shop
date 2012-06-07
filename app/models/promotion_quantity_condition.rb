@@ -1,20 +1,34 @@
 class PromotionQuantityCondition < PromotionCondition
-  # option(:sku) do
-  #   key :integer, :sku_id
-  #   key :integer, :quantity
-  # end
+  option(:sku) do
+    integer :sku_id,   :required => true
+    integer :quantity, :required => true
 
-  # option(:product) do
-  #   key :integer, :product_id
-  #   key :integer, :quantity
-  # end
+    qualification :check_sku
+  end
 
-  # option(:category) do
-  #   key :integer, :product_category_id
-  #   key :integer, :quantity
+  option(:product) do
+    integer :product_id,  :required => true
+    integer :quantity,    :required => true
 
-  #   qualification lambda {|order|
-  #     # order has at least one item from the category
-  #   }
-  # end
+    qualification :check_product
+  end
+
+  option(:category) do
+    integer :product_category_id, :required => true
+    integer :quantity,            :required => true
+
+    qualification :check_category
+  end
+
+  def check_sku(order)
+
+  end
+
+  def check_product(order)
+
+  end
+
+  def check_category(order)
+
+  end
 end
