@@ -17,7 +17,11 @@ module IslayShop
       end
 
       def new_record
-        Product.new.tap {|p| p.skus.build(:template => true)}
+        if params[:action] == 'new'
+          Product.new.tap {|p| p.skus.build(:template => true)}
+        else
+          Product.new
+        end
       end
 
       def find_record
