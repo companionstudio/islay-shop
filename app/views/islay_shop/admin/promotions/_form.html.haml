@@ -7,6 +7,7 @@
 
     = f.fieldset('Conditions') do
       = f.fields_for(:conditions) do |c|
+        = c.hidden_field(:type)
         = c.input(:active, :as => 'boolean', :label => c.object.desc)
         - c.metadata do |attrs|
           - attrs.each do |name, opts|

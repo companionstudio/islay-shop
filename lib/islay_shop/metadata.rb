@@ -91,10 +91,10 @@ module IslayShop
           @model.validates_length_of(name, opts[:length])
         end
 
-        if opts[:values]
-          values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
-          @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
-        end
+        # if opts[:values] and name != :foreign_key
+        #   values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
+        #   @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
+        # end
       end
 
       def define_attribute(name, type, primitive, opts)
