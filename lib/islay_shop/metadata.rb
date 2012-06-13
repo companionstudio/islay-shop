@@ -52,6 +52,10 @@ module IslayShop
         instance_eval(&blk)
       end
 
+      def foreign_key(name, opts = {})
+        define_attribute(name, :foreign_key, :integer, opts)
+      end
+
       def enum(name, opts = {})
         define_attribute(name, :enum, :string, opts)
       end
@@ -96,8 +100,9 @@ module IslayShop
       def define_attribute(name, type, primitive, opts)
         raise ExistingAttributeError.new(name, @model) if column_names.include?(name)
 
-        @model.attr_accessible name
         @model.class_eval %{
+          attr_accessible :#{name}
+
           def #{name}
             data_column['#{name}']
           end

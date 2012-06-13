@@ -1,0 +1,24 @@
+- sub_nav('All', '')
+- sub_nav('Active', '')
+- sub_nav('Complete', '')
+- sub_nav('Upcoming', '')
+- control('Promotion', path(:new, :promotion), :new)
+
+= content do
+  %table{:cellpadding => 0, :cellspacing => 0}
+    %thead
+      %tr
+        %th Active
+        %th Name
+        %th Start
+        %th End
+        %th Updated At
+
+    %tbody
+      - @promotions.each do |promotion|
+        %tr
+          %td= promotion.active?
+          %td= promotion.name
+          %td= promotion.start_at
+          %td= promotion.end_at
+          %td= promotion.updated_at

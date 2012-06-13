@@ -1,17 +1,35 @@
 class PromotionCondition < ActiveRecord::Base
-  include Islay::PromotionConfig
-
   belongs_to :promotion
 
-  # Check to see if the order qualifies for this particular condition.
+  class_attribute :_desc, :definitions
+  attr_accessor :active
+  attr_accessible :active
+  after_initialize :set_active
+
+  def set_active
+    active = false if active.nil?
+  end
+
   def qualifies?(order)
-    config = self._options[option]
-    config.qualifies?(self, order)
+    raise NotImplementedError
+  end
+
+  def desc
+    _desc
+  end
+
+  def self.inherited(klass)
+    self.definitions ||= []
+    self.definitions << klass
+    self.definitions.sort! {|x, y| x._desc > y._desc}
   end
 
   private
 
-  def self.qualification(method = nil, &blk)
-    default_option.qualification(method, &blk)
+  def self.desc(s)
+    self._desc = s
   end
+
+  # Force the subclasses to be loaded
+  Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)].each {|f| require f}
 end

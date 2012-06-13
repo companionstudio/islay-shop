@@ -18,4 +18,12 @@ class Sku < ActiveRecord::Base
   metadata(:metadata) do
     enum :color, :values => %w(red green blue yellow), :kind => :short
   end
+
+  # Summary of this SKU, which includes it's product name, data cols, sizing,
+  # price etc.
+  #
+  # This should be over-ridden in any subclasses to be more specific.
+  def desc
+    "#{product.name} - #{price}"
+  end
 end

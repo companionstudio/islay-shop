@@ -27,9 +27,7 @@ Rails.application.routes.draw do
         get '/' => 'orders#index', :as => 'orders'
       end
 
-      scope :path => 'promotions' do
-        get '/' => 'promotions#index', :as => 'promotions'
-      end # scope
+      resources :promotions
     end # namespace
   end # scope
 end # draw
