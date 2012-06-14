@@ -15,7 +15,13 @@
               = c.metadata_input(name, opts)
 
     = f.fieldset('Effect') do
-      %p Effect
+      = f.fields_for(:effects) do |e|
+        = e.fieldset(e.object.desc) do
+          = e.hidden_field(:type)
+          = e.input(:active, :as => 'boolean')
+          - e.metadata do |attrs|
+            - attrs.each do |name, opts|
+              = e.metadata_input(name, opts)
 
   = footer do
     %button Save
