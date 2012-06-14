@@ -1,9 +1,13 @@
 = resource_form(@promotion) do |f|
   = content do
     = f.fieldset(:class => 'primary') do
-      = f.input(:name)
+      = f.input(:name, :col => 'first-inline')
+      = f.input(:active, :col => 'inline')
       = f.input(:start_at, :col => 'first-inline')
       = f.input(:end_at, :col => 'inline')
+
+    = f.fieldset do
+      = f.input(:description, :as => 'text')
 
     = f.fieldset('Conditions') do
       = f.fields_for(:conditions) do |c|

@@ -4,12 +4,15 @@ class Promotion < ActiveRecord::Base
   has_many :conditions, :class_name => 'PromotionCondition', :order => 'type ASC'
   has_many :effects,    :class_name => 'PromotionEffect',    :order => 'type ASC'
 
-  attr_accessible :name, :start_at, :end_at, :conditions_attributes, :effects_attributes
+  attr_accessible :name, :start_at, :end_at, :conditions_attributes, :effects_attributes, :active, :description
 
   accepts_nested_attributes_for :conditions, :reject_if => :condition_or_effect_inactive?
   accepts_nested_attributes_for :effects,    :reject_if => :condition_or_effect_inactive?
 
   before_save :clean_conditions_and_effects
+
+  validations_from_schema
+  validates_associated :conditions, :effects
 
   def active?
     now = Time.now
