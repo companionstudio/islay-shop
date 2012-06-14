@@ -31,6 +31,7 @@ class Promotion < ActiveRecord::Base
 
   def apply!(order)
     effect.apply!(order)
+    order.save!
   end
 
   def prefill

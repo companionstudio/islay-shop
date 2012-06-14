@@ -4,7 +4,7 @@ class PromotionEffect < ActiveRecord::Base
 
   belongs_to :promotion
 
-  def apply!(order)
+  def apply!(order, conditions)
     raise NotImplementedError
   end
 

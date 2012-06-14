@@ -6,7 +6,7 @@ class PromotionProductQuantityCondition < PromotionCondition
     integer       :quantity,    :required => true, :greater_than => 0
   end
 
-  def qualifies?
-    false
+  def qualifies?(order)
+    order.items.map {|i| i.sku.product_id}.include?(product_id)
   end
 end

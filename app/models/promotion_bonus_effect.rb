@@ -6,7 +6,7 @@ class PromotionBonusEffect < PromotionEffect
     integer     :quantity,  :required => true, :greater_than => 0
   end
 
-  def apply!(order)
+  def apply!(order, conditions)
 
   end
 end
