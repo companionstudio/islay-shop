@@ -6,7 +6,6 @@ Promotion.blueprint do
 end
 
 Promotion.blueprint(:quantity_condition) do
-  condition { PromotionQuantityCondition.make }
 end
 
 Promotion.blueprint(:spend_condition) do

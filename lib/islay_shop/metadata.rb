@@ -122,7 +122,7 @@ module IslayShop
           attr_accessible :#{name}
 
           def #{name}
-            data_column['#{name}']
+            _metadata.coerce_#{primitive}(data_column['#{name}'])
           end
 
           def #{name}=(v)
