@@ -78,7 +78,7 @@ module IslayShop
 
       private
 
-      def define_validations(name, opts)
+      def define_validations(name, type, primitive, opts)
         if opts[:required]
           @model.validates_presence_of(name)
         end
@@ -91,10 +91,28 @@ module IslayShop
           @model.validates_length_of(name, opts[:length])
         end
 
-        # if opts[:values] and name != :foreign_key
-        #   values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
-        #   @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
-        # end
+        if primitive == :integer || primitive == :float
+          config = {}
+
+          if primitive == :integer
+            config[:only_integer] = true
+          end
+
+          if opts[:greater_than]
+            config[:greater_than] = opts[:greater_than]
+          end
+
+          if opts[:less_than]
+            config[:less_than] = opts[:less_than]
+          end
+
+          @model.validates_numericality_of(name, config)
+        end
+
+        if opts[:values] and type != :foreign_key
+          values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
+          @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
+        end
       end
 
       def define_attribute(name, type, primitive, opts)
@@ -112,7 +130,7 @@ module IslayShop
           end
         }
 
-        define_validations(name, opts)
+        define_validations(name, type, primitive, opts)
         @attributes[name] = opts.merge!(:type => type)
       end
 

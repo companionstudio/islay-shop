@@ -1,12 +1,14 @@
 class Promotion < ActiveRecord::Base
   has_many :orders
   has_many :order_items
-  has_many :conditions, :class_name => 'PromotionCondition'
+  has_many :conditions, :class_name => 'PromotionCondition', :order => 'type ASC'
   has_one  :effect,     :class_name => 'PromotionEffect'
 
   attr_accessible :name, :start_at, :end_at, :conditions_attributes, :effect_attributes
 
-  accepts_nested_attributes_for :conditions
+  accepts_nested_attributes_for :conditions, :reject_if => :condition_inactive?
+
+  before_save :clean_conditions
 
   def active?
     now = Time.now
@@ -30,7 +32,20 @@ class Promotion < ActiveRecord::Base
   def prefill
     types = conditions.map(&:type)
     PromotionCondition.definitions.each do |klass|
-      conditions << klass.new unless types.include?(klass.to_s)
+      # conditions << klass.new unless types.include?(klass.to_s)
+      conditions.build(:type => klass.to_s) unless types.include?(klass.to_s)
+    end
+  end
+
+  private
+
+  def condition_inactive?(param)
+    param[:active] == '0'
+  end
+
+  def clean_conditions
+    conditions.each do |condition|
+      condition.destroy unless condition.active
     end
   end
 end

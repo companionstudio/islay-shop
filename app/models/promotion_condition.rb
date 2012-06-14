@@ -1,10 +1,12 @@
 class PromotionCondition < ActiveRecord::Base
+  include IslayShop::MetaData
+
   belongs_to :promotion
 
-  class_attribute :_desc, :definitions
-  attr_accessor :active
-  attr_accessible :active, :type
-  after_initialize :set_active
+  class_attribute   :_desc, :definitions
+  attr_accessible   :active, :type
+  after_initialize  :set_active
+  attr_reader       :active
 
   # This nasty stuff here is a way of making STI work with nested_attributes.
   # Basically, you can pass in :type when initializing a model and it will
@@ -23,7 +25,15 @@ class PromotionCondition < ActiveRecord::Base
   end
 
   def set_active
-    self.active = !new_record? if active.nil?
+    @active ||= !new_record?
+  end
+
+  def active=(b)
+    @active = case b
+    when true, false then b
+    when 0, '0' then false
+    when 1, '1' then true
+    end
   end
 
   def qualifies?(order)
@@ -37,7 +47,6 @@ class PromotionCondition < ActiveRecord::Base
   def self.inherited(klass)
     self.definitions ||= []
     self.definitions << klass
-    self.definitions.sort! {|x, y| x._desc > y._desc}
   end
 
   private
