@@ -6,10 +6,10 @@ class Promotion < ActiveRecord::Base
 
   attr_accessible :name, :start_at, :end_at, :conditions_attributes, :effects_attributes, :active, :description
 
-  accepts_nested_attributes_for :conditions, :reject_if => :condition_or_effect_inactive?
-  accepts_nested_attributes_for :effects,    :reject_if => :condition_or_effect_inactive?
+  accepts_nested_attributes_for :conditions
+  accepts_nested_attributes_for :effects
 
-  before_save :clean_conditions_and_effects
+  before_validation :clean_conditions_and_effects
 
   validations_from_schema
   validates_associated :conditions, :effects
