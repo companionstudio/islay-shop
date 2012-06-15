@@ -4,8 +4,12 @@ class PromotionEffect < ActiveRecord::Base
 
   belongs_to :promotion
 
-  def apply!(order, conditions)
+  def apply!(order, qualifications)
     raise NotImplementedError
+  end
+
+  def required_stock
+    {}
   end
 
   # Force the subclasses to be loaded

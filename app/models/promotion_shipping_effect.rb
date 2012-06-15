@@ -5,7 +5,7 @@ class PromotionShippingEffect < PromotionEffect
     float :amount, :required => true
   end
 
-  def apply!(order, conditions)
-
+  def apply!(order, qualifications)
+    order.shipping_total = amount
   end
 end

@@ -1,4 +1,9 @@
 class Promotion < ActiveRecord::Base
+  # CONSTRAINTS
+  # * Only one effect at a time
+  # * Conditions are ANDed together. No OR.
+  # * Validate conflicting conditions i.e. conditions related to quantity, only one at a time
+
   has_many :orders
   has_many :order_items
   has_many :conditions, :class_name => 'PromotionCondition', :order => 'type ASC'
@@ -25,13 +30,25 @@ class Promotion < ActiveRecord::Base
 
   end
 
+  def required_stock
+
+  end
+
   def qualifies?(order)
     conditions.map {|c| c.qualifies?(order)}.all?
   end
 
+  def qualifications(order)
+    @qualifications ||= conditions.inject({}) do |h, c|
+      h.merge!(c.qualifications(order))
+      h
+    end
+  end
+
   def apply!(order)
-    effect.apply!(order)
-    order.save!
+    effects.each {|e| e.apply!(order, qualifications(order))}
+
+    # order.promotions << self
   end
 
   def prefill

@@ -9,4 +9,9 @@ class PromotionSkuQuantityCondition < PromotionCondition
   def qualifies?(order)
     ids = order.items.map(&:sku_id).include?(sku_id)
   end
+
+  def qualifications(order)
+    item = order.items.select {|i| i.sku_id == sku_id}.first
+    {item.sku_id => item.quantity / quantity}
+  end
 end

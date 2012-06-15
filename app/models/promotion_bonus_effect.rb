@@ -6,7 +6,9 @@ class PromotionBonusEffect < PromotionEffect
     integer     :quantity,  :required => true, :greater_than => 0
   end
 
-  def apply!(order, conditions)
-
+  def apply!(order, qualifications)
+    # We don't care about individual SKUs, just the total number of qualifications
+    quantity = qualifications.values.sum
+    order.add_item(sku_id, quantity)
   end
 end

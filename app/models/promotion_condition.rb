@@ -8,6 +8,10 @@ class PromotionCondition < ActiveRecord::Base
     raise NotImplementedError
   end
 
+  def qualifications(order)
+    {}
+  end
+
   # Force the subclasses to be loaded
   Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)].each {|f| require f}
 end
