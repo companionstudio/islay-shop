@@ -47,13 +47,6 @@ module IslayShop
     end
 
     module ClassMethods
-      def inherited(klass)
-        self.definitions ||= []
-        self.definitions << klass
-      end
-
-      private
-
       def desc(s)
         self._desc = s
       end

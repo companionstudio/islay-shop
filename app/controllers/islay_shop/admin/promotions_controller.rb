@@ -16,6 +16,14 @@ module IslayShop
         @promotion.prefill
       end
 
+      def find_record
+        if params[:action] == 'show'
+          Promotion.find(params[:id]).tap(&:prefill)
+        else
+          Promotion.find(params[:id])
+        end
+      end
+
       def new_record
         if params[:action] == 'new'
           Promotion.new.tap(&:prefill)

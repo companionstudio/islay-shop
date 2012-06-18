@@ -2,7 +2,6 @@ class CreateOrders < ActiveRecord::Migration
   def change
     create_table :orders do |t|
       t.integer   :person_id,             :null => true, :on_delete => :set_null
-      t.integer   :promotion_id,          :null => true, :on_delete => :set_null
 
       t.string    :name,                  :limit => 200,  :null => false
       t.string    :phone,                 :limit => 50

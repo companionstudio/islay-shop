@@ -1,43 +1,56 @@
 class Promotion < ActiveRecord::Base
-  # CONSTRAINTS
-  # * Only one effect at a time
-  # * Conditions are ANDed together. No OR.
-  # * Validate conflicting conditions i.e. conditions related to quantity, only one at a time
-
-  has_many :orders
-  has_many :order_items
   has_many :conditions, :class_name => 'PromotionCondition', :order => 'type ASC'
   has_many :effects,    :class_name => 'PromotionEffect',    :order => 'type ASC'
 
   attr_accessible :name, :start_at, :end_at, :conditions_attributes, :effects_attributes, :active, :description
 
-  accepts_nested_attributes_for :conditions
-  accepts_nested_attributes_for :effects
+  accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
+  accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
   before_validation :clean_conditions_and_effects
 
   validations_from_schema
   validates_associated :conditions, :effects
 
+  # Returns a boolean indicating if the promotion is actually running. This means
+  # it has to be both published and have a current start/end date.
   def active?
     now = Time.now
-    start_at <= now and (end_at.nil? || end_at >= now)
+    published  and start_at <= now and (end_at.nil? || end_at >= now)
   end
 
   # Derives a description of the promotion by looking at the conditions and the
   # effect.
+  #
+  # TODO:
   def summary
 
   end
 
+  # Returns a hash keyed by sku_id, with values indicating the amount of stock
+  # required in order fulfill the effects of a promotion.
+  #
+  # In some cases, this will return an empty hash e.g. for free shipping or
+  # order total discounts.
+  #
+  # TODO:
   def required_stock
 
   end
 
+  # Queries each condition attached to the promotion, and returns a boolean
+  # indicating the qualification of the specified order.
+  #
+  # The conditions are ANDed together. All or nothing.
   def qualifies?(order)
     conditions.map {|c| c.qualifies?(order)}.all?
   end
 
+  # This returns a hash keyed by sku_id and values indicating the number of times
+  # a SKU has qualified for the conditions.
+  #
+  # This is used by some of the effects to calculate bonuses e.g. buy one get
+  # one free needs to know how many skus qualify.
   def qualifications(order)
     @qualifications ||= conditions.inject({}) do |h, c|
       h.merge!(c.qualifications(order))
@@ -45,37 +58,44 @@ class Promotion < ActiveRecord::Base
     end
   end
 
+  # Applies each of the effects to the order, then assigns this promotion to
+  # the order via the PromotionOrder model.
   def apply!(order)
     effects.each {|e| e.apply!(order, qualifications(order))}
-
-    # order.promotions << self
   end
 
+  # When editing a promotion, this method is used to prefill the condition and
+  # effect collections. For each type of condition or effect that is missing,
+  # we stub out a new record.
   def prefill
     cond_types = conditions.map(&:type)
-    PromotionCondition.definitions.each do |klass|
+    PromotionCondition.subclasses.each do |klass|
       conditions.build(:type => klass.to_s) unless cond_types.include?(klass.to_s)
     end
 
     effect_types = effects.map(&:type)
-    PromotionEffect.definitions.each do |klass|
+    PromotionEffect.subclasses.each do |klass|
       effects.build(:type => klass.to_s) unless effect_types.include?(klass.to_s)
     end
   end
 
   private
 
-  def condition_or_effect_inactive?(param)
-    param[:active] == '0'
+  # Run on the accepts_nested_for_* collections. Prevents any stubbed out records
+  # that are marked as inactive from even being considered.
+  def condition_or_order_inactive?(params)
+    params[:active] == '0' and params[:id].blank?
   end
 
+  # Reject any conditions or effects that have not been marked as inactive. This
+  # will remove existing records and omit any new/stubbed records.
   def clean_conditions_and_effects
     conditions.each do |condition|
-      condition.destroy unless condition.active
+      conditions.delete(condition) unless condition.active
     end
 
     effects.each do |effect|
-      effect.destroy unless effect.active
+      effects.delete(effect) unless effect.active
     end
   end
 end
