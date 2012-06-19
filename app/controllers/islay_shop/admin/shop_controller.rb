@@ -1,6 +1,6 @@
 module IslayShop
   module Admin
-    class ShopController < ApplicationController
+    class ShopController < IslayShop::Admin::ApplicationController
       header('Shop')
 
       def index

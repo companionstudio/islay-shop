@@ -1,6 +1,6 @@
 module IslayShop
   module Admin
-    class ProductCategoriesController < ApplicationController
+    class ProductCategoriesController < IslayShop::Admin::ApplicationController
       resourceful :product_category
       header('Shop')
 

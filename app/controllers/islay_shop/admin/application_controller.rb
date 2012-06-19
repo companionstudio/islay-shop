@@ -1,7 +1,6 @@
 module IslayShop
   module Admin
-    class ApplicationController < ActionController::Base
-      include Islay::AdminController
+    class ApplicationController < Islay::Admin::ApplicationController
     end
   end
 end

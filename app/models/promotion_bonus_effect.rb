@@ -7,6 +7,15 @@ class PromotionBonusEffect < PromotionEffect
   end
 
   def apply!(order, qualifications)
-    order.add_item(sku_id, qualifications.values.sum)
+    qualifications.each do |id, count|
+      bonus_item = order.add_bonus_item(id, count)
+
+      applications.build(
+        :promotion              => promotion,
+        :order                  => order,
+        :bonus_order_item       => bonus_item,
+        :qualifying_order_item  => order.item_by_sku_id(sku_id)
+      )
+    end
   end
 end

@@ -1,0 +1,3 @@
+class OrderRegularItem < OrderItem
+
+end

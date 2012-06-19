@@ -1,0 +1,3 @@
+class OrderDiscountItem < OrderItem
+
+end

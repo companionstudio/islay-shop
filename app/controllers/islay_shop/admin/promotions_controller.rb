@@ -1,6 +1,6 @@
 module IslayShop
   module Admin
-    class PromotionsController < ApplicationController
+    class PromotionsController < IslayShop::Admin::ApplicationController
       resourceful :promotion
       header 'Promotions'
 

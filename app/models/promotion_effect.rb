@@ -2,7 +2,12 @@ class PromotionEffect < ActiveRecord::Base
   include IslayShop::MetaData
   include IslayShop::PromotionConfig
 
-  belongs_to :promotion
+  has_many    :applications,            :class_name => 'AppliedPromotions'
+  has_many    :orders,                  :through => :applications
+  has_many    :qualifying_order_items,  :through => :applications
+  has_many    :bonus_order_items,       :through => :applications
+
+  belongs_to  :promotion
 
   def apply!(order, qualifications)
     raise NotImplementedError
