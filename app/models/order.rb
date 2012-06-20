@@ -1,4 +1,8 @@
 class Order < ActiveRecord::Base
+  # Turn off single table inheritance
+  self.inheritance_column = :_type_disabled
+  self.table_name = 'orders'
+
   belongs_to  :person
   has_one     :credit_card_payment
   has_many    :items,            :class_name => 'OrderItem'

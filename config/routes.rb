@@ -30,5 +30,25 @@ Rails.application.routes.draw do
 
       resources :promotions
     end # namespace
+
+    namespace :public, :path => '' do
+      # TODO: Make these paths configurable
+      scope :path => 'catalogue', :controller => 'catalogue' do
+        get '/', :action => 'index', :as => 'catalogue'
+      end
+
+      scope :path => 'basket', :controller => 'basket' do
+        get     '/',                :action => 'contents',  :as => 'order_basket'
+        post    '/add',             :action => 'add',       :as => 'order_basket_add'
+        post    '/remove/:sku_id',  :action => 'remove',    :as => 'order_basket_remove'
+        post    '/update',          :action => 'remove',    :as => 'order_basket_update'
+        delete  '/clear',           :action => 'clear',     :as => 'order_basket_clear'
+      end
+
+      scope :path => 'checkout', :controller => 'checkout' do
+        get '/',        :action => 'contact',   :as => 'order_checkout'
+        get '/payment', :action => 'payment',   :as => 'order_checkout_payment'
+      end
+    end
   end # scope
 end # draw

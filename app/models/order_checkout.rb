@@ -1,0 +1,3 @@
+class OrderCheckout < Order
+
+end

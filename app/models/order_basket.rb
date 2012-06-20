@@ -1,0 +1,3 @@
+class OrderBasket < Order
+
+end
