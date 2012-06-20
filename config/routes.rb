@@ -23,8 +23,9 @@ Rails.application.routes.draw do
 
       end
 
-      scope :path => 'orders' do
-        get '/' => 'orders#index', :as => 'orders'
+      scope :path => 'orders', :controller => 'orders' do
+        get '/',    :action => 'index', :as => 'orders'
+        get '/:id', :action => 'show', :as => 'order'
       end
 
       resources :promotions

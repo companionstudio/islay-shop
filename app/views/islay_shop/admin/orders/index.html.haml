@@ -1,0 +1,12 @@
+
+%table(cellpadding=0 cellspacing=0)
+  %thead
+    %tr
+      %th Name
+      %th Created At
+
+  %tbody
+    - @orders.each do |order|
+      %tr
+        %td= link_to(order.name, path(order))
+        %td.time= order.created_at
