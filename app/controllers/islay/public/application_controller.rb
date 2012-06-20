@@ -6,7 +6,7 @@ class Islay::Public::ApplicationController
 
   def load_order
     if session['order']
-      @order = OrderBasket.load(JSON.parse(session['order']))
+      @order = OrderBasket.load(session['order'])
     end
   end
 end

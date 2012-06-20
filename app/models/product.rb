@@ -18,7 +18,19 @@ class Product < ActiveRecord::Base
   accepts_nested_attributes_for :skus, :allow_destroy => true, :reject_if => :new_sku?
   validates_associated :skus
 
+  before_save :store_published_at
+
+  def self.newest
+    where(:published => true).order('published_at DESC').limit(4)
+  end
+
   private
+
+  def store_published_at
+    if published and published_at.blank?
+      self.published_at = Time.now
+    end
+  end
 
   def new_sku?(params)
     params.delete(:template) == "true"

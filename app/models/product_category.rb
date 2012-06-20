@@ -9,4 +9,8 @@ class ProductCategory < ActiveRecord::Base
   attr_accessible :name, :description, :asset_id, :product_category_id, :published, :status
 
   track_user_edits
+
+  def self.published
+    where(:published => true, :product_category_id => nil).order('position ASC')
+  end
 end

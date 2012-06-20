@@ -34,7 +34,12 @@ Rails.application.routes.draw do
     namespace :public, :path => '' do
       # TODO: Make these paths configurable
       scope :path => 'catalogue', :controller => 'catalogue' do
-        get '/', :action => 'index', :as => 'catalogue'
+        get '/',              :action => 'index',       :as => 'catalogue'
+        get '/categories',    :action => 'categories',  :as => 'product_categories'
+        get '/category/:id',  :action => 'category',    :as => 'product_category'
+        get '/ranges',        :action => 'ranges',      :as => 'product_ranges'
+        get '/range/:id',     :action => 'range',       :as => 'product_range'
+        get '/product/:id',   :action => 'product',     :as => 'product'
       end
 
       scope :path => 'basket', :controller => 'basket' do

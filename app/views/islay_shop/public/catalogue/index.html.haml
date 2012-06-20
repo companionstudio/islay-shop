@@ -1,0 +1,16 @@
+%h1 Product Catalogue
+
+%h2 Newest Products
+%ul
+  - @newest_products.each do |product|
+    %li= link_to(product.name, path(product))
+
+%h2 Categories
+%ul
+  - @categories.each do |category|
+    %li= link_to(category.name, path(category))
+
+%h2 Ranges
+%ul
+  - @ranges.each do |range|
+    %li= link_to(range.name, path(range))

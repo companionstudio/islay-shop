@@ -5,4 +5,8 @@ class ProductRange < ActiveRecord::Base
   attr_accessible :name, :description
 
   track_user_edits
+
+  def self.published
+    all
+  end
 end
