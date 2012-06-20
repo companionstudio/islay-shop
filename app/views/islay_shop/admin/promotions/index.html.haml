@@ -18,7 +18,7 @@
       - @promotions.each do |promotion|
         %tr
           %td= promotion.active?
-          %td= promotion.name
+          %td= link_to(promotion.name, path(promotion))
           %td= promotion.start_at
           %td= promotion.end_at
           %td= promotion.updated_at

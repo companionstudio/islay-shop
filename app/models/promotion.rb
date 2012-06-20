@@ -20,7 +20,7 @@ class Promotion < ActiveRecord::Base
   # it has to be both published and have a current start/end date.
   def active?
     now = Time.now
-    published  and start_at <= now and (end_at.nil? || end_at >= now)
+    active  and start_at <= now and (end_at.nil? || end_at >= now)
   end
 
   # Derives a description of the promotion by looking at the conditions and the
