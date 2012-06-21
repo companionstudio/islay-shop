@@ -6,7 +6,12 @@ class PromotionProductQuantityCondition < PromotionCondition
     integer       :quantity,    :required => true, :greater_than => 0, :default => 1
   end
 
+  def qualifications(order)
+    items = order.candidate_items.select {|i| i.sku.product_id == product_id}
+    items.inject({}) {|h, i| h[i.sku_id] = quantity * i.quantity; h}
+  end
+
   def qualifies?(order)
-    order.items.map {|i| i.sku.product_id}.include?(product_id)
+    order.candidate_items.map {|i| i.sku.product_id}.include?(product_id)
   end
 end

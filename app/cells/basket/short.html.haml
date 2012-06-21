@@ -7,3 +7,9 @@
       = i.hidden_field(:sku_id)
 
     %button Update
+
+  - if @order.bonus_items[0]
+    %h3 Bonus Items
+    %ul
+      - @order.bonus_items.each do |item|
+        %li #{item.sku_id} (#{item.quantity})

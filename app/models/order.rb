@@ -94,13 +94,19 @@ class Order < ActiveRecord::Base
     sku_id    = sku_id.to_i
     quantity  = quantity.to_i
 
-    item = regular_items.by_sku_id(sku_id) || regular_items.build(:sku_id => sku_id)
-    item.quantity = if item.quantity.blank?
-      quantity
+    item = regular_items.by_sku_id(sku_id)
+
+    if item and quantity == 0
+      regular_items.delete(item)
     else
-      case mode
-      when :add     then item.quantity + quantity
-      when :update  then quantity
+      item ||= regular_items.build(:sku_id => sku_id)
+      item.quantity = if item.quantity.blank?
+        quantity
+      else
+        case mode
+        when :add     then item.quantity + quantity
+        when :update  then quantity
+        end
       end
     end
   end
@@ -138,6 +144,14 @@ class Order < ActiveRecord::Base
   # the totals from each regular and discounted line item.
   def product_total
     self[:product_total] ||= (regular_items.map(&:total) + discount_items.map(&:total)).sum
+  end
+
+  # Is a convenience method for promotion conditions. It returns a duplicate of
+  # the regular_items association. The reason for this is because AR does
+  # stupid things with association collections that haven't been saved to the
+  # DB e.g. they don't actually respond to all the array methods.
+  def candidate_items
+    @candidate_items ||= regular_items.dup
   end
 
   # Provides a simplified representation of the items in an order, consolidating
@@ -178,9 +192,7 @@ class Order < ActiveRecord::Base
   def apply_promotions
     raise PromotionApplyError if @_promotions_applied
 
-    promotions = Promotion.all # Should be all current promotions
-    promotions.each {|p| p.apply!(self) if p.qualifies?(self)}
-
+    Promotion.active.each {|p| p.apply!(self) if p.qualifies?(self)}
     @_promotions_applied = true
   end
 

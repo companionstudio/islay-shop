@@ -2,7 +2,7 @@ class PromotionEffect < ActiveRecord::Base
   include IslayShop::MetaData
   include IslayShop::PromotionConfig
 
-  has_many    :applications,            :class_name => 'AppliedPromotions'
+  has_many    :applications,            :class_name => 'AppliedPromotion'
   has_many    :orders,                  :through => :applications
   has_many    :qualifying_order_items,  :through => :applications
   has_many    :bonus_order_items,       :through => :applications

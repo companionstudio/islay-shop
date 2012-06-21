@@ -7,12 +7,12 @@ class PromotionGetNFreeEffect < PromotionEffect
 
   def apply!(order, qualifications)
     qualifications.each do |id, count|
-      qualifying_item = order.add_free_item(sku_id, count)
+      bonus = order.add_bonus_item(id, count)
 
       applications.build(
-        :promotion              => promotion,
-        :order                  => order,
-        :qualifying_order_item  => qualifying_item
+        :promotion         => promotion,
+        :order             => order,
+        :bonus_item  => bonus
       )
     end
   end
