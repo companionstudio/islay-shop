@@ -1,3 +1,8 @@
 %h1 Catalogue
+
 %h2 Product: #{@product.name}
+= render_cell :buy, :add, @product
+
+%h2 Your Basket
+= render_cell :basket, :short
 

@@ -46,7 +46,7 @@ Rails.application.routes.draw do
         get     '/',                :action => 'contents',  :as => 'order_basket'
         post    '/add',             :action => 'add',       :as => 'order_basket_add'
         post    '/remove/:sku_id',  :action => 'remove',    :as => 'order_basket_remove'
-        post    '/update',          :action => 'remove',    :as => 'order_basket_update'
+        post    '/update',          :action => 'update',    :as => 'order_basket_update'
         delete  '/clear',           :action => 'clear',     :as => 'order_basket_clear'
       end
 

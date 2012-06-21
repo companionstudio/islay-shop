@@ -24,8 +24,10 @@ class Order < ActiveRecord::Base
   # It is implemented so it can handle the case the there items are in memory
   # only, or where they are persisted in the DB.
   has_many :regular_items, :class_name => 'OrderRegularItem' do
-    def find_or_create_by_sku_id(sku_id)
-      if loaded?
+    def by_sku_id(sku_id)
+      # We check for existance like this, since this catches records that have
+      # both been loaded from the DB and new instances built on the assocation.
+      if self[0]
         select {|i| i.sku_id == sku_id}.first
       else
         where(:sku_id => sku_id).first
@@ -37,7 +39,11 @@ class Order < ActiveRecord::Base
   before_save :calculate_totals
   track_user_edits
 
-  # Generates and order from a JSON object.
+  # Generates and order from a JSON object. The apply boolean indicates if
+  # promotions should be applied to the order after it has been loaded.
+  #
+  # TODO: Investigate checking stock levels when loading to see if it has
+  # been decremented by another action between requests.
   def self.load(json, apply = true)
     order = Order.new(JSON.parse(json))
     order.apply_promotions if apply
@@ -82,13 +88,27 @@ class Order < ActiveRecord::Base
   # Adds or updates an item based on the sku_id. If the item exists, it's
   # quantity is incremented by the specified amount, otherwise a new item is
   # created.
-  def add_or_update_item(sku_id, quantity)
+  #
+  # TODO: This action needs to account for and handle exhausted stock levels.
+  def add_or_update_item(sku_id, quantity, mode = :add)
+    sku_id    = sku_id.to_i
+    quantity  = quantity.to_i
+
     item = regular_items.by_sku_id(sku_id) || regular_items.build(:sku_id => sku_id)
     item.quantity = if item.quantity.blank?
       quantity
     else
-      item.quantity + quantity
+      case mode
+      when :add     then item.quantity + quantity
+      when :update  then quantity
+      end
     end
+  end
+
+  # This is a shortcut for updating multiple items in one go. It replaces any
+  # existing item quantities with the passed in values.
+  def update_items(items)
+    items.each {|k, i| add_or_update_item(i[:sku_id], i[:quantity], :update)}
   end
 
   # Removes the a regular item specified by it's sku_id.

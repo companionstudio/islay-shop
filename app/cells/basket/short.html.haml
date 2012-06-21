@@ -1,0 +1,9 @@
+%div.basket
+  %h3 Items
+  = form_for(@order, :url => public_order_basket_update_path) do |f|
+    = f.fields_for(:regular_items) do |i|
+      = i.label(:quantity, i.object.sku_id)
+      = i.text_field(:quantity)
+      = i.hidden_field(:sku_id)
+
+    %button Update

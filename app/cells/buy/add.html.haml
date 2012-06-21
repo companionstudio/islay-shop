@@ -1,0 +1,6 @@
+- @product.skus.each do |sku|
+  = form_tag(public_order_basket_add_path) do
+    = label(:quantity, sku.id)
+    = text_field_tag(:quantity, 1)
+    = hidden_field_tag(:sku_id, sku.id)
+    %button Add
