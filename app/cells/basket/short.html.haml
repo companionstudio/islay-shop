@@ -1,12 +1,16 @@
 %div.basket
   %h3 Items
-  = form_for(@order, :url => public_order_basket_update_path) do |f|
-    = f.fields_for(:regular_items) do |i|
-      = i.label(:quantity, i.object.sku_id)
-      = i.text_field(:quantity)
-      = i.hidden_field(:sku_id)
+  - if @order.regular_items[0]
+    = form_for(@order, :url => public_order_basket_update_path) do |f|
+      = f.fields_for(:regular_items) do |i|
+        = i.label(:quantity, i.object.sku_id)
+        = i.text_field(:quantity)
+        = i.hidden_field(:sku_id)
 
-    %button Update
+      %button Update
+
+  - else
+    %p Empty
 
   - if @order.bonus_items[0]
     %h3 Bonus Items
