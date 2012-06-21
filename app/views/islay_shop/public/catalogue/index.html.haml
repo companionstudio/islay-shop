@@ -14,3 +14,10 @@
 %ul
   - @ranges.each do |range|
     %li= link_to(range.name, path(range))
+
+%h2 Current Promotions
+%ul
+  - @promotions.each do |promotion|
+    %li
+      %h3= promotion.name
+      = simple_format(promotion.description)

@@ -3,6 +3,7 @@ class IslayShop::Public::CatalogueController < IslayShop::Public::ApplicationCon
     @newest_products  = Product.newest
     @categories       = ProductCategory.published
     @ranges           = ProductRange.published
+    @promotions       = Promotion.active
   end
 
   def categories

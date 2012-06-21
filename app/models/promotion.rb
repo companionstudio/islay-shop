@@ -16,6 +16,12 @@ class Promotion < ActiveRecord::Base
   validations_from_schema
   validates_associated :conditions, :effects
 
+  # Returns the promotions that have been published and have current start and
+  # end dates
+  def self.active
+    PromotionQuery.active
+  end
+
   # Returns a boolean indicating if the promotion is actually running. This means
   # it has to be both published and have a current start/end date.
   def active?
