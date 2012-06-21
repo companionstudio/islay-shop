@@ -5,6 +5,8 @@
   - @newest_products.each do |product|
     %li= link_to(product.name, path(product))
 
+%p= link_to('All products', path(:products))
+
 %h2 Categories
 %ul
   - @categories.each do |category|

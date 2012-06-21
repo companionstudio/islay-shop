@@ -1,0 +1,6 @@
+%h1 Catalogue
+
+%h2 Products
+%ul
+  - @products.each do |product|
+    %li= link_to(product.name, path(product))

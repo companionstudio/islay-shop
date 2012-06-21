@@ -24,6 +24,10 @@ class Product < ActiveRecord::Base
     where(:published => true).order('published_at DESC').limit(4)
   end
 
+  def self.published
+    where(:published => true).order('name ASC')
+  end
+
   private
 
   def store_published_at

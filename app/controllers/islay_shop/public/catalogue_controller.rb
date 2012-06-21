@@ -22,6 +22,10 @@ class IslayShop::Public::CatalogueController < IslayShop::Public::ApplicationCon
     @range = ProductRange.find(params[:id])
   end
 
+  def products
+    @products = Product.published
+  end
+
   def product
     @product = Product.find(params[:id])
   end
