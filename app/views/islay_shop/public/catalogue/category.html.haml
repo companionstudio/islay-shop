@@ -2,3 +2,8 @@
 %h2 Category: #{@category.name}
 
 = render_cell :promotion, :category, @category
+
+%h2 Products
+- @category.products.each do |product|
+  %li= link_to(product.name, path(product))
+
