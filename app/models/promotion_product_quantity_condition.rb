@@ -11,6 +11,14 @@ class PromotionProductQuantityCondition < PromotionCondition
     items.inject({}) {|h, i| h[i.sku_id] = quantity * i.quantity; h}
   end
 
+  def sku_qualifies?(sku)
+    sku.product_id == product_id
+  end
+
+  def product_qualifies?(product)
+    product.id == product_id
+  end
+
   def qualifies?(order)
     order.candidate_items.map {|i| i.sku.product_id}.include?(product_id)
   end

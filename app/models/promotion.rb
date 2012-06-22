@@ -22,6 +22,39 @@ class Promotion < ActiveRecord::Base
     PromotionQuery.active
   end
 
+  # Returns any active promotions that apply to a particular SKU.
+  def self.for_sku(sku)
+    active.select {|p| p.product_qualifies?(sku)}
+  end
+
+  # Returns any active promotions that apply to a particular product.
+  def self.for_product(product)
+    active.select {|p| p.product_qualifies?(product)}
+  end
+
+  # Returns any active promotions that apply to a particular product category.
+  def self.for_category(category)
+    active.select {|p| p.category_qualifies?(category)}
+  end
+
+  # This is used to indicate if a promotion involves the specified SKU in some
+  # way.
+  def sku_qualifies?(sku)
+    conditions.map {|c| c.sku_qualifies?(sku)}.any?
+  end
+
+  # This is used to indicate if a promotion involves the specified product in
+  # some way.
+  def product_qualifies?(product)
+    conditions.map {|c| c.product_qualifies?(product)}.any?
+  end
+
+  # This is used to indicate if a promotion involves the specified product
+  # category in some way.
+  def category_qualifies?(category)
+    conditions.map {|c| c.category_qualifies?(category)}.any?
+  end
+
   # Returns a boolean indicating if the promotion is actually running. This means
   # it has to be both published and have a current start/end date.
   def active?

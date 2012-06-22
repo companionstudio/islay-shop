@@ -4,6 +4,18 @@ class PromotionCondition < ActiveRecord::Base
 
   belongs_to :promotion
 
+  def sku_qualifies?(sku)
+    false
+  end
+
+  def product_qualifies?(product)
+    false
+  end
+
+  def category_qualifies?(category)
+    false
+  end
+
   def qualifies?(order)
     raise NotImplementedError
   end
