@@ -1,6 +1,7 @@
 class PromotionCell < Cell::Rails
   def category(category)
-
+    @promotions = Promotion.for_category(category)
+    render unless @promotions.empty?
   end
 
   def product(product)
