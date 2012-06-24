@@ -19,6 +19,20 @@ class PromotionCategoryQuantityCondition < PromotionCondition
   end
 
   def qualifies?(order)
-    order.items.map {|i| i.sku.product.product_category_id}.include?(product_category_id)
+    check = order.candidate_items.map do |i|
+      i.sku.product.product_category_id == product_category_id and i.quantity >= quantity
+    end
+
+    !check.empty? and check.any?
+  end
+
+  def qualifications(order)
+    order.candidate_items.inject({}) do |h, i|
+      if i.sku.product.product_category_id == product_category_id and i.quantity >= quantity
+        h[i.sku_id] = i.quantity / quantity
+      end
+
+      h
+    end
   end
 end
