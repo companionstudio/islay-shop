@@ -1,5 +1,7 @@
 /.rvmrc
+.yardoc
 .bundle/
 log/*.log
 pkg/
 spec/dummy
+doc

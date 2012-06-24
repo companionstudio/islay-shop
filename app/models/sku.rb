@@ -22,4 +22,11 @@ class Sku < ActiveRecord::Base
   def desc
     "#{product.name} - #{price}"
   end
+
+  # Indicates if the SKU has any stock.
+  #
+  # @returns Boolean
+  def in_stock?
+    stock_level > 0
+  end
 end
