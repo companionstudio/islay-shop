@@ -42,14 +42,19 @@ class Order < ActiveRecord::Base
   # Generates and order from a JSON object. The apply boolean indicates if
   # promotions should be applied to the order after it has been loaded.
   #
-  # TODO: Investigate checking stock levels when loading to see if it has
+  # @param [String] json JSON representation of order (result of #dump)
+  # @param [Boolean] apply apply promotions after loading
+  #
+  # @todo Investigate checking stock levels when loading to see if it has
   # been decremented by another action between requests.
   def self.load(json, apply = true)
-    order = Order.new(JSON.parse(json))
+    order = new(JSON.parse(json))
     order.apply_promotions if apply
     order
   end
 
+  # Specifies the values that can be safely exposed to the public. This is used
+  # by the #dump method to create a JSON string that can be written to session.
   DUMP_OPTS = {
     root: false, :methods => :items_dump,
     :except => [
@@ -61,103 +66,26 @@ class Order < ActiveRecord::Base
   # Generates a JSON string representation of the order and it's items. It
   # only dumps the regular items and their quantities. Bonus and discount
   # details are ignored, since they are reapplied when the order is loaded.
+  #
+  # @return [String] JSON representation of order
   def dump
     to_json(DUMP_OPTS)
   end
 
-  # Loads an order from a JSON object. Adds the item specified, then applies
-  # promotions, returning the order instance
-  def self.load_and_add_item(json, sku_id, quantity)
-    order = load(json, false)
-    order.add_or_update_item(sku_id, quantity)
-    order.apply_promotions
-
-    order
-  end
-
-  # Loads an order from a JSON object. removes the item specified, then applies
-  # promotions, returning the order instance
-  def self.load_and_remove_item(json, sku_id)
-    order = load(json, false)
-    order.remove_item(sku_id)
-    order.apply_promotions
-
-    order
-  end
-
-  # Adds or updates an item based on the sku_id. If the item exists, it's
-  # quantity is incremented by the specified amount, otherwise a new item is
-  # created.
-  #
-  # TODO: This action needs to account for and handle exhausted stock levels.
-  def add_or_update_item(sku_id, quantity, mode = :add)
-    sku_id    = sku_id.to_i
-    quantity  = quantity.to_i
-
-    item = regular_items.by_sku_id(sku_id)
-
-    if item and quantity == 0
-      regular_items.delete(item)
-    else
-      item ||= regular_items.build(:sku_id => sku_id)
-      item.quantity = if item.quantity.blank?
-        quantity
-      else
-        case mode
-        when :add     then item.quantity + quantity
-        when :update  then quantity
-        end
-      end
-    end
-  end
-
-  # This is a shortcut for updating multiple items in one go. It replaces any
-  # existing item quantities with the passed in values.
-  def update_items(items)
-    items.each {|k, i| add_or_update_item(i[:sku_id], i[:quantity], :update)}
-  end
-
-  # Removes the a regular item specified by it's sku_id.
-  def remove_item(sku_id)
-    regular_items.delete(regular_items.by_sku_id(sku_id))
-  end
-
-  # Apply a discount to a regular item by replacing it with an instance of a
-  # discount_item.
-  def discount_item(sku_id, discount_price, discount_percentage)
-    item = regular_items.by_sku_id(sku_id)
-    discount_items.build(
-      :sku_id   => sku_id,
-      :quantity => item.quantity,
-      :price    => discount_price,
-      :discount => discount_percentage
-    )
-    regular_items.delete(item)
-  end
-
-  # Does what it says on the tin.
-  def add_bonus_item(sku_id, quantity)
-    bonus_items.build(:sku_id => sku_id, :quantity => quantity)
-  end
-
   # This either returns the stored product total or it calculates it by summing
   # the totals from each regular and discounted line item.
+  #
+  # @return [Integer] total value of 'purchasable' items in order
   def product_total
     self[:product_total] ||= (regular_items.map(&:total) + discount_items.map(&:total)).sum
-  end
-
-  # Is a convenience method for promotion conditions. It returns a duplicate of
-  # the regular_items association. The reason for this is because AR does
-  # stupid things with association collections that haven't been saved to the
-  # DB e.g. they don't actually respond to all the array methods.
-  def candidate_items
-    @candidate_items ||= regular_items.dup
   end
 
   # Provides a simplified representation of the items in an order, consolidating
   # regular and discounted items into a single collection.
   #
   # It is intended to be used when dumping the order contents to JSON.
+  #
+  # @return [String] JSON representation of order items
   def items_dump
     regular   = regular_items.map   {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
     discount  = discount_items.map  {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
@@ -167,6 +95,8 @@ class Order < ActiveRecord::Base
 
   # When loading up an order from session, this accessor is used to generate the
   # regular item instances on the order model.
+  #
+  # @params [Array<Hash>] raw values for order items
   def items_dump=(items)
     items.each {|i| regular_items.build(i)}
   end

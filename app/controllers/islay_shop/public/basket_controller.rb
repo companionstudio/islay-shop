@@ -11,7 +11,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def remove
-
+    @order.add_or_update_item(params[:sku_id], 0)
     store_and_redirect
   end
 
@@ -22,6 +22,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def clear
     session.delete('order')
+    bounce_back
   end
 
   private

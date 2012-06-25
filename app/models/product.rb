@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
 
   # Check to see if any of the SKUs attached to this product are in stock.
   #
-  # @returns Boolean
+  # @return Boolean
   def in_stock?
     skus.map {|s| s.stock_level > 0}.any?
   end
