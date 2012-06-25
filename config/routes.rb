@@ -53,8 +53,11 @@ Rails.application.routes.draw do
       end
 
       scope :path => 'checkout', :controller => 'checkout' do
-        get '/',        :action => 'contact',   :as => 'order_checkout'
-        get '/payment', :action => 'payment',   :as => 'order_checkout_payment'
+        get   '/',                :action => 'details',       :as => 'order_checkout'
+        post  '/',                :action => 'update'
+        get   '/payment',         :action => 'payment',       :as => 'order_checkout_payment'
+        get   '/payment/process', :action => 'payment_error', :as => 'order_checkout_payment_process'
+        get   '/thank-you',       :action => 'thank_you',     :as => 'order_checkout_thank_you'
       end
     end
   end # scope

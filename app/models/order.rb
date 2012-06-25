@@ -5,6 +5,7 @@ class Order < ActiveRecord::Base
 
   belongs_to  :person
   has_one     :credit_card_payment
+  has_one     :spreedly_core_payment
   has_many    :items,            :class_name => 'OrderItem'
   has_many    :bonus_items,      :class_name => 'OrderBonusItem'
   has_many    :discount_items,   :class_name => 'OrderDiscountItem'
@@ -58,6 +59,13 @@ class Order < ActiveRecord::Base
   # Clears out any existing stock alerts
   def destroy_alerts
     stock_alerts.clear
+  end
+
+  # Checks to see if there is anything in the order at all.
+  #
+  # @return Boolean
+  def empty?
+    regular_items.empty?
   end
 
   # Generates and order from a JSON object. The apply boolean indicates if
