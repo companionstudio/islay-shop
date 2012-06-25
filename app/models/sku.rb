@@ -18,15 +18,24 @@ class Sku < ActiveRecord::Base
   # Summary of this SKU, which includes it's product name, data cols, sizing,
   # price etc.
   #
-  # This should be over-ridden in any subclasses to be more specific.
+  # @return String
+  #
+  # @note This should be over-ridden in any subclasses to be more specific.
   def desc
     "#{product.name} - #{price}"
   end
 
   # Indicates if the SKU has any stock.
   #
-  # @returns Boolean
+  # @return [Boolean]
   def in_stock?
     stock_level > 0
+  end
+
+  # Indicates if the SKU is out of stock.
+  #
+  # @return [Boolean]
+  def out_of_stock?
+    stock_level < 1
   end
 end

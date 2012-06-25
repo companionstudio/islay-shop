@@ -14,7 +14,8 @@ class Order < ActiveRecord::Base
     :billing_country, :billing_postcode, :billing_state, :billing_street,
     :billing_city, :email, :gift_message, :gifted_to, :is_gift, :name, :phone,
     :shipping_city, :shipping_country, :shipping_instructions, :shipping_postcode,
-    :shipping_state, :shipping_street, :use_shipping_address, :items_dump
+    :shipping_state, :shipping_street, :use_shipping_address, :items_dump,
+    :stock_alerts_dump
   )
 
   # This association has an extra method attached to it. This is so we can
@@ -39,16 +40,44 @@ class Order < ActiveRecord::Base
   before_save :calculate_totals
   track_user_edits
 
+  # Used to track any items that have gone out of stock.
+  #
+  # @return Array<Sku>
+  def stock_alerts
+    @stock_alerts ||= []
+  end
+
+  # Indicates if there are any stock alerts for this order. These will generally
+  # be generated when loading the order from a JSON dump.
+  #
+  # @return [Boolean]
+  def stock_alerts?
+    !stock_alerts.empty?
+  end
+
+  # Clears out any existing stock alerts
+  def destroy_alerts
+    stock_alerts.clear
+  end
+
   # Generates and order from a JSON object. The apply boolean indicates if
   # promotions should be applied to the order after it has been loaded.
   #
   # @param [String] json JSON representation of order (result of #dump)
   # @param [Boolean] apply apply promotions after loading
   #
+  # @return [Order]
+  #
   # @todo Investigate checking stock levels when loading to see if it has
   # been decremented by another action between requests.
   def self.load(json, apply = true)
     order = new(JSON.parse(json))
+
+    # Check stock levels for each regular_item, replacing each with an alert
+    # where they are out of stock.
+    order.check_stock_levels
+
+    # Conditionally apply the promotions (which will mutate the order)
     order.apply_promotions if apply
     order
   end
@@ -56,9 +85,9 @@ class Order < ActiveRecord::Base
   # Specifies the values that can be safely exposed to the public. This is used
   # by the #dump method to create a JSON string that can be written to session.
   DUMP_OPTS = {
-    root: false, :methods => :items_dump,
+    root: false, :methods => [:items_dump, :stock_alerts_dump],
     :except => [
-      :id, :product_total, :shipping_total, :total, :currency,
+      :id, :product_total, :shipping_total, :total, :currency, :stock_alerts,
       :creator_id, :updater_id, :created_at, :updated_at, :person_id
     ]
   }
@@ -96,9 +125,40 @@ class Order < ActiveRecord::Base
   # When loading up an order from session, this accessor is used to generate the
   # regular item instances on the order model.
   #
-  # @params [Array<Hash>] raw values for order items
+  # @param [Array<Hash>] items raw values for order items
   def items_dump=(items)
     items.each {|i| regular_items.build(i)}
+  end
+
+  # Provides an array of SKU ids which are in the order, but have gone out of
+  # stock. Used when dumping a JSON representation of the order.
+  #
+  # @return Array<Integer>
+  def stock_alerts_dump
+    stock_alerts.map(&:id)
+  end
+
+  # Generates stock alerts from previous ones that have been dumped to JSON.
+  #
+  # @param [Array<Integer>] items ids of SKUs
+  def stock_alerts_dump=(items)
+    @stock_alerts = if items.empty?
+      []
+    else
+      Sku.where(:id => items)
+    end
+  end
+
+  # Iterates over the regular_items in the order, checking each to see if they
+  # are in stock. Where they are out of stock, the item is removed and we add a
+  # stock alert for that item to the order.
+  def check_stock_levels
+    regular_items.each do |item|
+      if item.sku.out_of_stock?
+        stock_alerts << item.sku
+        regular_items.delete(item)
+      end
+    end
   end
 
   class PromotionApplyError < StandardError

@@ -4,7 +4,7 @@ Rails.application.routes.draw do
       scope :path => 'catalogue' do
         get '/' => 'shop#index', :as => 'catalogue'
 
-        resources :products, :path => 'categories/products' do
+        resources :products do
           get :delete, :on => :member
           resources :product_assets, :path => 'assets'
           resources :sku do
@@ -44,11 +44,12 @@ Rails.application.routes.draw do
       end
 
       scope :path => 'basket', :controller => 'basket' do
-        get     '/',                :action => 'contents',  :as => 'order_basket'
-        post    '/add',             :action => 'add',       :as => 'order_basket_add'
-        post    '/remove/:sku_id',  :action => 'remove',    :as => 'order_basket_remove'
-        post    '/update',          :action => 'update',    :as => 'order_basket_update'
-        delete  '/clear',           :action => 'clear',     :as => 'order_basket_clear'
+        get     '/',                :action => 'contents',        :as => 'order_basket'
+        post    '/add',             :action => 'add',             :as => 'order_basket_add'
+        post    '/remove/:sku_id',  :action => 'remove',          :as => 'order_basket_remove'
+        post    '/',                :action => 'update',          :as => 'order_basket_update'
+        delete  '/',                :action => 'destroy',         :as => 'order_basket_destroy'
+        delete  '/alerts',          :action => 'destroy_alerts',  :as => 'order_basket_destroy_alerts'
       end
 
       scope :path => 'checkout', :controller => 'checkout' do
