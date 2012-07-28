@@ -1,6 +1,6 @@
-- sub_nav('Latest', path(:catalogue), :root => true)
-- sub_nav('Categories', path(:product_categories))
-- sub_nav('Ranges', path(:product_ranges))
-- sub_nav('Products', path(:products))
+- sub_nav('Overview', path(:catalogue), :root => true, :class => 'icon-home')
+- sub_nav('Categories', path(:product_categories), :class => 'icon-cloud')
+- sub_nav('Ranges', path(:product_ranges), :class => 'icon-star')
+- sub_nav('Products', path(:products), :class => 'icon-music')
 
 - control('Category', path(:new, :product_category), :new)
