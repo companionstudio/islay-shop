@@ -1,0 +1,38 @@
+/* -------------------------------------------------------------------------- */
+/* PRODUCT CATEGORIES
+/* -------------------------------------------------------------------------- */
+#islay-shop-admin-product-categories.index
+  .level-1 .published-flag
+    margin-left: 1.5em
+
+  .level-2 .published-flag
+    margin-left: 3em
+
+  .level-3 .published-flag
+    margin-left: 4.5em
+
+  .level-4 .published-flag
+    margin-left: 6em
+
+  .published-flag
+    &:before
+      font-size: 1.5em
+
+    span
+      +hide
+
+  .published:before
+    color: $positive-color
+
+  .unpublished:before
+    color: $negative-color
+
+  .indicator
+    +border-radius(0.2em)
+    border: 2px solid #999
+    text-transform: uppercase
+    background: white
+    text-align: center
+    font-size: 1.2em
+    padding: 0.3em 0.6em
+    float: left

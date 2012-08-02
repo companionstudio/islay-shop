@@ -1,6 +1,12 @@
-%li
-  %strong= link_to(category.name, path(category))
-  %span.count= category.products.count
-  - unless category.children.empty?
-    %ul
-      = render :partial => 'category', :collection => category.children
+%tr(class="enable-#{published} level-#{level}")
+  %td
+    %strong(class="published-flag #{published_class(category)}")
+      %span= friendly_bool(category.published?)
+      = link_to(category.name, path(category))
+  %td
+    %span.count.indicator= category.products.count
+  %td
+    %span.time= category.created_at
+
+- unless category.children.empty?
+  = render :partial => 'category', :collection => category.children, :locals => {:level => level + 1, :published => category.published?}
