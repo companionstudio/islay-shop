@@ -27,6 +27,29 @@
   .unpublished:before
     color: $negative-color
 
+/* -------------------------------------------------------------------------- */
+/* INDICATOR
+/* For statuses and counts.
+/* -------------------------------------------------------------------------- */
+table
+  .boolean
+    float: left
+
+    &:before
+      font-size: 1.6em
+
+    &.true:before
+      color: $positive-color
+      content: "✓"
+
+    &.false:before
+      color: $negative-color
+      content: "✕"
+
+  .title
+    font-size: 1.2em
+    text-decoration: none
+
   .indicator
     +border-radius(0.2em)
     border: 2px solid #999

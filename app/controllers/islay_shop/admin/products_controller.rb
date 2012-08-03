@@ -5,6 +5,10 @@ module IslayShop
       header 'Shop - Products'
       nav 'islay_shop/admin/shop/nav'
 
+      def index
+        @products = Product.order(:name)
+      end
+
       def show
         dependencies
         @product = find_record

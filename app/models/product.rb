@@ -35,6 +35,14 @@ class Product < ActiveRecord::Base
     skus.map {|s| s.stock_level > 0}.any?
   end
 
+  def stock_level_status
+    'OK'
+  end
+
+  def for_sale?
+    status == 'for_sale'
+  end
+
   private
 
   def store_published_at
