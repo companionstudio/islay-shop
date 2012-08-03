@@ -1,4 +1,3 @@
-= render :partial => 'islay_shop/admin/shop/nav'
 %ul
   - @products.each do |product|
     %li= link_to(product.name, path(product))

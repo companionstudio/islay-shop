@@ -2,7 +2,8 @@ module IslayShop
   module Admin
     class ProductsController < IslayShop::Admin::ApplicationController
       resourceful :product
-      header('Products')
+      header 'Shop - Products'
+      nav 'islay_shop/admin/shop/nav'
 
       def show
         dependencies

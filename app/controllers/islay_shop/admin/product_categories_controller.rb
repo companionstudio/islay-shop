@@ -2,7 +2,8 @@ module IslayShop
   module Admin
     class ProductCategoriesController < IslayShop::Admin::ApplicationController
       resourceful :product_category
-      header('Shop')
+      header 'Shop'
+      nav 'islay_shop/admin/shop/nav'
 
       def index
         @product_categories = ProductCategory.where(:product_category_id => nil)

@@ -1,10 +1,11 @@
 module IslayShop
   module Admin
     class ShopController < IslayShop::Admin::ApplicationController
-      header('Shop')
+      header 'Shop'
+      nav 'nav'
 
       def index
-        @products = Product.all
+
       end
     end
   end
