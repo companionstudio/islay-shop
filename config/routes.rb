@@ -32,9 +32,18 @@ Rails.application.routes.draw do
 
       end
 
-      scope :path => 'orders', :controller => 'orders' do
-        get '/',    :action => 'index', :as => 'orders'
-        get '/:id', :action => 'show', :as => 'order'
+      scope :path => 'orders' do
+        scope :path => 'process', :controller => 'order_processing' do
+          get '', :action => 'index', :as => 'processing'
+        end
+
+        get 'archived(/filter-:filter)(/sort-:sort)', :controller => 'order_archive', :action => 'index', :as => 'archived'
+      end
+
+      resources :orders do
+        member do
+          get 'delete'
+        end
       end
 
       resources :promotions
