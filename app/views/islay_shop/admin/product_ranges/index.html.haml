@@ -1,0 +1,19 @@
+- sub_header('Product Ranges')
+
+= content do
+  %table(cellpadding=0 cellspacing=0)
+    %thead
+      %tr
+        %th.boolean Published
+        %th Range
+        %th Updated At
+    %tbody
+      - @product_ranges.each do |range|
+        %tr
+          %td.boolean
+            %span.boolean.true
+              %span Yes
+          %td
+            = link_to(range.name, path(range), :class => 'title')
+          %td
+            %span.time= range.updated_at

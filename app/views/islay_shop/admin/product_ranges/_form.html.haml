@@ -1,0 +1,7 @@
+= resource_form(@product_range) do |f|
+  = content do
+    = f.input(:name)
+    = f.input(:description, :as => 'text')
+
+  = footer do
+    = f.submit('Save')
