@@ -41,10 +41,11 @@ Rails.application.routes.draw do
       end
 
       resources :orders do
-        member do
-          get 'delete'
-        end
+        get '(sort-:sort)', :action => 'index', :on => :collection, :as => 'filter_and_sort'
+        get 'delete', :on => :member
       end
+
+      resources :order_summaries, :controller => 'orders', :path => 'orders', :only => 'show'
 
       resources :promotions
     end # namespace

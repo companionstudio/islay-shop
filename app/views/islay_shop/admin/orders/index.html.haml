@@ -1,14 +1,29 @@
 - sub_header('Recent Updates')
 
+- sort_nav(:orders, 'Updated')
+- sort_nav(:orders, 'Status', 'status')
+- sort_nav(:orders, 'Name', 'name')
+
 = content do
   %table(cellpadding=0 cellspacing=0)
     %thead
       %tr
+        %th Status
         %th Name
-        %th Created At
+        %th Total
+        %th Updated At
 
     %tbody
       - @orders.each do |order|
         %tr
-          %td= link_to(order.name, path(order))
-          %td.time= order.created_at
+          %td
+            %span.indicator= order.status
+          %td
+            = link_to(order.name, path(order), :class => 'title')
+            %span.reference= order.reference
+            %span.summary= order.items_summary
+          %td
+            = order.formatted_total
+          %td
+            %span.time= order.updated_at
+            by #{order.updater_name}

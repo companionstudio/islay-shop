@@ -4,14 +4,6 @@ class IslayShop::Admin::OrdersController < IslayShop::Admin::ApplicationControll
   nav 'nav'
 
   def index
-    @orders = Order.all
-  end
-
-  def derp
-
-  end
-
-  def archived
-
+    @orders = OrderSummary.summary.sorted(params[:sort])
   end
 end
