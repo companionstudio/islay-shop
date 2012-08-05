@@ -6,7 +6,7 @@ module IslayShop
       nav 'islay_shop/admin/shop/nav'
 
       def index
-        @products = Product.order(:name)
+        @products = Product.filtered(params[:filter]).sorted(params[:sort])
       end
 
       def show

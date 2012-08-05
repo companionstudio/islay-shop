@@ -5,8 +5,12 @@ Rails.application.routes.draw do
         get '/' => 'shop#index', :as => 'catalogue'
 
         resources :products do
+          get '(/filter-:filter)(/sort-:sort)', :action => :index, :on => :collection, :as => 'filter_and_sort'
+
           get :delete, :on => :member
+
           resources :product_assets, :path => 'assets'
+
           resources :sku do
             resources :sku_assets, :path => 'assets'
             get :delete, :on => :member

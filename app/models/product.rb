@@ -28,6 +28,25 @@ class Product < ActiveRecord::Base
     where(:published => true).order('name ASC')
   end
 
+  def self.filtered(f)
+    if f
+      where :published => case f
+      when 'published' then true
+      when 'unpublished' then false
+      end
+    else
+      scoped
+    end
+  end
+
+  def self.sorted(s)
+    if s
+      order(s)
+    else
+      order(:name)
+    end
+  end
+
   # Check to see if any of the SKUs attached to this product are in stock.
   #
   # @return Boolean
