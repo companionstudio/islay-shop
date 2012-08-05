@@ -28,6 +28,18 @@ class Product < ActiveRecord::Base
     where(:published => true).order('name ASC')
   end
 
+  # Creates a scope where the returned fields are limited and extra calculated
+  # fields like a SKU summary have been added.
+  def self.summary
+    select(%{
+      id, published, status, name, updated_at,
+      (SELECT name FROM users WHERE id = updater_id) AS updater_name,
+      (SELECT ARRAY_TO_STRING(ARRAY_AGG(id::text), ', ')
+       FROM skus
+       GROUP BY product_id HAVING product_id = products.id) AS skus_summary
+    })
+  end
+
   def self.filtered(f)
     if f
       where :published => case f

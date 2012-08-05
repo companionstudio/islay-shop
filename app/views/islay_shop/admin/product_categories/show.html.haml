@@ -1,7 +1,17 @@
 - sub_header("Category", @product_category.name)
-- control('Product', path(:new, :product), :new)
-- control('Edit', path(:edit, @product_category), :edit)
-- control('Delete', path(:delete, @product_category), :delete)
+
+- filter_nav(:product_category, 'All')
+- filter_nav(:product_category, 'Published', 'published')
+- filter_nav(:product_category, 'Unpublished', 'unpublished')
+
+- sort_nav(:product_category, 'Name')
+- sort_nav(:product_category, 'Created', 'created_at')
+- sort_nav(:product_category, 'Updated', 'updated_at')
 
 = content do
-  = simple_format(@product_category.description)
+  = render :partial => 'islay_shop/admin/products/table'
+
+= footer do
+  = edit_button(@product_category)
+  = delete_button(@product_category)
+  = new_button('Product', :product, :to => @product_category)

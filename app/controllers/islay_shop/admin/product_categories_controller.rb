@@ -13,6 +13,11 @@ module IslayShop
         end
       end
 
+      def show
+        super
+        @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
+      end
+
       private
 
       def dependencies

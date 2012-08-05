@@ -19,7 +19,11 @@ Rails.application.routes.draw do
 
         resources :product_categories, :path => 'categories' do
           get '(/filter-:filter)', :action => :index, :on => :collection, :as => 'filter_and_sort'
-          get :delete, :on => :member
+
+          member do
+            get :delete
+            get '(/filter-:filter)(/sort-:sort)', :action => :show, :as => 'filter_and_sort'
+          end
         end
 
         resources :product_ranges, :path => 'ranges' do
