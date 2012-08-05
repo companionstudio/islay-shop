@@ -19,8 +19,34 @@
     margin-left: 4em
 
 /* -------------------------------------------------------------------------- */
-/* INDICATOR
-/* For statuses and counts.
+/* SUMMARY
+/* Appears above tables and lists with summary counts
+/* -------------------------------------------------------------------------- */
+#summary
+  border-bottom: 0.1em solid $header-border-color
+  float: left
+  width: 100%
+
+  li
+    font-size: 1.2em
+    padding: 0.7em 1em
+    float: left
+
+  .key
+    color: $dark-grey
+    margin: 0.6em 0 0 0.5em
+    float: left
+
+  .expiring
+    float: right
+
+    .key
+      font-weight: bold
+      color: $negative-color
+
+/* -------------------------------------------------------------------------- */
+/* TABLES
+/* Various table elements
 /* -------------------------------------------------------------------------- */
 table
   th.boolean,
@@ -63,25 +89,6 @@ table
     width: 100%
     float: left
 
-  span.indicator
-    +border-radius(0.2em)
-    border: 0.2em solid $dark-grey
-    color: $dark-grey
-    text-transform: uppercase
-    background: white
-    text-align: center
-    font-size: 1.1em
-    padding: 0.3em 0.6em
-    float: left
-
-    &.ok
-      border-color: $positive-color
-      color: $positive-color
-
-    &.warning
-      border-color: $negative-color
-      color: $negative-color
-
   th.indicator,
   td.indicator
     width: 6em
@@ -89,3 +96,30 @@ table
   td.indicator
     padding-top: 0.5em
     padding-bottom: 0.5em
+
+/* -------------------------------------------------------------------------- */
+/* INDICATOR
+/* For statuses and counts.
+/* -------------------------------------------------------------------------- */
+span.indicator
+  +border-radius(0.2em)
+  border: 0.2em solid $dark-grey
+  color: $dark-grey
+  text-transform: uppercase
+  background: white
+  text-align: center
+  font-size: 1.1em
+  padding: 0.3em 0.6em
+  float: left
+
+  &.neutral
+    border-color: $neutral-color
+    color: $neutral-color
+
+  &.ok
+    border-color: $positive-color
+    color: $positive-color
+
+  &.warning
+    border-color: $negative-color
+    color: $negative-color
