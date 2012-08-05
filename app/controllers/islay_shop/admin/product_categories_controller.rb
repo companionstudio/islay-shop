@@ -6,7 +6,11 @@ module IslayShop
       nav 'islay_shop/admin/shop/nav'
 
       def index
-        @product_categories = ProductCategory.where(:product_category_id => nil)
+        @product_categories = case params[:filter]
+        when 'published'    then ProductCategory.where(:product_category_id => nil, :published => true)
+        when 'unpublished'  then ProductCategory.where(:product_category_id => nil, :published => false)
+        else ProductCategory.where(:product_category_id => nil)
+        end
       end
 
       private

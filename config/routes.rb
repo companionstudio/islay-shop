@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         end
 
         resources :product_categories, :path => 'categories' do
+          get '(/filter-:filter)', :action => :index, :on => :collection, :as => 'filter_and_sort'
           get :delete, :on => :member
         end
 

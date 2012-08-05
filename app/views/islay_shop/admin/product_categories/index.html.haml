@@ -1,7 +1,12 @@
+- filter_nav(:product_categories, 'All')
+- filter_nav(:product_categories, 'Published', 'published')
+- filter_nav(:product_categories, 'Unpublished', 'unpublished')
+
 = content do
   %table(cellpadding=0 cellspacing=0)
     %thead
       %tr
+        %th.boolean Published
         %th Category
         %th Stock Level
         %th Updated At

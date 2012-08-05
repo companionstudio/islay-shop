@@ -1,8 +1,9 @@
 %tr(class="enable-#{published} level-#{level}")
-  %td
-    %strong(class="published-flag #{published_class(category)}")
+  %td.boolean
+    %span(class="boolean #{category.published?}")
       %span= friendly_bool(category.published?)
-      = link_to(category.name, path(category))
+  %td
+    = link_to(category.name, path(category), :class => 'title')
   %td
     %span.count.indicator= category.products.count
   %td

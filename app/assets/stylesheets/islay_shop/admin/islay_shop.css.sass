@@ -14,25 +14,16 @@
   .level-4 .published-flag
     margin-left: 6em
 
-  .published-flag
-    &:before
-      font-size: 1.5em
-
-    span
-      +hide
-
-  .published:before
-    color: $positive-color
-
-  .unpublished:before
-    color: $negative-color
-
 /* -------------------------------------------------------------------------- */
 /* INDICATOR
 /* For statuses and counts.
 /* -------------------------------------------------------------------------- */
 table
-  .boolean
+  th.boolean,
+  td.boolean
+    width: 4em
+
+  span.boolean
     float: left
 
     &:before
@@ -46,16 +37,36 @@ table
       color: $negative-color
       content: "✕"
 
+    span
+      +hide
+
   .title
     font-size: 1.2em
     text-decoration: none
 
-  .indicator
+  span.indicator
     +border-radius(0.2em)
-    border: 2px solid #999
+    border: 0.2em solid $dark-grey
+    color: $dark-grey
     text-transform: uppercase
     background: white
     text-align: center
-    font-size: 1.2em
+    font-size: 1.1em
     padding: 0.3em 0.6em
     float: left
+
+    &.ok
+      border-color: $positive-color
+      color: $positive-color
+
+    &.warning
+      border-color: $negative-color
+      color: $negative-color
+
+  th.indicator,
+  td.indicator
+    width: 6em
+
+  td.indicator
+    padding-top: 0.5em
+    padding-bottom: 0.5em

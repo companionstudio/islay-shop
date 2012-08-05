@@ -55,6 +55,10 @@ class Product < ActiveRecord::Base
   end
 
   def stock_level_status
+    'ok'
+  end
+
+  def friendly_stock_level_status
     'OK'
   end
 
