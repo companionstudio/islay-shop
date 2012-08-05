@@ -34,10 +34,10 @@ Rails.application.routes.draw do
 
       scope :path => 'orders' do
         scope :path => 'process', :controller => 'order_processing' do
-          get '', :action => 'index', :as => 'processing'
+          get '', :action => 'index', :as => 'order_processing'
         end
 
-        get 'archived(/filter-:filter)(/sort-:sort)', :controller => 'order_archive', :action => 'index', :as => 'archived'
+        get 'archived(/filter-:filter)(/sort-:sort)', :controller => 'order_archive', :action => 'index', :as => 'order_archive'
       end
 
       resources :orders do
