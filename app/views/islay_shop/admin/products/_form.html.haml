@@ -34,4 +34,5 @@
       = f.input(:description, :as => 'text')
 
   = footer do
-    %button Save
+    = save_button
+    = delete_button(@product)
