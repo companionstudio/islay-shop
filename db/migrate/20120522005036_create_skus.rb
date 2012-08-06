@@ -6,7 +6,7 @@ class CreateSkus < ActiveRecord::Migration
       t.integer     :position,            :null => false, :limit => 3, :default => 1
       t.string      :description,         :null => true,  :limit => 200
       t.hstore      :metadata,            :null => true
-      t.integer     :price,               :null => false, :precision => 7, :scale => 2
+      t.float       :price,               :null => false, :precision => 7, :scale => 2
       t.integer     :stock_level,         :null => false, :limit => 5, :default => 1
       t.boolean     :published,           :null => false, :default => false
       t.timestamp   :published_at,        :null => true

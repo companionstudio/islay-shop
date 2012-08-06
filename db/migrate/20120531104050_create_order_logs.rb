@@ -6,7 +6,7 @@ class CreateOrderLogs < ActiveRecord::Migration
       t.string    :action,      :null => false, :limit => 20
       t.string    :notes,       :limit => 2000
 
-      t.user_tracking
+      t.user_tracking(true)
       t.timestamps
     end
   end

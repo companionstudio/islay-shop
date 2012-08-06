@@ -6,7 +6,7 @@ class CreateSkuStockLogs < ActiveRecord::Migration
       t.integer :after,   :null => false,   :limit => 5
       t.string  :action,  :null => false,   :limit => 25
 
-      t.user_tracking
+      t.user_tracking(true)
       t.timestamps
     end
   end

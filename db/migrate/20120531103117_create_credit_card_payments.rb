@@ -3,7 +3,7 @@ class CreateCreditCardPayments < ActiveRecord::Migration
     create_table :credit_card_payments do |t|
       t.integer   :order_id,        :null => false, :on_delete => :cascade
       t.boolean   :successful,      :null => false, :default => false
-      t.integer   :amount,          :precision => 7,  :scale => 2,  :null => false
+      t.float      :amount,          :precision => 7,  :scale => 2,  :null => false
       t.string    :first_name,      :limit => 200,  :null => false
       t.string    :last_name,       :limit => 200,  :null => false
       t.string    :number,          :limit => 25,   :null => false

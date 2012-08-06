@@ -4,7 +4,7 @@ class CreateCreditCardTransactions < ActiveRecord::Migration
       t.integer :credit_card_payment_id,  :null => false, :on_delete => :cascade
       t.string  :transaction_id,          :null => false, :limit => 60, :references => nil
       t.string  :transaction_type,        :null => false, :limit => 50
-      t.integer :amount,                  :null => false, :precision => 7, :scale => 2
+      t.float   :amount,                  :null => false, :precision => 7, :scale => 2
       t.string  :currency,                :null => false, :limit => 4, :default => 'AUD'
 
       t.timestamps

@@ -3,6 +3,8 @@ class CreateOrders < ActiveRecord::Migration
     create_table :orders do |t|
       t.integer   :person_id,             :null => true, :on_delete => :set_null
 
+      t.string    :status,                :limit => 50, :null => false, :default => 'open'
+
       t.string    :name,                  :limit => 200,  :null => false
       t.string    :phone,                 :limit => 50
       t.string    :email,                 :limit => 200,  :null => false
@@ -27,12 +29,12 @@ class CreateOrders < ActiveRecord::Migration
       t.boolean   :use_shipping_address,  :null => false, :default => false
 
       # Totals
-      t.integer   :product_total,         :precision => 7,  :scale => 2,  :null => false
-      t.integer   :shipping_total,        :precision => 7,  :scale => 2,  :null => false
-      t.integer   :total,                 :precision => 7,  :scale => 2,  :null => false
+      t.float     :product_total,         :precision => 7,  :scale => 2,  :null => false
+      t.float     :shipping_total,        :precision => 7,  :scale => 2,  :null => false
+      t.float     :total,                 :precision => 7,  :scale => 2,  :null => false
       t.string    :currency,              :null => false, :limit => 4, :default => 'AUD'
 
-      t.user_tracking
+      t.user_tracking(true)
       t.timestamps
     end
   end
