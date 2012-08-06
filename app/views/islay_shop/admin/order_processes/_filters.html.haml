@@ -1,0 +1,10 @@
+- sub_header('Order Processing', @title)
+
+- filter_nav(:order_processes, with_count('Billing', @counts[:billing]), 'billing')
+- filter_nav(:order_processes, with_count('Packing', @counts[:packing]), 'packing')
+- filter_nav(:order_processes, with_count('Shipping', @counts[:shipping]), 'shipping')
+- filter_nav(:order_processes, with_count('Recent', @counts[:recent]), 'recent')
+
+- sort_nav(:order_processes, 'Updated')
+- sort_nav(:order_processes, 'Status', 'status')
+- sort_nav(:order_processes, 'Name', 'name')

@@ -44,6 +44,17 @@ Rails.application.routes.draw do
             # just work.
             get '(/:filter)(/sort-:sort)(/page-:page)',   :action => 'index', :as => 'filter_and_sort'
           end
+
+          member do
+            get 'billing/:id/review', :action => 'review_billing', :as => 'review_billing'
+            put 'billing/:id',        :action => 'bill', :as => 'bill'
+
+            put 'packing/:id',  :action => 'pack', :as => 'pack'
+            put 'packing/all',  :action => 'all',  :as => 'pack_all'
+
+            put 'shipping/:id', :action => 'ship',     :as => 'ship'
+            put 'ship/all',     :action => 'ship_all', :as => 'ship_all'
+          end
         end
 
         resources :order_archives, :path => 'archives', :only => 'index' do
