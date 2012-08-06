@@ -43,11 +43,4 @@
             %span.time= order.updated_at
             by #{order.updater_name}
 
-  = footer do
-    %ul#pagination
-      %li.previous
-        %a Previous
-      %li.count
-        Page 1 of 3
-      %li.next
-        %a Next
+= paginate(@orders, :theme => 'admin')
