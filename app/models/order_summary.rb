@@ -15,6 +15,31 @@ class OrderSummary < ActiveRecord::Base
     })
   end
 
+  def self.status_counts
+    {
+      :billing  => billing.count,
+      :packing  => packing.count,
+      :shipping => shipping.count,
+      :recent   => recently_completed.count
+    }
+  end
+
+  def self.billing
+    where(:status => 'pending')
+  end
+
+  def self.packing
+    where(:status => 'billed')
+  end
+
+  def self.shipping
+    where(:status => 'packed')
+  end
+
+  def self.recently_completed
+    where("status = 'complete' AND updated_at >= (NOW() - '7 days'::interval)")
+  end
+
   def self.processing
     where(:status => %w(pending billed packed))
   end
@@ -23,7 +48,7 @@ class OrderSummary < ActiveRecord::Base
     where(:status => %w(complete cancelled refunded))
   end
 
-  def self.sorted(s = nil)
+  def self.sorted(s)
     if s
       order(s)
     else

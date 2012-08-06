@@ -33,8 +33,17 @@ Rails.application.routes.draw do
       end
 
       scope :path => 'orders' do
-        scope :path => 'process', :controller => 'order_processing' do
-          get '', :action => 'index', :as => 'order_processing'
+        resources :order_processes, :path => 'processing', :only => 'index' do
+          collection do
+            %w(billing packing shipping recent).each do |f|
+              get "#{f}/(sort-:sort)(/page-:page)", :action => f, :as => f, :defaults => {:filter => f}
+            end
+
+            # This is just a dummy route to help us generate the URLs for the
+            # routes above. Basically, it makes the filter and sorting helpers
+            # just work.
+            get '(/:filter)(/sort-:sort)(/page-:page)',   :action => 'index', :as => 'filter_and_sort'
+          end
         end
 
         resources :order_archives, :path => 'archives', :only => 'index' do
