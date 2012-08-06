@@ -5,7 +5,7 @@ Rails.application.routes.draw do
         get '/' => 'shop#index', :as => 'catalogue'
 
         resources :products do
-          get '(/filter-:filter)(/sort-:sort)', :action => :index, :on => :collection, :as => 'filter_and_sort'
+          get '(/filter-:filter)(/sort-:sort)(/page-:page)', :action => :index, :on => :collection, :as => 'filter_and_sort'
 
           get :delete, :on => :member
 
@@ -37,11 +37,11 @@ Rails.application.routes.draw do
           get '', :action => 'index', :as => 'order_processing'
         end
 
-        get 'archived(/filter-:filter)(/sort-:sort)', :controller => 'order_archive', :action => 'index', :as => 'order_archive'
+        get 'archived(/filter-:filter)(/sort-:sort)(/page-:page)', :controller => 'order_archive', :action => 'index', :as => 'order_archive'
       end
 
       resources :orders do
-        get '(sort-:sort)', :action => 'index', :on => :collection, :as => 'filter_and_sort'
+        get '(/sort-:sort)(/page-:page)', :action => 'index', :on => :collection, :as => 'filter_and_sort'
         get 'delete', :on => :member
       end
 
