@@ -16,6 +16,11 @@ class OrderSummary < ActiveRecord::Base
     })
   end
 
+  # TODO: This needs to be replaced once we have order statuses in place.
+  def self.archived
+    scoped
+  end
+
   def self.sorted(s)
     if s
       order(s)

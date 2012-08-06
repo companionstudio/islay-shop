@@ -37,7 +37,9 @@ Rails.application.routes.draw do
           get '', :action => 'index', :as => 'order_processing'
         end
 
-        get 'archived(/filter-:filter)(/sort-:sort)(/page-:page)', :controller => 'order_archive', :action => 'index', :as => 'order_archive'
+        resources :order_archives, :path => 'archives', :only => 'index' do
+          get '(/filter-:filter)(/sort-:sort)(/page-:page)',  :action => 'index', :as => 'filter_and_sort', :on => :collection
+        end
       end
 
       resources :orders do

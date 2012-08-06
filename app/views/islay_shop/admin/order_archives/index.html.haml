@@ -1,0 +1,11 @@
+- sub_header('Archived Orders')
+
+- sort_nav(:order_archives, 'Name', 'Name')
+- sort_nav(:order_archives, 'Status', 'status')
+- sort_nav(:order_archives, 'Updated')
+- sort_nav(:order_archives, 'Created', 'created_at')
+
+= content do
+  = render :partial => 'islay_shop/admin/orders/table'
+
+= paginate(@orders, :theme => 'admin')
