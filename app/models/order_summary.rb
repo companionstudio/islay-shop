@@ -3,9 +3,8 @@ class OrderSummary < ActiveRecord::Base
 
   def self.summary
     select(%{
-      id, name, updated_at,
+      id, status, name, updated_at,
       '#' || id::text AS reference,
-      'pending' AS status,
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(ps.name::text), ', ')
@@ -16,12 +15,15 @@ class OrderSummary < ActiveRecord::Base
     })
   end
 
-  # TODO: This needs to be replaced once we have order statuses in place.
-  def self.archived
-    scoped
+  def self.processing
+    where(:status => %w(pending billed packed))
   end
 
-  def self.sorted(s)
+  def self.archived
+    where(:status => %w(complete cancelled refunded))
+  end
+
+  def self.sorted(s = nil)
     if s
       order(s)
     else

@@ -4,6 +4,6 @@ class IslayShop::Admin::OrdersController < IslayShop::Admin::ApplicationControll
   nav 'nav'
 
   def index
-    @orders = OrderSummary.summary.page(params[:page]).sorted(params[:sort])
+    @orders = OrderSummary.summary.processing.page(params[:page]).sorted(params[:sort])
   end
 end
