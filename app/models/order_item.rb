@@ -7,6 +7,14 @@ class OrderItem < ActiveRecord::Base
 
   attr_accessible :sku_id, :quantity
 
+  # Used to count the total number of individual SKUs. Most useful when called
+  # via an association. In fact, that's probably the only time you should use it.
+  #
+  # @return ActiveRecord::Relation
+  def self.sku_total_quantity
+    sum(:quantity)
+  end
+
   private
 
   def store_actual_price_and_total

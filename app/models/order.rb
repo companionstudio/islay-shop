@@ -157,6 +157,63 @@ class Order < ActiveRecord::Base
     end
   end
 
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_street
+    self[:shipping_street] || self[:billing_street]
+  end
+
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_city
+    self[:shipping_city] || self[:billing_city]
+  end
+
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_state
+    self[:shipping_state] || self[:billing_state]
+  end
+
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_postcode
+    self[:shipping_postcode] || self[:billing_postcode]
+  end
+
+  # Counts the number of individual SKUs in an order.
+  #
+  # @return Integer
+  def sku_total_quantity
+    items.sku_total_quantity
+  end
+
+  # TODO: This should be a stored field
+  def reference
+    "1203-HGAS"
+  end
+
+  # Returns a formatted string of the order total.
+  #
+  # @return String
+  def formatted_total
+    format_money(total)
+  end
+
+  # Formats a float into a monentary formatted string i.e. sticks a '$' in the
+  # front and pads the decimals.
+  #
+  # @param Float value
+  #
+  # @return String
+  def format_money(value)
+    "$%.2f" % value
+  end
+
   # Iterates over the regular_items in the order, checking each to see if they
   # are in stock. Where they are out of stock, the item is removed and we add a
   # stock alert for that item to the order.

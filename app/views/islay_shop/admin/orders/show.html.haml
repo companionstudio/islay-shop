@@ -1,5 +1,38 @@
 - sub_header('Order', @order.name)
 
+%ul#summary
+  %li
+    %span.value.indicator.reference= @order.reference
+  %li
+    %span.value.indicator.neutral= @order.status
+  %li
+    %span.value.indicator.neutral= @order.sku_total_quantity
+    %span.key items
+  %li
+    %span.value.indicator.neutral= @order.formatted_total
+    %span.key total
+
+= content do
+  = column(4) do
+    %h3 Billing Address
+    %p
+      = @order.billing_street
+      %br/
+      #{@order.billing_city}, #{@order.billing_state} #{@order.billing_postcode}
+
+    %h3 Shipping Address
+    %p
+      = @order.shipping_street
+      %br/
+      #{@order.shipping_city}, #{@order.shipping_state} #{@order.shipping_postcode}
+
+    %h3 Billing Details
+
+  = column(8) do
+    %h3 Order Contents
+
+    %h3 Logs
+
 = footer do
   = edit_button(@order)
   = delete_button(@order)
