@@ -9,6 +9,7 @@ class Order < ActiveRecord::Base
   has_many    :items,            :class_name => 'OrderItem'
   has_many    :bonus_items,      :class_name => 'OrderBonusItem'
   has_many    :discount_items,   :class_name => 'OrderDiscountItem'
+  has_many    :logs,             :class_name => 'OrderLog'
 
   # These are the only attributes that we want to expose publically.
   attr_accessible(

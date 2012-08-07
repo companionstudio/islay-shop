@@ -1,5 +1,6 @@
 Order.blueprint do
   items rand(5) + 1
+  logs 1
 
   status            { 'pending' }
 

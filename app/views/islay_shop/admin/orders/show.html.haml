@@ -13,26 +13,88 @@
     %span.key total
 
 = content do
-  = column(4) do
-    %h3 Billing Address
-    %p
-      = @order.billing_street
-      %br/
-      #{@order.billing_city}, #{@order.billing_state} #{@order.billing_postcode}
-
-    %h3 Shipping Address
-    %p
-      = @order.shipping_street
-      %br/
-      #{@order.shipping_city}, #{@order.shipping_state} #{@order.shipping_postcode}
-
+  = column(4, :class => 'last') do
     %h3 Billing Details
 
-  = column(8) do
-    %h3 Order Contents
+    %p.billing
+      %span.type.mastercard Mastercard
+      %span.number XXXXXX-XXXXX-34236
+      %span.name Luke M Sutton
+      %span.expiry Expiry: 13/2013
 
+  = column(8) do
+    %h3 Billing Address
+    %p.address
+      %strong= @order.name
+      %br/
+      = @order.billing_street
+      %br/
+      = @order.billing_city
+      %br/
+      #{@order.billing_state} #{@order.billing_postcode}
+
+    %h3 Shipping Address
+    %p.address
+      %strong= @order.name
+      %br/
+      = @order.shipping_street
+      %br/
+      = @order.shipping_city
+      %br/
+      #{@order.shipping_state} #{@order.shipping_postcode}
+
+  %div.items
+    %h3 Order Items
+    %table(cellpadding=0 cellspacing=0)
+      %thead
+        %tr
+          %th Product/SKU
+          %th Quantity
+          %th Price
+          %th Total
+
+      %tbody
+        - @order.items.summary.each do |item|
+          %tr
+            %td
+              = link_to(item.sku_name, path(:product, :id => item.product_id), :class => 'title')
+            %td
+              %span.numeric= item.quantity
+            %td
+              %span.numeric= item.formatted_price
+              - if item.discounted?
+                %span.numeric.discount #{item.formatted_discount} discount
+            %td
+              %span.numeric= item.formatted_total
+
+  %div.logs
     %h3 Logs
+    %table
+      %thead
+        %tr
+          %th.boolean Succeeded?
+          %th Action
+          %th.notes Notes
+          %th On
+
+      %tbody
+        - @order.logs.summary.each do |log|
+          %tr
+            %td.boolean
+              %span(class="boolean #{log.succeeded?}")
+                %span= friendly_bool(log.succeeded?)
+            %td
+              %span.title= log.action.humanize
+            %td
+              - if log.notes?
+                = simple_format(log.notes)
+              - else
+                &nbsp;
+            %td
+              %span.time= log.created_at
+              by #{log.updater_name}
 
 = footer do
+  = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button')
   = edit_button(@order)
   = delete_button(@order)

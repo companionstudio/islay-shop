@@ -22,16 +22,59 @@
 /* ORDER OVERVIEW
 /* -------------------------------------------------------------------------- */
 #islay-shop-admin-orders.show
-  .reference
-    font-family: Menlo, sans-serif !important
-
   #summary
-    margin-bottom: 1em
+    margin-bottom: 2em
 
   #content
     margin-left: 2%
     margin-right: 2%
     width: 96%
+
+  .address
+    margin-bottom: 1em
+    line-height: 1.2
+
+    strong
+      font-weight: bold
+
+  .billing
+    +border-radius(0.6em)
+    +background-image(linear-gradient(white, $light-grey + 20))
+    border: 0.1em solid $light-grey - 20
+    font-family: 'Ropa Sans'
+    text-transform: uppercase
+    padding: 1.5em
+    width: 19em
+    float: left
+
+    span
+      float: left
+
+    .type
+      margin-bottom: 3em
+
+    .number
+      font-size: 1.2em
+      letter-spacing: 0.2em
+      width: 100%
+
+    .name,
+    .expiry
+      margin: 1em 0 0 0
+
+    .expiry
+      float: right
+
+  .items,
+  .logs
+    border-top: 0.1em solid $light-grey
+    padding: 1em 0
+    margin: 2em 0 0 0
+    width: 100%
+    float: left
+
+    table
+      border: 0.1em solid $light-grey
 
 /* -------------------------------------------------------------------------- */
 /* SUMMARY
@@ -43,14 +86,19 @@
   width: 100%
 
   li
-    font-size: 1.2em
     padding: 0.7em 1em
     float: left
 
   .key
+    font-size: 1.2em
     color: $dark-grey
     margin: 0.6em 0 0 0.5em
     float: left
+
+  .value
+    font-size: 2em
+    border-width: 0.15em
+    padding: 0.1em 0.3em
 
   .expiring .key
     font-weight: bold
@@ -101,6 +149,13 @@ table
     width: 100%
     float: left
 
+  .numeric
+    font-family: 'Ropa Sans'
+    font-size: 1.2em
+
+  .notes
+    width: 50%
+
   th.indicator,
   td.indicator
     width: 6em
@@ -121,6 +176,7 @@ span.indicator
   background: white
   text-align: center
   font-size: 1.1em
+  font-family: 'Ropa Sans'
   padding: 0.3em 0.6em
   float: left
 
