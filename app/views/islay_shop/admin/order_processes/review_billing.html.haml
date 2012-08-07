@@ -1,0 +1,31 @@
+- sub_header('Confirm Order Billing', @order.name)
+
+= resource_form(@order, :url => path(:bill, @order)) do |f|
+  = content do
+    = column(4, :class => 'billing') do
+      %h3 Payment Details
+      %p
+        %span.type.mastercard Mastercard
+        %span.number XXXXXX-XXXXX-34236
+        %span.name Luke M Sutton
+        %span.expiry Expiry: 13/2013
+
+    = column(8, :class => 'totals') do
+      %h3 Payment Due
+      %ul
+        %li
+          %span.key Product Total
+          %span.value.numeric= @order.formatted_product_total
+        %li
+          %span.key Shipping
+          - if @order.free_shipping?
+            %span.value FREE
+          - else
+            %span.value.numeric= @order.formatted_shipping_total
+        %li
+          %span.key Total
+          %span.value.numeric= @order.formatted_total
+
+  = footer do
+    = link_to('Cancel', path(:order, :id => @order), :class => 'button cancel')
+    = save_button

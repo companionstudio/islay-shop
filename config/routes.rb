@@ -65,7 +65,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :orders do
+      resources :orders, :only => %w(index show edit update) do
         get '(/sort-:sort)(/page-:page)', :action => 'index', :on => :collection, :as => 'filter_and_sort'
 
         member do

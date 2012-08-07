@@ -120,12 +120,15 @@
     = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button')
 
   - if @order.run?(:pack)
-    = link_to('Pack', path(:pack, :order_process, :id => @order), :class => 'button')
+    = form_for(@order, :url => path(:pack, :order_process, :id => @order)) do
+      %button Pack
 
   - if @order.run?(:ship)
-    = link_to('Ship', path(:ship, :order_process, :id => @order), :class => 'button')
+    = form_for(@order, :url => path(:ship, :order_process, :id => @order)) do
+      %button Ship
 
-  = edit_button(@order)
+  - if @order.editable?
+    = edit_button(@order)
 
   - if @order.run?(:bill)
     = link_to('Edit Payment', path(:payment, @order), :class => 'button edit')

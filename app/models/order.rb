@@ -83,6 +83,12 @@ class Order < ActiveRecord::Base
     regular_items.empty?
   end
 
+  # Indicates if the order is editable at all. This could mean only partially
+  # editable.
+  def editable?
+    status != 'complete' and status != 'cancelled'
+  end
+
   # Generates and order from a JSON object. The apply boolean indicates if
   # promotions should be applied to the order after it has been loaded.
   #

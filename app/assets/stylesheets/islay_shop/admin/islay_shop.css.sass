@@ -19,26 +19,12 @@
     margin-left: 4em
 
 /* -------------------------------------------------------------------------- */
-/* ORDER OVERVIEW
+/* ORDER OVERVIEW, BILLING ETC.
 /* -------------------------------------------------------------------------- */
-#islay-shop-admin-orders.show
-  .billing,
-  .address
-    margin: 1.5em 3em 0 0
-    float: left
-
-    h3
-      font-size: 1em
-
-  .address
-    line-height: 1.2
-
-    strong
-      font-weight: bold
-
+#islay-shop-admin-orders,
+#islay-shop-admin-order-processes
   .billing
-    margin-left: 2%
-    width: 22em
+    float: left
 
     p
       +border-radius(0.6em)
@@ -68,6 +54,28 @@
     .expiry
       float: right
 
+/* -------------------------------------------------------------------------- */
+/* ORDER OVERVIEW
+/* -------------------------------------------------------------------------- */
+#islay-shop-admin-orders.show
+  .billing,
+  .address
+    margin: 1.5em 3em 0 0
+    float: left
+
+    h3
+      font-size: 1em
+
+  .billing
+    width: 22em
+    margin-left: 2%
+
+  .address
+    line-height: 1.2
+
+    strong
+      font-weight: bold
+
   h3.items,
   h3.logs
     border-top: 0.1em solid $header-border-color
@@ -94,6 +102,36 @@
       text-align: right
       font-weight: bold
       padding-right: 1em
+
+/* -------------------------------------------------------------------------- */
+/* ORDER - REVIEW BILLING
+/* -------------------------------------------------------------------------- */
+#islay-shop-admin-order-processes.review-billing
+  #content
+    width: 88%
+    padding: 3em 4%
+
+  .totals
+    ul
+      font-size: 1.5em
+      margin-top: 0.6em
+      width: 20em
+      float: left
+
+    li
+      width: 100%
+      float: left
+
+    .key
+      text-transform: uppercase
+      font-weight: bold
+      margin-bottom: 0.6em
+      width: 10em
+      float: left
+
+    .value
+      width: 8em !important
+      float: left
 
 /* -------------------------------------------------------------------------- */
 /* SUMMARY
@@ -168,10 +206,6 @@ table
     width: 100%
     float: left
 
-  .numeric
-    font-family: 'Ropa Sans'
-    font-size: 1.2em
-
   .notes
     width: 50%
 
@@ -182,6 +216,14 @@ table
   td.indicator
     padding-top: 0.5em
     padding-bottom: 0.5em
+
+/* -------------------------------------------------------------------------- */
+/* NUMERIC VALUES
+/* Should use our geometric typeface and be a little bigger.
+/* -------------------------------------------------------------------------- */
+.numeric
+  font-family: 'Ropa Sans'
+  font-size: 1.2em
 
 /* -------------------------------------------------------------------------- */
 /* INDICATOR
