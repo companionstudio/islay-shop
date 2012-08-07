@@ -116,6 +116,20 @@
             by #{log.updater_name}
 
 = footer do
-  = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button')
+  - if @order.run?(:bill)
+    = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button')
+
+  - if @order.run?(:pack)
+    = link_to('Pack', path(:pack, :order_process, :id => @order), :class => 'button')
+
+  - if @order.run?(:ship)
+    = link_to('Ship', path(:ship, :order_process, :id => @order), :class => 'button')
+
   = edit_button(@order)
-  = delete_button(@order)
+
+  - if @order.run?(:bill)
+    = link_to('Edit Payment', path(:payment, @order), :class => 'button edit')
+
+  - if @order.run?(:cancel)
+    = link_to('Cancel', path(:cancel, :order_process, :id => @order), :class => 'button delete')
+

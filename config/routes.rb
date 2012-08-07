@@ -46,14 +46,17 @@ Rails.application.routes.draw do
           end
 
           member do
-            get 'billing/:id/review', :action => 'review_billing', :as => 'review_billing'
-            put 'billing/:id',        :action => 'bill', :as => 'bill'
+            get 'billing/:id',  :action => 'review_billing', :as => 'bill'
+            put 'billing/:id',  :action => 'bill'
 
             put 'packing/:id',  :action => 'pack', :as => 'pack'
             put 'packing/all',  :action => 'all',  :as => 'pack_all'
 
             put 'shipping/:id', :action => 'ship',     :as => 'ship'
             put 'ship/all',     :action => 'ship_all', :as => 'ship_all'
+
+            get 'cancel/:id',   :action => 'review_cancellation', :as => 'cancel'
+            put 'cancel/:id',   :action => 'cancel'
           end
         end
 
@@ -64,7 +67,12 @@ Rails.application.routes.draw do
 
       resources :orders do
         get '(/sort-:sort)(/page-:page)', :action => 'index', :on => :collection, :as => 'filter_and_sort'
-        get 'delete', :on => :member
+
+        member do
+          get 'payment',  :action => 'edit_payment', :as => 'payment'
+          put 'payment',  :action => 'update_payment'
+          get 'delete'
+        end
       end
 
       resources :order_summaries, :controller => 'orders', :path => 'orders', :only => 'show'

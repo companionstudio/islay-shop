@@ -51,6 +51,14 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   end
 
+  def review_cancellation
+
+  end
+
+  def cancel
+
+  end
+
   def recent
     @title = 'Completed (last 7 days)'
     @orders = OrderSummary.summary.recently_completed.page(params[:page]).sorted(params[:sort])

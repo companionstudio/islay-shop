@@ -1,4 +1,6 @@
 class Order < ActiveRecord::Base
+  include IslayShop::OrderWorkflow
+
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled
   self.table_name = 'orders'
@@ -19,6 +21,18 @@ class Order < ActiveRecord::Base
     :shipping_state, :shipping_street, :use_shipping_address, :items_dump,
     :stock_alerts_dump
   )
+
+  # The workflow is defined here so it can be queried against this class and
+  # it's sub-classes, but the actual workflow should be run against an instance
+  # of OrderProcess
+  workflow(:status, :open) do
+    event :add,   {:open     => :pending}
+    event :bill,  {:pending  => :billed}
+    event :pack,  {:billed   => :packed}
+    event :ship,  {:packed   => :complete}
+
+    event :cancel, {[:pending, :billed, :packed] => :cancelled}
+  end
 
   # This association has an extra method attached to it. This is so we can
   # easily retrieve an item by it's sku_id, which is necessary for both
