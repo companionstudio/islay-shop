@@ -8,7 +8,10 @@ class Sku < ActiveRecord::Base
   has_many :stock_logs, :class_name => 'SkuStockLog', :order => 'created_at DESC'
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
 
-  attr_accessible :product_id, :description, :unit, :amount, :price, :stock_level, :published, :template, :position
+  attr_accessible(
+    :product_id, :description, :unit, :amount, :price, :stock_level,
+    :published, :template, :position, :name, :weight, :volume, :size
+  )
 
   track_user_edits
   validations_from_schema

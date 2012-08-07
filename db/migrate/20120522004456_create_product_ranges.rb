@@ -5,6 +5,7 @@ class CreateProductRanges < ActiveRecord::Migration
       t.string  :name,          :null => false, :limit => 255, :index => :unique
       t.string  :description,   :null => false, :limit => 4000
 
+      t.publishing
       t.user_tracking
       t.timestamps
     end

@@ -7,10 +7,9 @@ class CreateProducts < ActiveRecord::Migration
       t.string      :name,                :null => false, :limit => 200, :index => {:unique => true, :with => 'product_category_id'}
       t.string      :description,         :null => false, :limit => 4000
       t.hstore      :metadata,            :null => true
-      t.boolean     :published,           :null => false, :default => false
-      t.timestamp   :published_at,        :null => true
       t.string      :status,              :null => false, :limit => 20, :default => 'for_sale'
 
+      t.publishing
       t.user_tracking
       t.timestamps
     end
