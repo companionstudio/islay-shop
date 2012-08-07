@@ -9,12 +9,6 @@ module IslayShop
         @products = Product.summary.page(params[:page]).filtered(params[:filter]).sorted(params[:sort])
       end
 
-      def show
-        dependencies
-        @product = find_record
-        render :edit
-      end
-
       private
 
       def invalid_record

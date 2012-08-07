@@ -66,8 +66,22 @@ class Product < ActiveRecord::Base
     skus.map {|s| s.stock_level > 0}.any?
   end
 
+  def stock_warning?
+    !in_stock? or stock_low?
+  end
+
+  def stock_low?
+    false
+  end
+
   def stock_level_status
-    'ok'
+    if !in_stock?
+      'out'
+    elsif stock_low?
+      'low'
+    else
+      'ok'
+    end
   end
 
   def friendly_stock_level_status
@@ -76,6 +90,17 @@ class Product < ActiveRecord::Base
 
   def for_sale?
     status == 'for_sale'
+  end
+
+  def destroyable?
+    true
+  end
+
+  # Indicates if the product has it's status set to discontinued.
+  #
+  # @return Boolean
+  def discontinued?
+    status == 'discontinued'
   end
 
   private

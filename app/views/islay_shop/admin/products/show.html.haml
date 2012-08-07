@@ -1,0 +1,27 @@
+- sub_header('Product', @product.name)
+
+= content do
+  %ul#summary
+    %li
+      - if @product.published?
+        %span.value.indicator.ok Published
+      - else
+        %span.value.indicator Unpublished
+
+    %li
+      - if @product.for_sale?
+        %span.value.indicator.ok For Sale
+      - elsif @product.discontinued?
+        %span.value.indicator Discontinued
+      - else
+        %span.value.indicator Not for Sale
+
+    %li
+      %span(class="value indicator #{@product.stock_warning? ? 'warning' : 'ok'}")
+        Stock Level:
+        = @product.stock_level_status.capitalize
+
+= footer do
+  = edit_button(@product)
+  - if @product.destroyable?
+    = delete_button(@product)
