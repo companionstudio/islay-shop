@@ -22,30 +22,33 @@
 /* ORDER OVERVIEW
 /* -------------------------------------------------------------------------- */
 #islay-shop-admin-orders.show
-  #summary
-    margin-bottom: 2em
+  .billing,
+  .address
+    margin: 1.5em 3em 0 0
+    float: left
 
-  #content
-    margin-left: 2%
-    margin-right: 2%
-    width: 96%
+    h3
+      font-size: 1em
 
   .address
-    margin-bottom: 1em
     line-height: 1.2
 
     strong
       font-weight: bold
 
   .billing
-    +border-radius(0.6em)
-    +background-image(linear-gradient(white, $light-grey + 20))
-    border: 0.1em solid $light-grey - 20
-    font-family: 'Ropa Sans'
-    text-transform: uppercase
-    padding: 1.5em
-    width: 19em
-    float: left
+    margin-left: 2%
+    width: 22em
+
+    p
+      +border-radius(0.6em)
+      +background-image(linear-gradient(white, $light-grey + 20))
+      border: 0.1em solid $light-grey - 20
+      font-family: 'Ropa Sans'
+      text-transform: uppercase
+      padding: 1.5em
+      width: 19em
+      float: left
 
     span
       float: left
@@ -65,16 +68,32 @@
     .expiry
       float: right
 
-  .items,
-  .logs
-    border-top: 0.1em solid $light-grey
-    padding: 1em 0
-    margin: 2em 0 0 0
-    width: 100%
-    float: left
+  h3.items,
+  h3.logs
+    border-top: 0.1em solid $header-border-color
+    margin-top: 1.5em
+    padding-top: 1.5em
+    padding-left: 2%
+    width: 98%
 
-    table
-      border: 0.1em solid $light-grey
+  table.items,
+  table.logs
+    border: 0.1em solid $header-border-color
+    margin-left: 2%
+    width: 96%
+
+  tfoot
+    tr:first-child
+      th, td
+        border-top: 0.1em solid $header-border-color
+
+    th, td
+      background: transparent
+
+    th
+      text-align: right
+      font-weight: bold
+      padding-right: 1em
 
 /* -------------------------------------------------------------------------- */
 /* SUMMARY

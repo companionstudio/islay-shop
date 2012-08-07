@@ -198,11 +198,40 @@ class Order < ActiveRecord::Base
     "1203-HGAS"
   end
 
+  # Indicates if the order has any kind of discount applied to it.
+  #
+  # @return Boolean
+  # @todo: Actually implement this
+  def discounted?
+    false
+  end
+
+  # Indicates if the order has free shipping.
+  #
+  # @return Boolean
+  def free_shipping?
+    shipping_total < 1
+  end
+
   # Returns a formatted string of the order total.
   #
   # @return String
   def formatted_total
     format_money(total)
+  end
+
+  # Returns a formatted string of the order product total.
+  #
+  # @return String
+  def formatted_product_total
+    format_money(product_total)
+  end
+
+  # Returns a formatted string of the order shipping total.
+  #
+  # @return String
+  def formatted_shipping_total
+    format_money(shipping_total)
   end
 
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
