@@ -5,6 +5,7 @@ class IslayShop::Admin::OrdersController < IslayShop::Admin::ApplicationControll
 
   def index
     @orders = OrderSummary.summary.processing.page(params[:page]).sorted(params[:sort])
+    @counts = OrderSummary.status_counts
   end
 
   def edit_payment
