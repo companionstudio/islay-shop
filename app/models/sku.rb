@@ -120,7 +120,7 @@ class Sku < ActiveRecord::Base
     end
 
     def to_s
-      "SKU ##{sku.id} has insufficent stock"
+      "SKU ##{@sku.id} has insufficent stock"
     end
   end
 end
