@@ -10,6 +10,8 @@ class Product < ActiveRecord::Base
   has_many   :skus, :order => 'position ASC'
   has_many   :sku_assets, :through => :skus, :through => :assets
   has_many   :variants, :class_name => 'ProductVariant', :order => 'position ASC'
+  has_many   :stock_logs, :through => :skus, :order => 'created_at DESC'
+  has_many   :price_logs, :through => :skus, :order => 'created_at DESC'
 
   attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status, :skus_attributes
 

@@ -21,6 +21,86 @@
         Stock Level:
         = @product.stock_level_status.capitalize
 
+  %h3 Product Details
+  = simple_format(@product.description)
+
+  %h3 SKUs
+
+  %table
+    %thead
+      %tr
+        %th Published
+        %th For Sale
+        %th SKU
+        %th Price
+        %th Stock Level
+
+    %tbody
+      - @product.skus.each do |sku|
+        %tr
+          %td
+            = sku.published?
+          %td
+            = sku.for_sale?
+          %td
+            %span.title= sku.short_desc
+          %td
+            %span.numeric= sku.formatted_price
+          %td
+            %span.numeric= sku.stock_level
+            = link_to('Adjust', '', :class => 'button')
+
+  %h3 Stock Logs
+
+  %table
+    %thead
+      %tr
+        %th SKU
+        %th Action
+        %th Movement
+        %th Level
+        %th On
+
+    %tbody
+      - @product.stock_logs.summary.each do |log|
+        %tr
+          %td
+            %span.title= log.short_desc
+          %td
+            = log.action.humanize
+          %td
+            %span.numeric= log.movement
+            %span(class="dir #{log.direction}")= log.direction
+          %td
+            %span.numeric= log.after
+          %td
+            %span.time= log.created_at
+            by #{log.creator_name}
+
+  %h3 Price Adjustments
+
+  %table
+    %thead
+      %tr
+        %th SKU
+        %th Movement
+        %th Price
+        %th On
+
+    %tbody
+      - @product.price_logs.summary.each do |log|
+        %tr
+          %td
+            %span.title= log.short_desc
+          %td
+            %span.numeric= log.movement
+            %span(class="dir #{log.direction}")= log.direction
+          %td
+            %span.numeric= log.after
+          %td
+            %span.time= log.created_at
+            by #{log.creator_name}
+
 = footer do
   = edit_button(@product)
   - if @product.destroyable?

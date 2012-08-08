@@ -1,6 +1,7 @@
 class Sku < ActiveRecord::Base
   include IslayShop::MetaData
   include IslayShop::Statuses
+  include SkuDescription
 
   belongs_to :product
   has_many :sku_assets,                               :order => 'position ASC'
@@ -15,6 +16,8 @@ class Sku < ActiveRecord::Base
 
   track_user_edits
   validations_from_schema
+
+  before_save :log_price
 
   attr_accessor :template
 
@@ -90,16 +93,6 @@ class Sku < ActiveRecord::Base
     skus
   end
 
-  # Summary of this SKU, which includes it's product name, data cols, sizing,
-  # price etc.
-  #
-  # @return String
-  #
-  # @note This should be over-ridden in any subclasses to be more specific.
-  def desc
-    "#{product.name} - #{price}"
-  end
-
   # Indicates if the SKU has any stock.
   #
   # @return [Boolean]
@@ -114,6 +107,30 @@ class Sku < ActiveRecord::Base
     stock_level < 1
   end
 
+  # Indicates if the SKU is available for sale.
+  #
+  # @return Boolean
+  def for_sale?
+    status == 'for_sale'
+  end
+
+  # Returns a money formatted string of the price.
+  #
+  # @return String
+  def formatted_price
+    format_money(price)
+  end
+
+  # Formats a float into a monentary formatted string i.e. sticks a '$' in the
+  # front and pads the decimals.
+  #
+  # @param Float value
+  #
+  # @return String
+  def format_money(value)
+    "$%.2f" % value
+  end
+
   class InsufficientStock < StandardError
     def initialize(sku)
       @sku = sku
@@ -121,6 +138,16 @@ class Sku < ActiveRecord::Base
 
     def to_s
       "SKU ##{@sku.id} has insufficent stock"
+    end
+  end
+
+  private
+
+  # Checks to see if the price has changed and if it has, creates a log.
+  def log_price
+    if price_changed?
+    logger.debug "DO A THOINK!"
+      price_logs.build(:before => price_was, :after => price)
     end
   end
 end
