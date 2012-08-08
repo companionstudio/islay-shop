@@ -26,12 +26,12 @@ class Order < ActiveRecord::Base
   # it's sub-classes, but the actual workflow should be run against an instance
   # of OrderProcess
   workflow(:status, :open) do
-    event :add,   {:open     => :pending}
-    event :bill,  {:pending  => :billed}
+    event :add,   {:open     => :pending},  :process_add!
+    event :bill,  {:pending  => :billed},   :process_billing!
     event :pack,  {:billed   => :packed}
-    event :ship,  {:packed   => :complete}
+    event :ship,  {:packed   => :complete}, :process_shipping!
 
-    event :cancel, {[:pending, :billed, :packed] => :cancelled}
+    event :cancel, {[:pending, :billed, :packed] => :cancelled}, :process_cancellation!
   end
 
   # This association has an extra method attached to it. This is so we can

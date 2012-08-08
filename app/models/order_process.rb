@@ -1,35 +1,24 @@
 class OrderProcess < Order
   private
 
-  def process_add!(token)
-    self.credit_card_payment = CreditCardPayment.new(:order => self, :token => token, :amount => total)
-    if valid? and credit_card_payment.authorize!
-      Public::OrderMailer.pending(self).deliver
-      next!
-    else
-      fail!
-    end
+  def process_add!
+    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    Sku.purchase_stock!(skus)
+    next!
   end
 
-  def process_capture!
-    if credit_card_payment.capture!
-      next!
-    else
-      fail!
-    end
+  def process_billing!
+    next!
   end
 
   def process_cancellation!
-    if credit_card_payment.cancel!
-      Public::OrderMailer.cancelled(self).deliver
-      next!
-    else
-      fail!
-    end
+    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    puts skus.inspect
+    Sku.return_stock!(skus)
+    next!
   end
 
   def process_shipping!
-    Public::OrderMailer.shipped(self).deliver
     next!
   end
 end

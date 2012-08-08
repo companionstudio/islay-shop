@@ -18,6 +18,78 @@ class Sku < ActiveRecord::Base
 
   attr_accessor :template
 
+  # Move the stock level down for the specified SKUs. Log each modification
+  # as a purchase action.
+  #
+  # @param Hash skus
+  #
+  # @return Hash
+  def self.purchase_stock!(skus)
+    modify_stock_level!('purchase', skus) do |sku, amount|
+      sku.stock_level - amount
+    end
+  end
+
+  # Move the stock level up for the specified SKUs. Log each modification
+  # as a return action; when an order is cancelled/refunded.
+  #
+  # @param Hash skus
+  #
+  # @return Hash
+  def self.return_stock!(skus)
+    modify_stock_level!('return', skus) do |sku, amount|
+      sku.stock_level + amount
+    end
+  end
+
+  # Move the stock level up for the specified SKUs. Log each modification
+  # as a restock.
+  #
+  # @param Hash skus
+  #
+  # @return Hash
+  def self.increment_stock!(skus)
+    modify_stock_level!('restock', skus) do |sku, amount|
+      sku.stock_level + amount
+    end
+  end
+
+  # Move the stock level adjustment for the specified SKUs. Log each modification
+  # as a adjust_down.
+  #
+  # @param Hash skus
+  #
+  # @return Hash
+  def self.increment_stock!(skus)
+    modify_stock_level!('adjust_down', skus) do |sku, amount|
+      sku.stock_level - amount
+    end
+  end
+
+  # Modifies the stock level for the specified SKUs and logs the modification
+  # with the action. The block is run for each SKU identified and the result
+  # is used as the new stock level.
+  #
+  # @param String action
+  # @param Hash skus
+  # @param Block blk
+  #
+  # @return Hash
+  def self.modify_stock_level!(action, skus, &blk)
+    skus.each_pair do |id, amount|
+      sku     = find(id)
+      result  = blk.call(sku, amount)
+
+      raise InsufficientStock.new(sku) if result < 0
+
+      sku.stock_logs.build(:before => sku.stock_level, :after => result, :action => action)
+      sku.stock_level = result
+      sku.save!
+    end
+
+    skus
+  end
+
   # Summary of this SKU, which includes it's product name, data cols, sizing,
   # price etc.
   #
@@ -40,5 +112,15 @@ class Sku < ActiveRecord::Base
   # @return [Boolean]
   def out_of_stock?
     stock_level < 1
+  end
+
+  class InsufficientStock < StandardError
+    def initialize(sku)
+      @sku = sku
+    end
+
+    def to_s
+      "SKU ##{sku.id} has insufficent stock"
+    end
   end
 end

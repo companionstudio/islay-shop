@@ -28,9 +28,11 @@ module IslayShop
         config  = @events[event][model[col].to_sym]
         logic   = config[:logic]
 
-        case config[:logic]
-        when Proc   then model.instance_exec(*args, &logic)
-        when Symbol then model.send(logic, *args)
+        ActiveRecord::Base.transaction do
+          case config[:logic]
+          when Proc   then model.instance_exec(*args, &logic)
+          when Symbol then model.send(logic, *args)
+          end
         end
       end
 

@@ -1,8 +1,5 @@
-Order.blueprint do
+OrderProcess.blueprint do
   items rand(5) + 1
-  logs 1
-
-  status            { 'pending' }
 
   name              { Faker::Name.name }
   email             { Faker::Internet.email(object.name) }
