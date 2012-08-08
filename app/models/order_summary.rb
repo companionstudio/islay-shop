@@ -1,5 +1,6 @@
 class OrderSummary < ActiveRecord::Base
   self.table_name = 'orders'
+  has_many :items, :class_name => 'OrderItem', :foreign_key => 'order_id'
 
   def self.summary
     select(%{
@@ -28,8 +29,16 @@ class OrderSummary < ActiveRecord::Base
     where(:status => 'pending')
   end
 
+  PACKING_SELECT = %{
+    id, name, updated_at, billing_street, billing_city, billing_state,
+    billing_postcode, shipping_street, shipping_city, shipping_state, shipping_postcode,
+    '#' || id::text AS reference,
+    '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
+    (SELECT name FROM users WHERE id = updater_id) AS updater_name
+  }.freeze
+
   def self.packing
-    where(:status => 'billed')
+    select(PACKING_SELECT).where(:status => 'billed')
   end
 
   def self.shipping

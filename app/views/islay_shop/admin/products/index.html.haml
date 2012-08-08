@@ -11,4 +11,5 @@
 = content do
   = render :partial => 'table'
 
-= paginate(@products, :theme => 'admin')
+= footer do
+  = paginate(@products, :theme => 'admin')

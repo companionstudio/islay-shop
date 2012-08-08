@@ -43,6 +43,9 @@ Rails.application.routes.draw do
             # routes above. Basically, it makes the filter and sorting helpers
             # just work.
             get '(/:filter)(/sort-:sort)(/page-:page)',   :action => 'index', :as => 'filter_and_sort'
+
+            put 'ship/all',     :action => 'ship_all', :as => 'ship_all'
+            put 'packing/all',  :action => 'pack_all',  :as => 'pack_all'
           end
 
           member do
@@ -50,10 +53,7 @@ Rails.application.routes.draw do
             put 'billing/:id',  :action => 'bill'
 
             put 'packing/:id',  :action => 'pack', :as => 'pack'
-            put 'packing/all',  :action => 'all',  :as => 'pack_all'
-
             put 'shipping/:id', :action => 'ship',     :as => 'ship'
-            put 'ship/all',     :action => 'ship_all', :as => 'ship_all'
 
             get 'cancel/:id',   :action => 'review_cancellation', :as => 'cancel'
             put 'cancel/:id',   :action => 'cancel'

@@ -1,0 +1,46 @@
+- render :partial => 'filters'
+
+= form_tag(path(:pack_all, :order_processes), :method => :put) do
+  = content do
+    %table(cellpadding=0 cellspacing=0)
+      %thead
+        %tr
+          %th.select
+            = check_box_tag('all')
+            %span Select
+          %th Order
+          %th Ship To
+          %th Total
+          %th Updated At
+
+      %tbody
+        - @orders.each do |order|
+          %tr
+            %td.select
+              = check_box_tag('ids[]', order.id)
+            %td
+              = link_to(order.name, path(order), :class => 'title')
+              %span.reference= order.reference
+              %ul.items
+                - order.items.summary.each do |item|
+                  %li
+                    = link_to(item.sku_name, path(:product, :id => item.product_id))
+                    %span.numeric= item.quantity
+            %td
+              %p
+                %strong= order.name
+                %br/
+                = order.shipping_street
+                %br/
+                = order.shipping_city
+                %br/
+                #{order.shipping_state} #{order.shipping_postcode}
+            %td
+              = order.formatted_total
+            %td
+              %span.time= order.updated_at
+              by #{order.updater_name}
+
+  = footer do
+    = paginate(@orders, :theme => 'admin')
+    %button.save Pack

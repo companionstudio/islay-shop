@@ -26,8 +26,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def packing
     @title = 'Packing'
-    @orders = OrderSummary.summary.packing.page(params[:page]).sorted(params[:sort])
-    render :index
+    @orders = OrderSummary.packing.page(params[:page]).sorted(params[:sort])
   end
 
   def pack
@@ -36,8 +35,14 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   end
 
   def pack_all
-    OrderProcess.run_all!(:pack, params[:ids])
-    redirect_to path(:packing, :order_processing)
+    if params[:all]
+      ids = OrderSummary.packing.pluck(:id)
+      OrderProcess.run_all!(:pack, ids)
+    else
+      OrderProcess.run_all!(:pack, params[:ids])
+    end
+
+    redirect_to path(:packing, :order_processes)
   end
 
   def shipping
@@ -52,8 +57,14 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   end
 
   def ship_all
-    OrderProcess.run_all!(:ship, params[:ids])
-    redirect_to path(:shipping, :order_processing)
+    if params[:all]
+      ids = OrderSummary.packing.pluck(:id)
+      OrderProcess.run_all!(:ship, ids)
+    else
+      OrderProcess.run_all!(:ship, params[:ids])
+    end
+
+    redirect_to path(:shipping, :order_processes)
   end
 
   def review_cancellation
