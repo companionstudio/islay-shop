@@ -135,7 +135,14 @@ class Order < ActiveRecord::Base
   #
   # @return [Integer] total value of 'purchasable' items in order
   def product_total
-    self[:product_total] ||= (regular_items.map(&:total) + discount_items.map(&:total)).sum
+    self[:product_total] = (regular_items.map(&:total) + discount_items.map(&:total)).sum
+  end
+
+  # Calculates a total based on the product and shipping totals.
+  #
+  # @return Float
+  def total
+    self[:total] = product_total + shipping_total
   end
 
   # Provides a simplified representation of the items in an order, consolidating
@@ -301,7 +308,13 @@ class Order < ActiveRecord::Base
     @_promotions_applied = true
   end
 
+  private
+
+  # Forces the model to calculate the total, which in turn calculates the
+  # product and shipping totals.
+  #
+  # @return Float
   def calculate_totals
-    self.total = product_total + shipping_total
+    total
   end
 end
