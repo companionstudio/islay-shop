@@ -26,7 +26,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def packing
     @title = 'Packing'
-    @orders = OrderSummary.packing.page(params[:page]).sorted(params[:sort])
+    @orders = OrderSummary.alt_summary.packing.page(params[:page]).sorted(params[:sort])
   end
 
   def pack
@@ -47,8 +47,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def shipping
     @title = 'Shipping'
-    @orders = OrderSummary.summary.shipping.page(params[:page]).sorted(params[:sort])
-    render :index
+    @orders = OrderSummary.alt_summary.shipping.page(params[:page]).sorted(params[:sort])
   end
 
   def ship
@@ -58,7 +57,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def ship_all
     if params[:all]
-      ids = OrderSummary.packing.pluck(:id)
+      ids = OrderSummary.shipping.pluck(:id)
       OrderProcess.run_all!(:ship, ids)
     else
       OrderProcess.run_all!(:ship, params[:ids])
