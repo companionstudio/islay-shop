@@ -22,4 +22,5 @@
 
   = render :partial => 'table'
 
-= paginate(@orders, :theme => 'admin')
+= footer do
+  = paginate(@orders, :theme => 'admin')

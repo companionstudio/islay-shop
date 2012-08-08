@@ -24,4 +24,5 @@
           %td
             = link_to('Bill', path(:bill, :order_process, :id => order), :class => 'button')
 
-= paginate(@orders, :theme => 'admin')
+= footer do
+  = paginate(@orders, :theme => 'admin')
