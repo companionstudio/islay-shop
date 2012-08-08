@@ -54,6 +54,7 @@
         %th Quantity
         %th Price
         %th Total
+        %th Discount
 
     %tbody
       - @order.items.summary.each do |item|
@@ -64,10 +65,13 @@
             %span.numeric= item.quantity
           %td
             %span.numeric= item.formatted_price
-            - if item.discounted?
-              %span.numeric.discount #{item.formatted_discount} discount
           %td
             %span.numeric= item.formatted_total
+          %td
+            - if item.discounted?
+              %span.numeric.discount #{item.formatted_discount} discount
+            - else
+              &nbsp;
 
     %tfoot
       %tr
@@ -75,6 +79,12 @@
           Product Total
         %td
           %span.numeric= @order.formatted_product_total
+        %td
+          - if @order.discounted_total?
+            %span.numeric.discount #{@order.formatted_product_discount} discount
+          - else
+            &nbsp;
+
       %tr
         %th(colspan=3)
           Shipping
@@ -83,11 +93,16 @@
             FREE
           - else
             %span.numeric= @order.formatted_shipping_total
+        %td
+          &nbsp;
+
       %tr
         %th(colspan=3)
           Total
         %td
           %span.numeric= @order.formatted_total
+        %td
+          &nbsp;
 
   %h3.logs Logs
   %table.logs(cellpadding=0 cellspacing=0)

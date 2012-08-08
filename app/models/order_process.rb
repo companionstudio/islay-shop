@@ -13,7 +13,6 @@ class OrderProcess < Order
 
   def process_cancellation!
     skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
-    puts skus.inspect
     Sku.return_stock!(skus)
     next!
   end

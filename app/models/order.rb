@@ -130,6 +130,14 @@ class Order < ActiveRecord::Base
     to_json(DUMP_OPTS)
   end
 
+  # The shipping total without any discounts applied to it.
+  #
+  # @return Float
+  # @todo Actually implement it
+  def actual_shipping_total
+    self[:actual_shipping_total] = shipping_total
+  end
+
   # This either returns the stored product total or it calculates it by summing
   # the totals from each regular and discounted line item.
   #
@@ -138,11 +146,25 @@ class Order < ActiveRecord::Base
     self[:product_total] = (regular_items.map(&:total) + discount_items.map(&:total)).sum
   end
 
+  # The product totals without any discounts applied to the items.
+  #
+  # @return Float
+  def actual_product_total
+    self[:actual_product_total] = items.map(&:actual_total).sum
+  end
+
   # Calculates a total based on the product and shipping totals.
   #
   # @return Float
   def total
-    self[:total] = product_total + shipping_total
+    self[:total] = (product_total + shipping_total) - discount
+  end
+
+  # Calculates a total based on the non-discounted product and shipping totals.
+  #
+  # @return Float
+  def actual_total
+    self[:actual_total] = actual_product_total + actual_shipping_total
   end
 
   # Provides a simplified representation of the items in an order, consolidating
@@ -233,6 +255,46 @@ class Order < ActiveRecord::Base
     false
   end
 
+  # Indicates if any of the products have had a discount applied to them.
+  #
+  # @return Boolean
+  def discounted_products?
+    actual_product_total > product_total
+  end
+
+  # The total discount applied to the products in an order.
+  #
+  # @return Float
+  def product_discount
+    actual_product_total - product_total
+  end
+
+  # Discount formatted to a money string
+  #
+  # @return String
+  def formatted_product_discount
+    format_money(product_discount)
+  end
+
+  # Indicates if the order has had a discount of any kind applied to it.
+  #
+  # @return Boolean
+  def discounted_total?
+    actual_total > total
+  end
+
+  # The discount applied to the entire order.
+  def total_discount
+    actual_total - total
+  end
+
+  # Discount formatted to a money string
+  #
+  # @return String
+  def formatted_total_discount
+    format_money(total_discount)
+  end
+
   # Indicates if the order has free shipping.
   #
   # @return Boolean
@@ -316,5 +378,6 @@ class Order < ActiveRecord::Base
   # @return Float
   def calculate_totals
     total
+    actual_total
   end
 end

@@ -4,7 +4,13 @@ namespace :islay_shop do
     task :seed => :environment do
       require 'islay/spec'
       ProductCategory.make!(15)
-      OrderProcess.make(80).map {|o| o.run!(:add)}
+      OrderProcess.make(80).map do |o|
+        begin
+          o.run!(:add)
+        rescue Sku::InsufficientStock
+          # Just ignore this guy
+        end
+      end
     end
   end
 end

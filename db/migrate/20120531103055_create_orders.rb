@@ -29,9 +29,13 @@ class CreateOrders < ActiveRecord::Migration
       t.boolean   :use_shipping_address,  :null => false, :default => false
 
       # Totals
+      t.float     :actual_product_total,  :precision => 7,  :scale => 2,  :null => false
       t.float     :product_total,         :precision => 7,  :scale => 2,  :null => false
+      t.float     :actual_shipping_total, :precision => 7,  :scale => 2,  :null => false
       t.float     :shipping_total,        :precision => 7,  :scale => 2,  :null => false
+      t.float     :actual_total,          :precision => 7,  :scale => 2,  :null => false
       t.float     :total,                 :precision => 7,  :scale => 2,  :null => false
+      t.float     :discount,              :precision => 7,  :scale => 2,  :null => false, :default => 0
       t.string    :currency,              :null => false, :limit => 4, :default => 'AUD'
 
       t.user_tracking(true)
