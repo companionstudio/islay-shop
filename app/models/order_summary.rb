@@ -8,7 +8,7 @@ class OrderSummary < ActiveRecord::Base
       '#' || id::text AS reference,
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
-      (SELECT ARRAY_TO_STRING(ARRAY_AGG(ps.name::text), ', ')
+      (SELECT ARRAY_TO_STRING(ARRAY_AGG(ps.name::text || ' (' || ois.quantity::text || ')'), ', ')
        FROM order_items AS ois
        JOIN skus ON skus.id = ois.sku_id
        JOIN products AS ps ON ps.id = skus.product_id
