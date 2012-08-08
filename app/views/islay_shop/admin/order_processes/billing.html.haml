@@ -22,6 +22,6 @@
             %span.time= order.updated_at
             by #{order.updater_name}
           %td
-            = link_to('Bill', path(:review_billing, :order_process, :id => order), :class => 'button')
+            = link_to('Bill', path(:bill, :order_process, :id => order), :class => 'button')
 
 = paginate(@orders, :theme => 'admin')
