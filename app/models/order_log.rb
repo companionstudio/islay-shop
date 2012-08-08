@@ -3,6 +3,8 @@ class OrderLog < ActiveRecord::Base
 
   attr_accessible :action, :notes, :succeeded
 
+  track_user_edits
+
   # Creates a select statement with calculated fields to be used when
   # summarising the logs
   #
