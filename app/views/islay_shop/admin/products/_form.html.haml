@@ -15,9 +15,11 @@
         %ul
           - @product.assets.each do |asset|
             %li{:id => "image-#{asset.id}"}
-              = image_tag(asset.preview.url(:thumb_small))
-              = link_to('Remove')
-          %li
+              %label
+                = asset.name
+                = check_box_tag('product[asset_ids][]', asset.id, :boolean => true)
+              = image_tag(asset.preview.url(:thumb_medium))
+          %li.add
             = link_to('Add Image', '', :rel => 'add')
 
       - f.metadata do |attrs|
@@ -44,12 +46,6 @@
             - attrs.each do |name, opts|
               = sf.metadata_input(name, opts)
           = sf.hidden_field(:template)
-
-    = f.fieldset('Variants', :class => 'tab') do
-      = f.input(:description, :as => 'text')
-
-    = f.fieldset('Stock', :class => 'tab') do
-      = f.input(:description, :as => 'text')
 
   = footer do
     = save_button
