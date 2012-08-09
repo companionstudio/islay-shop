@@ -5,7 +5,7 @@ Islay::Engine.extensions.register do |e|
   e.admin_scripts false
 
   # Navigation
-  e.nav_entry('Products', :catalogue, :class => 'icon-archive')
-  e.nav_entry('Orders', :orders, :class => 'icon-basket')
-  e.nav_entry('Promotions', :promotions, :class => 'icon-star')
+  e.nav_entry('Products', :catalogue)
+  e.nav_entry('Orders', :orders)
+  e.nav_entry('Promotions', :promotions)
 end
