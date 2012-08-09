@@ -10,6 +10,16 @@
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
 
+      %div.field.multi-images
+        %label Images
+        %ul
+          - @product.assets.each do |asset|
+            %li{:id => "image-#{asset.id}"}
+              = image_tag(asset.preview.url(:thumb_small))
+              = link_to('Remove')
+          %li
+            = link_to('Add Image', '', :rel => 'add')
+
       - f.metadata do |attrs|
         - attrs.each do |name, opts|
           = f.metadata_input(name, opts)
