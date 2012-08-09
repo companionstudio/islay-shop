@@ -22,6 +22,9 @@
         = @product.stock_level_status.capitalize
 
   %h3 Product Details
+  - unless @product.images.empty?
+    = image_tag(@product.images.first.preview.url(:thumb))
+
   = simple_format(@product.description)
 
   %h3 SKUs
