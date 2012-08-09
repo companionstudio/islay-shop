@@ -21,28 +21,33 @@
         Stock Level:
         = @product.stock_level_status.capitalize
 
-  %h3 Product Details
-  - unless @product.images.empty?
-    = image_tag(@product.images.first.preview.url(:thumb))
+  %div.overview
+    = column(4, :class => 'asset-preview') do
+      %div.frame
+        - if @product.images.empty?
+          %span(class='no-preview #{@asset.kind}') &nbsp;
+        - else
+          = image_tag(@product.images.first.preview.url(:thumb))
 
-  %ul.key-value
-    %li
-      %span.key Category
-      %span.value= @product.category.name
+    = column(8) do
+      %ul.key-value
+        %li
+          %span.key Category
+          %span.value= @product.category.name
 
-    - if @product.range
-      %li
-        %span.key Ranges
-        %span.value= @product.range.name
+        - if @product.range
+          %li
+            %span.key Ranges
+            %span.value= @product.range.name
 
-    %li
-      %span.key Description
-      %div.value
-        = simple_format(@product.description)
+        %li
+          %span.key Description
+          %div.value
+            = simple_format(@product.description)
 
-  %h3 SKUs
+  %h3.inset SKUs
 
-  %table
+  %table.inset
     %thead
       %tr
         %th Published
@@ -66,9 +71,9 @@
             %span.numeric= sku.stock_level
             = link_to('Adjust', '', :class => 'button')
 
-  %h3 Stock Logs
+  %h3.inset Stock Logs
 
-  %table
+  %table.inset
     %thead
       %tr
         %th SKU
@@ -93,9 +98,9 @@
             %span.time= log.created_at
             by #{log.creator_name}
 
-  %h3 Price Adjustments
+  %h3.inset Price Adjustments
 
-  %table
+  %table.inset
     %thead
       %tr
         %th SKU
