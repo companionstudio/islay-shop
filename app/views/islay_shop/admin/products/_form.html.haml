@@ -11,8 +11,8 @@
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
 
       %div.field.multi-images
-        %label Images
-        %ul
+        %label Assets
+        %ul(data-name="product[asset_ids][]")
           - @product.assets.each do |asset|
             %li{:id => "image-#{asset.id}"}
               %label
@@ -20,7 +20,7 @@
                 = check_box_tag('product[asset_ids][]', asset.id, :boolean => true)
               = image_tag(asset.preview.url(:thumb_medium))
           %li.add
-            = link_to('Add Image', '', :rel => 'add')
+            = link_to('Add Asset', '', :rel => 'add')
 
       - f.metadata do |attrs|
         - attrs.each do |name, opts|
