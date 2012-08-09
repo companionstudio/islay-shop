@@ -25,7 +25,20 @@
   - unless @product.images.empty?
     = image_tag(@product.images.first.preview.url(:thumb))
 
-  = simple_format(@product.description)
+  %ul.key-value
+    %li
+      %span.key Category
+      %span.value= @product.category.name
+
+    - if @product.range
+      %li
+        %span.key Ranges
+        %span.value= @product.range.name
+
+    %li
+      %span.key Description
+      %div.value
+        = simple_format(@product.description)
 
   %h3 SKUs
 
