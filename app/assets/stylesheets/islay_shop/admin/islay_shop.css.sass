@@ -139,6 +139,16 @@
     float: right
 
 /* -------------------------------------------------------------------------- */
+/* PRODUCT OVERVIEW
+/* -------------------------------------------------------------------------- */
+#islay-shop-admin-products.show
+  .adjust
+    width: 11em
+
+    .button
+      float: right
+
+/* -------------------------------------------------------------------------- */
 /* SUMMARY
 /* Appears above tables and lists with summary counts
 /* -------------------------------------------------------------------------- */
@@ -172,32 +182,6 @@
 /* Various table elements
 /* -------------------------------------------------------------------------- */
 table
-  th.boolean,
-  td.boolean
-    width: 4em
-
-  span.boolean
-    float: left
-
-    &:before
-      font-size: 1.6em
-
-    &.true:before
-      color: $positive-color
-      content: "✓"
-
-    &.false:before
-      color: $negative-color
-      content: "✕"
-
-    span
-      +hide
-
-  .title
-    font-size: 1.2em
-    text-decoration: none
-    float: left
-
   .reference
     +border-radius(0.2em)
     border: 0.1em solid $light-grey - 15
@@ -215,14 +199,6 @@ table
   .notes
     width: 50%
 
-  th.indicator,
-  td.indicator
-    width: 6em
-
-  td.indicator
-    padding-top: 0.5em
-    padding-bottom: 0.5em
-
 /* -------------------------------------------------------------------------- */
 /* NUMERIC VALUES
 /* Should use our geometric typeface and be a little bigger.
@@ -237,12 +213,11 @@ table
 /* -------------------------------------------------------------------------- */
 span.indicator
   +border-radius(0.2em)
-  border: 0.2em solid $dark-grey
-  color: $dark-grey
+  border: 0.15em solid $mid-grey
   text-transform: uppercase
   background: white
   text-align: center
-  font-size: 1.1em
+  font-size: 1.2em
   font-family: 'Ropa Sans'
   padding: 0.3em 0.6em
   float: left

@@ -50,26 +50,30 @@
   %table.inset
     %thead
       %tr
-        %th Published
-        %th For Sale
+        %th.boolean Published
+        %th.boolean For Sale
         %th SKU
-        %th Price
-        %th Stock Level
+        %th.indicator Price
+        %th.indicator Stock Level
+        %th.meta Updated At
 
     %tbody
       - @product.skus.each do |sku|
         %tr
-          %td
-            = sku.published?
-          %td
-            = sku.for_sale?
+          %td.boolean
+            = boolean_indicator(sku.published?)
+          %td.boolean
+            = boolean_indicator(sku.for_sale?)
           %td
             %span.title= sku.short_desc
-          %td
-            %span.numeric= sku.formatted_price
-          %td
-            %span.numeric= sku.stock_level
+          %td.indicator
+            %span.indicator= sku.formatted_price
+          %td.indicator.adjust
+            %span.indicator= sku.stock_level
             = link_to('Adjust', '', :class => 'button')
+          %td.meta
+            %span.time= sku.updated_at
+            by derp
 
   %h3.inset Stock Logs
 
@@ -89,12 +93,13 @@
             %span.title= log.short_desc
           %td
             = log.action.humanize
-          %td
-            %span.numeric= log.movement
-            %span(class="dir #{log.direction}")= log.direction
-          %td
-            %span.numeric= log.after
-          %td
+          %td.indicator
+            %span.indicator= log.movement
+            %span(class="dir #{log.direction}")
+              %span= log.direction
+          %td.indicator
+            %span.indicator= log.after
+          %td.meta
             %span.time= log.created_at
             by #{log.creator_name}
 
@@ -113,12 +118,13 @@
         %tr
           %td
             %span.title= log.short_desc
-          %td
-            %span.numeric= log.movement
-            %span(class="dir #{log.direction}")= log.direction
-          %td
-            %span.numeric= log.after
-          %td
+          %td.indicator
+            %span.indicator= log.movement
+            %span(class="dir #{log.direction}")
+              %span= log.direction
+          %td.indicator
+            %span.indicator= log.after
+          %td.meta
             %span.time= log.created_at
             by #{log.creator_name}
 

@@ -31,7 +31,7 @@ module SkuDescription
   # @return String
   def formatted_volume
     if volume.to_i >= 1000
-      "#{volume / 100}lt"
+      "#{volume.to_f / 1000}l"
     else
       "#{volume}ml"
     end
