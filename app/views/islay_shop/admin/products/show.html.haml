@@ -25,7 +25,7 @@
     = column(4, :class => 'asset-preview') do
       %div.frame
         - if @product.images.empty?
-          %span(class='no-preview #{@asset.kind}') &nbsp;
+          %span(class='no-preview image') &nbsp;
         - else
           = image_tag(@product.images.first.preview.url(:thumb))
 
