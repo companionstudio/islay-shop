@@ -30,6 +30,12 @@ Rails.application.routes.draw do
           get :delete, :on => :member
         end
 
+        resources :stock_levels, :path => 'stock', :only => 'index' do
+          collection do
+            get '(/filter-:filter)(/sort-:sort)', :action => 'index', :as => 'filter_and_sort'
+            put '', :action => 'update'
+          end
+        end
       end
 
       scope :path => 'orders' do

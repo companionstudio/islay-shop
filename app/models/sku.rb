@@ -31,6 +31,43 @@ class Sku < ActiveRecord::Base
     })
   end
 
+  # Produces a scope with calculated fields like the ::summary method, but with
+  # the addition of the product name.
+  #
+  # @return ActiveRecord::Relation
+  def self.full_summary
+    select(%{
+      skus.*,
+      (SELECT name FROM users WHERE id = skus.updater_id) AS updater_name,
+      products.name AS product_name,
+      CASE
+        WHEN skus.status = 'for_sale' AND products.status = 'for_sale' THEN 'for_sale'
+        WHEN products.status = 'discontinued' OR skus.status = 'discontinued' THEN 'discontinued'
+        WHEN products.status = 'not_for_sale' OR skus.status = 'not_for_sale' THEN 'not_for_sale'
+        ELSE skus.status
+      END AS normalized_status
+    }).joins(:product)
+  end
+
+  def self.filter(f)
+    case f
+    when 'discontinued', 'not_for_sale'
+      where(["products.status = ? or skus.status = ?", f, f]).joins(:product)
+    when 'all'
+      scoped
+    else
+      where("skus.status = 'for_sale' AND products.status = 'for_sale'").joins(:product)
+    end
+  end
+
+  def self.sorted(s)
+    if s
+      order(s)
+    else
+      order('product_name ASC, skus.name ASC')
+    end
+  end
+
   # Move the stock level down for the specified SKUs. Log each modification
   # as a purchase action.
   #
@@ -53,6 +90,38 @@ class Sku < ActiveRecord::Base
     modify_stock_level!('return', skus) do |sku, amount|
       sku.stock_level + amount
     end
+  end
+
+  # Updates the stock levels and flags them as restocks or adjust down as
+  # appropriate.
+  #
+  #
+  # @param Hash skus
+  #
+  # @return nil
+  def self.update_stock!(skus)
+    skus = skus.reduce({}) do |acc, e|
+      acc[e[0].to_i] = e[1].to_i
+      acc
+    end
+
+    levels = select('id, stock_level').where(:id => skus.keys).reduce({}) do |acc, e|
+      acc[e.id] = e.stock_level
+      acc
+    end
+
+    restocks  = skus.select {|id, level| level > levels[id]}
+    adjusts   = skus.select {|id, level| level < levels[id]}
+
+    unless restocks.empty?
+      modify_stock_level!('restock', restocks) {|sku, amount| amount}
+    end
+
+    unless adjusts.empty?
+      modify_stock_level!('adjust_down', adjusts) {|sku, amount| amount}
+    end
+
+    nil
   end
 
   # Move the stock level up for the specified SKUs. Log each modification
