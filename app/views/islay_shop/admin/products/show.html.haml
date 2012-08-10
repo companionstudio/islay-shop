@@ -58,7 +58,7 @@
         %th.meta Updated At
 
     %tbody
-      - @product.skus.each do |sku|
+      - @product.skus.summary.each do |sku|
         %tr
           %td.boolean
             = boolean_indicator(sku.published?)
@@ -73,7 +73,7 @@
             = link_to('Adjust', '', :class => 'button')
           %td.meta
             %span.time= sku.updated_at
-            by derp
+            by #{sku.updater_name}
 
   %h3.inset Stock Logs
 

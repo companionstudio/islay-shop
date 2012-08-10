@@ -21,6 +21,16 @@ class Sku < ActiveRecord::Base
 
   attr_accessor :template
 
+  # Produces a scope with calculated fields for stock alerts, updater_name etc.
+  #
+  # @return ActiveRecord::Relation
+  def self.summary
+    select(%{
+      skus.*,
+      (SELECT name FROM users WHERE id = updater_id) AS updater_name
+    })
+  end
+
   # Move the stock level down for the specified SKUs. Log each modification
   # as a purchase action.
   #
