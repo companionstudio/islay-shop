@@ -186,6 +186,49 @@ class Sku < ActiveRecord::Base
     stock_level < 1
   end
 
+  # Indicates if the SKU's stock level is getting low; on or below the
+  # configured threshold.
+  #
+  # The threshold is set in the Settings class.
+  #
+  # @return Boolean
+  def low_stock?
+    stock_level <= Settings.for(:shop, :alert_level)
+  end
+
+  # Indicates if there is a stock warning for the SKU. The warning is only true
+  # if the stock is for sale, published and low.
+  #
+  # @return Boolean
+  def stock_warning?
+    normalized_published? and normalized_for_sale? and low_stock?
+  end
+
+  # Like the regular publish check, except it also goes looking for the
+  # published status against the product.
+  #
+  # @return Boolean
+  def normalized_published?
+    if self[:normalized_published]
+      normalized_published == true
+    else
+      product.published? and published?
+    end
+  end
+
+  # Normalized for sale is like the regular for sale, but it also uses the
+  # status of the product — if available — to figure out if it's actually, really
+  # for real, for sale.
+  #
+  # @return Boolean
+  def normalized_for_sale?
+    if self[:normalized_status]
+      normalized_status == 'for_sale'
+    else
+      product.status == 'for_sale' and status == 'for_sale'
+    end
+  end
+
   # Indicates if the SKU is available for sale.
   #
   # @return Boolean
