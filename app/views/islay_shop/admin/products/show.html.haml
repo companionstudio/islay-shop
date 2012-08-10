@@ -119,11 +119,11 @@
           %td
             %span.title= log.short_desc
           %td.indicator
-            %span.indicator= log.movement
+            %span.indicator= log.formatted_movement
             %span(class="dir #{log.direction}")
               %span= log.direction
           %td.indicator
-            %span.indicator= log.after
+            %span.indicator= log.formatted_after
           %td.meta
             %span.time= log.created_at
             by #{log.creator_name}
