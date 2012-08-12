@@ -19,7 +19,7 @@ class Order < ActiveRecord::Base
     :billing_city, :email, :gift_message, :gifted_to, :is_gift, :name, :phone,
     :shipping_city, :shipping_country, :shipping_instructions, :shipping_postcode,
     :shipping_state, :shipping_street, :use_shipping_address, :items_dump,
-    :stock_alerts_dump
+    :stock_alerts_dump, :person_id
   )
 
   # The workflow is defined here so it can be queried against this class and
@@ -114,10 +114,13 @@ class Order < ActiveRecord::Base
   # Specifies the values that can be safely exposed to the public. This is used
   # by the #dump method to create a JSON string that can be written to session.
   DUMP_OPTS = {
-    root: false, :methods => [:items_dump, :stock_alerts_dump],
-    :except => [
-      :id, :product_total, :shipping_total, :total, :currency, :stock_alerts,
-      :creator_id, :updater_id, :created_at, :updated_at, :person_id
+    root: false,
+    :methods => [:items_dump, :stock_alerts_dump],
+    :only => [
+      :person_id, :name, :phone, :email, :is_gift, :gifted_to, :gift_message,
+      :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
+      :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
+      :shipping_instructions, :use_shipping_address, :items_dump, :stock_alerts_dump
     ]
   }
 
