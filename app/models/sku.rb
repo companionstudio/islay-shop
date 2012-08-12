@@ -17,7 +17,7 @@ class Sku < ActiveRecord::Base
   track_user_edits
   validations_from_schema
 
-  before_save :log_price
+  before_update :log_price
 
   attr_accessor :template
 
@@ -164,7 +164,7 @@ class Sku < ActiveRecord::Base
 
       raise InsufficientStock.new(sku) if result < 0
 
-      sku.stock_logs.build(:before => sku.stock_level, :after => result, :action => action)
+      sku.stock_logs.build(:before => sku.stock_level || 0, :after => result, :action => action)
       sku.stock_level = result
       sku.save!
     end
@@ -268,8 +268,7 @@ class Sku < ActiveRecord::Base
   # Checks to see if the price has changed and if it has, creates a log.
   def log_price
     if price_changed?
-    logger.debug "DO A THOINK!"
-      price_logs.build(:before => price_was, :after => price)
+      price_logs.build(:before => price_was || 0, :after => price)
     end
   end
 end

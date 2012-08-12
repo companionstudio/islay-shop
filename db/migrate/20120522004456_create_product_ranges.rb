@@ -3,6 +3,7 @@ class CreateProductRanges < ActiveRecord::Migration
     create_table :product_ranges do |t|
       t.integer :asset_id,      :null => true
       t.string  :name,          :null => false, :limit => 255, :index => :unique
+      t.string  :slug,          :null => false, :limit => 255, :index => :unique
       t.string  :description,   :null => false, :limit => 4000
 
       t.publishing

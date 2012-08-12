@@ -5,6 +5,7 @@ class CreateProducts < ActiveRecord::Migration
       t.integer     :product_range_id,    :null => true,  :on_delete => :set_null
       t.string      :type,                :null => false, :limit => 50, :default => 'Product'
       t.string      :name,                :null => false, :limit => 200, :index => {:unique => true, :with => 'product_category_id'}
+      t.string      :slug,                :null => false, :limit => 200, :index => {:unique => true, :with => 'product_category_id'}
       t.string      :description,         :null => false, :limit => 4000
       t.hstore      :metadata,            :null => true
       t.string      :status,              :null => false, :limit => 20, :default => 'for_sale'

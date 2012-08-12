@@ -1,6 +1,9 @@
 class ProductCategory < ActiveRecord::Base
   include IslayShop::Statuses
 
+  extend FriendlyId
+  friendly_id :name, :use => :slugged
+
   has_many    :products
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
   belongs_to  :parent,    :class_name => 'ProductCategory',  :foreign_key => 'product_category_id'

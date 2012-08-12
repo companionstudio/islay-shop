@@ -3,6 +3,9 @@ class Product < ActiveRecord::Base
   include IslayShop::Statuses
   include Islay::Publishable
 
+  extend FriendlyId
+  friendly_id :name, :use => :slugged
+
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
   has_many   :skus, :order => 'position ASC'
@@ -40,7 +43,7 @@ class Product < ActiveRecord::Base
   # fields like a SKU summary have been added.
   def self.summary
     select(%{
-      id, published, status, name, updated_at,
+      id, slug, published, status, name, updated_at,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(id::text), ', ')
        FROM skus
