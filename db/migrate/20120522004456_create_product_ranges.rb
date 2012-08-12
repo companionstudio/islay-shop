@@ -10,5 +10,7 @@ class CreateProductRanges < ActiveRecord::Migration
       t.user_tracking
       t.timestamps
     end
+
+    add_column(:product_ranges, :terms, :tsvector)
   end
 end

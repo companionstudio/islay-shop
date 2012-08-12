@@ -10,5 +10,7 @@ class CreatePromotions < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_column(:promotions, :terms, :tsvector)
   end
 end

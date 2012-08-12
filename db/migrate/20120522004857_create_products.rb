@@ -14,5 +14,7 @@ class CreateProducts < ActiveRecord::Migration
       t.user_tracking
       t.timestamps
     end
+
+    add_column(:products, :terms, :tsvector)
   end
 end

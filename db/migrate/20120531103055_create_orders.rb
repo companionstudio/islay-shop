@@ -41,5 +41,7 @@ class CreateOrders < ActiveRecord::Migration
       t.user_tracking(true)
       t.timestamps
     end
+
+    add_column(:orders, :terms, :tsvector)
   end
 end
