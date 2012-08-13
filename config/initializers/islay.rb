@@ -8,4 +8,7 @@ Islay::Engine.extensions.register do |e|
   e.nav_entry('Products', :catalogue)
   e.nav_entry('Orders', :orders)
   e.nav_entry('Promotions', :promotions)
+
+  e.dashboard(:primary, :top, :order_overview)
+  e.dashboard(:secondary, :top, :stock_alerts)
 end
