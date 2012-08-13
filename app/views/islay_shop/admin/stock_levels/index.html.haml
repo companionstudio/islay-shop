@@ -22,7 +22,7 @@
 
       %tbody
         - @skus.each do |sku|
-          %tr(class="alert #{sku.stock_warning?}")
+          %tr(class="alert #{sku.stock_warning?}" id="sku-#{sku.id}")
             %td
               = link_to(sku.long_desc, path(:product, :id => sku.product_id), :class => 'title')
             %td.indicator

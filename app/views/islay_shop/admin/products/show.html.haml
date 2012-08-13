@@ -70,7 +70,7 @@
             %span.indicator= sku.formatted_price
           %td.indicator.adjust
             %span.indicator= sku.stock_level
-            = link_to('Adjust', '', :class => 'button')
+            = link_to('Adjust', path(:stock_levels, :anchor => "sku-#{sku.id}"), :class => 'button')
           %td.meta
             %span.time= sku.updated_at
             by #{sku.updater_name}
