@@ -77,7 +77,6 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   def recent
     @title = 'Completed (last 7 days)'
     @orders = OrderSummary.summary.recently_completed.page(params[:page]).sorted(params[:sort])
-    render :index
   end
 
   private

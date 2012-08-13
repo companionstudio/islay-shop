@@ -4,6 +4,7 @@ class CreateOrders < ActiveRecord::Migration
       t.integer   :person_id,             :null => true, :on_delete => :set_null
 
       t.string    :status,                :limit => 50, :null => false, :default => 'open'
+      t.string    :reference,             :limit => 11, :null => false, :unique => true
 
       t.string    :name,                  :limit => 200,  :null => false
       t.string    :phone,                 :limit => 50

@@ -14,7 +14,7 @@
         %tr
           %td
             = link_to(order.name, path(order), :class => 'title')
-            %span.reference= order.reference
+            %span.reference.numeric= order.reference
             %span.summary= order.items_summary
           %td
             = order.formatted_total

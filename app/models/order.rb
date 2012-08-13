@@ -248,11 +248,6 @@ class Order < ActiveRecord::Base
     items.sku_total_quantity
   end
 
-  # TODO: This should be a stored field
-  def reference
-    "1203-HGAS"
-  end
-
   # Indicates if the order has any kind of discount applied to it.
   #
   # @return Boolean

@@ -1,0 +1,7 @@
+- render :partial => 'filters'
+
+= content do
+  = render :partial => 'islay_shop/admin/orders/table'
+
+= footer do
+  = paginate(@orders, :theme => 'admin')
