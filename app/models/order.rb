@@ -1,5 +1,8 @@
 class Order < ActiveRecord::Base
   include IslayShop::OrderWorkflow
+  include Islay::Searchable
+
+  search_terms :against => {:name => 'A'}
 
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled
