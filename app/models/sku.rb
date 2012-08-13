@@ -10,7 +10,7 @@ class Sku < ActiveRecord::Base
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
 
   attr_accessible(
-    :product_id, :description, :unit, :amount, :price, :stock_level,
+    :product_id, :description, :unit, :amount, :price, :stock_level, :status,
     :published, :template, :position, :name, :weight, :volume, :size
   )
 

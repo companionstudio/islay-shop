@@ -22,19 +22,20 @@
           = sf.input(:_destroy, :as => 'boolean')
           = sf.input(:position, :class => 'small')
 
-          = sf.input(:published, :col => 'first-inline')
-          = sf.input(:price, :col => 'inline', :class => 'small')
-          = sf.input(:stock_level, :col => 'inline', :class => 'small')
-
           = sf.input(:name)
+          = sf.input(:published, :col => 'first-inline')
+          = sf.input(:status, :col => 'inline', :collection => sf.object.statuses, :as => 'radio_buttons')
 
-          = sf.input(:volume, :col => 'first-inline', :class => 'small', :label => 'Volume (ml)')
-          = sf.input(:weight, :col => 'inline', :class => 'small', :label => 'Weight (g)')
-          = sf.input(:size, :col => 'inline', :class => 'small')
+          %div.attributes
+            = sf.input(:price, :col => 'first-inline', :class => 'small')
+            = sf.input(:volume, :col => 'inline', :class => 'small', :label => 'Volume (ml)')
+            = sf.input(:weight, :col => 'inline', :class => 'small', :label => 'Weight (g)')
+            = sf.input(:size, :col => 'inline', :class => 'small')
 
-          - sf.metadata do |attrs|
-            - attrs.each do |name, opts|
-              = sf.metadata_input(name, opts)
+            - sf.metadata do |attrs|
+              - attrs.each do |name, opts|
+                = sf.metadata_input(name, opts)
+
           = sf.hidden_field(:template)
 
   = footer do
