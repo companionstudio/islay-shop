@@ -10,17 +10,7 @@
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
 
-      %div.field.multi-images
-        %label Assets
-        %ul(data-name="product[asset_ids][]")
-          - @product.assets.each do |asset|
-            %li{:id => "image-#{asset.id}"}
-              %label
-                = asset.name
-                = check_box_tag('product[asset_ids][]', asset.id, :boolean => true)
-              = image_tag(asset.preview.url(:thumb_medium))
-          %li.add
-            = link_to('Add Asset', '', :rel => 'add')
+      = asset_picker(f)
 
       - f.metadata do |attrs|
         - attrs.each do |name, opts|
