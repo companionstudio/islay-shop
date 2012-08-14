@@ -11,11 +11,14 @@ class Sku < ActiveRecord::Base
 
   attr_accessible(
     :product_id, :description, :unit, :amount, :price, :stock_level, :status,
-    :published, :template, :position, :name, :weight, :volume, :size
+    :published, :template, :position, :name, :weight, :volume, :size,
+    :batch_size, :batch_price
   )
 
   track_user_edits
+
   validations_from_schema
+  validate :batch_size_and_pricing
 
   before_update :log_price
 
@@ -172,6 +175,13 @@ class Sku < ActiveRecord::Base
     skus
   end
 
+  # Indicates if this SKU has any batch pricing specified.
+  #
+  # @return Boolean
+  def batch_pricing?
+    batch_price? and batch_size?
+  end
+
   # Indicates if the SKU has any stock.
   #
   # @return [Boolean]
@@ -243,6 +253,13 @@ class Sku < ActiveRecord::Base
     format_money(price)
   end
 
+  # Returns a money formatted string of the batch price.
+  #
+  # @return String
+  def formatted_batch_price
+    format_money(batch_price * batch_size)
+  end
+
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
   # front and pads the decimals.
   #
@@ -264,6 +281,16 @@ class Sku < ActiveRecord::Base
   end
 
   private
+
+  # Both batch volume and pricing may be empty, but if one is present, then
+  # both must be filled in.
+  def batch_size_and_pricing
+    if batch_size? and !batch_price?
+      errors.add(:batch_price, "can't be missing when setting batch size")
+    elsif batch_price? and !batch_size?
+      errors.add(:batch_size, "can't be missing when setting batch price")
+    end
+  end
 
   # Checks to see if the price has changed and if it has, creates a log.
   def log_price

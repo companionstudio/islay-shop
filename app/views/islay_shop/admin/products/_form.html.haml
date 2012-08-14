@@ -18,21 +18,27 @@
 
     = f.fieldset('SKUs', :class => 'tab association', :id => 'product-skus') do
       = f.fields_for(:skus) do |sf|
-        %fieldset(class='associated template-#{sf.object.template}')
+        = sf.fieldset("SKU ##{sf.object.id || '--'}", :class => "associated template-#{sf.object.template}") do
           = sf.input(:_destroy, :as => 'boolean')
           = sf.input(:position, :class => 'small')
 
-          = sf.input(:name)
           = sf.input(:published, :col => 'first-inline')
           = sf.input(:status, :col => 'inline', :collection => sf.object.statuses, :as => 'radio_buttons')
 
-          %div.attributes
-            = sf.input(:price, :col => 'first-inline', :class => 'small')
-            = sf.input(:volume, :col => 'inline', :class => 'small', :label => 'Volume (ml)')
-            = sf.input(:weight, :col => 'inline', :class => 'small', :label => 'Weight (g)')
-            = sf.input(:size, :col => 'inline', :class => 'small')
+          = sf.input(:name)
 
-            - sf.metadata do |attrs|
+          %div.pricing
+            = sf.input(:price, :class => 'small')
+            = sf.input(:batch_size, :class => 'small')
+            = sf.input(:batch_price, :class => 'small')
+
+          %div.attributes
+            = sf.input(:volume, :class => 'small', :label => 'Volume (ml)')
+            = sf.input(:weight, :class => 'small', :label => 'Weight (g)')
+            = sf.input(:size, :class => 'small')
+
+          - sf.metadata do |attrs|
+            %div.attributes
               - attrs.each do |name, opts|
                 = sf.metadata_input(name, opts)
 

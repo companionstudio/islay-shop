@@ -10,6 +10,8 @@ class CreateSkus < ActiveRecord::Migration
       t.string      :size,                :null => true,  :limit => 50
       t.hstore      :metadata,            :null => true
       t.float       :price,               :null => false, :precision => 7, :scale => 2
+      t.integer     :batch_size,          :null => true,  :limit => 5
+      t.float       :batch_price,         :null => true,  :precision => 7, :scale => 2
       t.integer     :stock_level,         :null => false, :limit => 5, :default => 1
       t.string      :status,              :null => false, :limit => 20, :default => 'for_sale'
 

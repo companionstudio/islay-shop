@@ -67,7 +67,10 @@
           %td
             %span.title= sku.short_desc
           %td.indicator
-            %span.indicator= sku.formatted_price
+            %span.indicator
+              = sku.formatted_price
+              - if sku.batch_pricing?
+                \/ #{sku.formatted_batch_price} for #{sku.batch_size}
           %td.indicator.adjust
             %span.indicator= sku.stock_level
             = link_to('Adjust', path(:stock_levels, :anchor => "sku-#{sku.id}"), :class => 'button')
