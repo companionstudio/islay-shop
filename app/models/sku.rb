@@ -294,8 +294,15 @@ class Sku < ActiveRecord::Base
 
   # Checks to see if the price has changed and if it has, creates a log.
   def log_price
-    if price_changed?
-      price_logs.build(:before => price_was || 0, :after => price)
+    if price_changed? or batch_size_changed? or batch_price_changed?
+      log = price_logs.build(
+        :price_before       => price_was || 0,
+        :price_after        => price,
+        :batch_size_before  => batch_size_was,
+        :batch_size_after   => batch_size,
+        :batch_price_before => batch_price_was,
+        :batch_price_after  => batch_price
+      )
     end
   end
 end

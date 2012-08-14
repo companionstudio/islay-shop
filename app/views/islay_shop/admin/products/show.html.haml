@@ -112,8 +112,7 @@
     %thead
       %tr
         %th SKU
-        %th Movement
-        %th Price
+        %th Change
         %th On
 
     %tbody
@@ -121,12 +120,13 @@
         %tr
           %td
             %span.title= log.short_desc
-          %td.indicator
-            %span.indicator= log.formatted_movement
-            %span(class="dir #{log.direction}")
-              %span= log.direction
-          %td.indicator
-            %span.indicator= log.formatted_after
+          %td
+            - if log.price_moved?
+              = movement_indicator('Price', log.formatted_price_before, log.formatted_price_after, log.price_direction)
+            - if log.batch_price_moved?
+              = movement_indicator('Batch Price', log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction)
+            - if log.batch_size_moved?
+              = movement_indicator('Batch Size', log.batch_size_before, log.batch_size_after, log.batch_size_direction)
           %td.meta
             %span.time= log.created_at
             by #{log.creator_name}

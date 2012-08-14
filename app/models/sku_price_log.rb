@@ -3,7 +3,10 @@ class SkuPriceLog < ActiveRecord::Base
 
   belongs_to :sku
 
-  attr_accessible :before, :after
+  attr_accessible(
+    :price_before, :price_after, :batch_size_before, :batch_price_before,
+    :batch_size_after, :batch_price_after
+  )
 
   track_user_edits
 
@@ -13,7 +16,8 @@ class SkuPriceLog < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      before, after, sku_price_logs.created_at,
+      price_before, price_after, batch_size_before, batch_size_after,
+      batch_price_before, batch_price_after, sku_price_logs.created_at,
       skus.name, skus.volume, skus.weight, skus.size,
       CASE
         WHEN sku_price_logs.creator_id IS NULL then 'Customer'
@@ -22,18 +26,80 @@ class SkuPriceLog < ActiveRecord::Base
     }).joins(:sku)
   end
 
-  # Formats the movement into a money formatted string.
-  #
-  # @return String
-  def formatted_movement
-    format_money(movement)
+
+  def price_moved?
+    price_after != price_before
   end
 
-  # Formats the price into a money formatted string.
+  def batch_size_moved?
+    batch_size_after != batch_size_before
+  end
+
+  def batch_price_moved?
+    batch_price_after != batch_price_before
+  end
+
+  # Formats the price_before into a money formatted string.
   #
   # @return String
-  def formatted_after
-    format_money(after)
+  def formatted_price_before
+    format_money(price_after)
+  end
+
+  # Formats the price_after into a money formatted string.
+  #
+  # @return String
+  def formatted_price_after
+    format_money(price_after)
+  end
+
+  # Formats the batch_price_after into a money formatted string.
+  #
+  # @return String
+  def formatted_batch_price_after
+    format_money(batch_price_after)
+  end
+
+  # Formats the batch_price_before into a money formatted string.
+  #
+  # @return String
+  def formatted_batch_price_before
+    format_money(batch_price_before)
+  end
+
+  # Which direction the price moved in; up/down.
+  #
+  # @return String
+  def price_direction
+    direction(:price)
+  end
+
+  # Which direction the batch size moved in; up/down.
+  #
+  # @return String
+  def batch_size_direction
+    direction(:batch_size)
+  end
+
+  # Which direction the batch price moved in; up/down.
+  #
+  # @return String
+  def batch_price_direction
+    direction(:batch_price)
+  end
+
+  private
+
+  # A helper for generating a string represenation of a value's movement i.e.
+  # up/down
+  #
+  # @return String
+  def direction(attr)
+    if self[:"#{attr}_before"] > self[:"#{attr}_after"]
+      'down'
+    else
+      'up'
+    end
   end
 
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
@@ -44,27 +110,5 @@ class SkuPriceLog < ActiveRecord::Base
   # @return String
   def format_money(value)
     "$%.2f" % value
-  end
-
-  # How much the price was modified by.
-  #
-  # @return Float
-  def movement
-    if before > after
-      (before - after).round(2)
-    else
-      (after - before).round(2)
-    end
-  end
-
-  # Which direction the price moved in; up/down.
-  #
-  # @return String
-  def direction
-    if before > after
-      'down'
-    else
-      'up'
-    end
   end
 end
