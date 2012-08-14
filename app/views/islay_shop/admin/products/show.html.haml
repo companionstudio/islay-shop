@@ -85,8 +85,7 @@
       %tr
         %th SKU
         %th Action
-        %th Movement
-        %th Level
+        %th Change
         %th On
 
     %tbody
@@ -96,12 +95,8 @@
             %span.title= log.short_desc
           %td
             = log.action.humanize
-          %td.indicator
-            %span.indicator= log.movement
-            %span(class="dir #{log.direction}")
-              %span= log.direction
-          %td.indicator
-            %span.indicator= log.after
+          %td
+            = movement(log.before, log.after, log.direction)
           %td.meta
             %span.time= log.created_at
             by #{log.creator_name}
@@ -122,11 +117,11 @@
             %span.title= log.short_desc
           %td
             - if log.price_moved?
-              = movement_indicator('Price', log.formatted_price_before, log.formatted_price_after, log.price_direction)
+              = movement(log.formatted_price_before, log.formatted_price_after, log.price_direction, :name => 'Price')
             - if log.batch_price_moved?
-              = movement_indicator('Batch Price', log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction)
+              = movement(log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction, :name => 'Batch Price')
             - if log.batch_size_moved?
-              = movement_indicator('Batch Size', log.batch_size_before, log.batch_size_after, log.batch_size_direction)
+              = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
           %td.meta
             %span.time= log.created_at
             by #{log.creator_name}
