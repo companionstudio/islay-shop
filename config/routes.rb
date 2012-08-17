@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
           member do
             get :delete
-            get '(/filter-:filter)(/sort-:sort)', :action => :show, :as => 'filter_and_sort'
+            get 'products(/filter-:filter)(/sort-:sort)', :action => :show, :as => 'filter_and_sort'
           end
         end
 
