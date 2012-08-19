@@ -24,6 +24,14 @@ class Sku < ActiveRecord::Base
 
   attr_accessor :template
 
+  # Checks to see if there are any SKUs which are low, or below the stock
+  # alert level — which is looked up via the shop settings.
+  #
+  # @return Array<Sku>
+  def self.alerts
+    Sku.summarize_product.filter('for_sale').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
+  end
+
   # Produces a scope with calculated fields for stock alerts, updater_name etc.
   #
   # @return ActiveRecord::Relation
@@ -31,6 +39,16 @@ class Sku < ActiveRecord::Base
     select(%{
       skus.*,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name
+    })
+  end
+
+  # Creates a scope which selects the SKU columns and the product name.
+  #
+  # @return ActiveRecord::Relation
+  def self.summarize_product
+    select(%{
+      skus.*,
+      (SELECT name FROM products WHERE products.id = product_id) AS product_name
     })
   end
 
