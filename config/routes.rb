@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   scope :module => 'islay_shop' do
     namespace :admin do
       scope :path => 'catalogue' do
-        get '/' => 'shop#index', :as => 'catalogue'
+        get '/' => redirect('/admin/catalogue/categories'), :as => 'catalogue'
 
         resources :products do
           get '(/filter-:filter)(/sort-:sort)(/page-:page)', :action => :index, :on => :collection, :as => 'filter_and_sort'

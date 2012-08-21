@@ -24,6 +24,7 @@ class Product < ActiveRecord::Base
   has_many   :videos,     :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'VideoAsset'
   has_many   :documents,  :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
 
+
   attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status, :skus_attributes, :asset_ids
 
   track_user_edits
