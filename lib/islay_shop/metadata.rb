@@ -64,6 +64,10 @@ module IslayShop
         define_attribute(name, :string, :string, opts)
       end
 
+      def text(name, opts = {})
+        define_attribute(name, :text, :string, opts)
+      end
+
       def boolean(name, opts = {})
         define_attribute(name, :boolean, :boolean, opts)
       end
