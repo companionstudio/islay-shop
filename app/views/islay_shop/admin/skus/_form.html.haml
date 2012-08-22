@@ -7,14 +7,14 @@
       = f.input(:name)
 
     = f.fieldset('Pricing', :class => 'pricing') do
-      = f.input(:price, :class => 'small')
-      = f.input(:batch_size, :class => 'small')
-      = f.input(:batch_price, :class => 'small')
+      = f.input(:price, :class => 'small', :col => 'first-inline')
+      = f.input(:batch_size, :class => 'small', :col => 'inline')
+      = f.input(:batch_price, :class => 'small', :col => 'inline')
 
     = f.fieldset('Size & Weight', :class => 'size-and-weight') do
-      = f.input(:volume, :class => 'small', :label => 'Volume (ml)')
-      = f.input(:weight, :class => 'small', :label => 'Weight (g)')
-      = f.input(:size, :class => 'small')
+      = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
+      = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
+      = f.input(:size, :class => 'small', :col => 'inline')
 
     - f.metadata do |attrs|
       = f.fieldset('Attributes', :class => 'attributes') do
