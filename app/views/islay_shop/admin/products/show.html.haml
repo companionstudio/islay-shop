@@ -127,6 +127,7 @@
             by #{log.creator_name}
 
 = footer do
+  = new_button('SKU', @product, :sku)
   = edit_button(@product)
   - if @product.destroyable?
     = delete_button(@product)

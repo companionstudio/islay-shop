@@ -21,6 +21,9 @@
         - attrs.each do |name, opts|
           = f.metadata_input(name, opts)
 
+
+    = f.hidden_field(:product_id, :value => @product.id)
+
   = footer do
     = cancel_button(@product)
     = save_button
