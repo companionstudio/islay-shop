@@ -65,7 +65,10 @@
           %td.boolean
             = boolean_indicator(sku.for_sale?)
           %td
-            = link_to(sku.id, path(:edit, @product, sku), :class => 'title')
+            %span.title= sku.short_desc
+            = link_to('Edit', path(:edit, @product, sku))
+            - if sku.destroyable?
+              = link_to('Delete', path(:delete, @product, sku))
           %td.indicator
             %span.indicator
               = sku.formatted_price

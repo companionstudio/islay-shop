@@ -8,4 +8,8 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
   def redirect_for(record)
     path(@product)
   end
+
+  def destroy_redirect_for(record)
+    path(@product)
+  end
 end

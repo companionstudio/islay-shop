@@ -8,6 +8,7 @@ class Sku < ActiveRecord::Base
   has_many :assets, :through => :sku_assets,          :order => 'sku_assets.position ASC'
   has_many :stock_logs, :class_name => 'SkuStockLog', :order => 'created_at DESC'
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
+  has_many :order_items
 
   attr_accessible(
     :product_id, :description, :unit, :amount, :price, :stock_level, :status,
@@ -191,6 +192,16 @@ class Sku < ActiveRecord::Base
     end
 
     skus
+  end
+
+  # Indicates if this record can be destroyed. If this SKU has been used in an
+  # order, it cannot be destroyed, since that would break historical records.
+  #
+  # @return Boolean
+  #
+  # @todo Have this account for promotions which also use this SKU.
+  def destroyable?
+    order_items.empty?
   end
 
   # Indicates if this SKU has any batch pricing specified.
