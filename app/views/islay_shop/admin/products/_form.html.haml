@@ -5,7 +5,7 @@
       = f.input(:published, :col => 'first-inline')
       = f.input(:status, :collection => @product.statuses, :col => 'inline', :as => 'radio_buttons')
 
-    = f.fieldset('Product', :class => 'tab') do
+    = f.fieldset('Product') do
       = f.input(:description, :as => 'text')
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
       = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
@@ -13,36 +13,9 @@
       = asset_picker(f)
 
       - f.metadata do |attrs|
-        - attrs.each do |name, opts|
-          = f.metadata_input(name, opts)
-
-    = f.fieldset('SKUs', :class => 'tab association', :id => 'product-skus') do
-      = f.fields_for(:skus) do |sf|
-        = sf.fieldset("SKU ##{sf.object.id || '--'}", :class => "associated template-#{sf.object.template}") do
-          = sf.input(:_destroy, :as => 'boolean')
-          = sf.input(:position, :class => 'small')
-
-          = sf.input(:published, :col => 'first-inline')
-          = sf.input(:status, :col => 'inline', :collection => sf.object.statuses, :as => 'radio_buttons')
-
-          = sf.input(:name)
-
-          %div.pricing
-            = sf.input(:price, :class => 'small')
-            = sf.input(:batch_size, :class => 'small')
-            = sf.input(:batch_price, :class => 'small')
-
-          %div.attributes
-            = sf.input(:volume, :class => 'small', :label => 'Volume (ml)')
-            = sf.input(:weight, :class => 'small', :label => 'Weight (g)')
-            = sf.input(:size, :class => 'small')
-
-          - sf.metadata do |attrs|
-            %div.attributes
-              - attrs.each do |name, opts|
-                = sf.metadata_input(name, opts)
-
-          = sf.hidden_field(:template)
+        = f.fieldset('Attributes') do
+          - attrs.each do |name, opts|
+            = f.metadata_input(name, opts)
 
   = footer do
     = save_button
