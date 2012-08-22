@@ -1,0 +1,26 @@
+= resource_form([:admin, @product, @sku]) do |f|
+  = content do
+    = f.fieldset(:class => 'primary') do
+      = f.input(:published, :col => 'first-inline')
+      = f.input(:status, :col => 'inline', :collection => f.object.statuses, :as => 'radio_buttons')
+
+      = f.input(:name)
+
+    = f.fieldset('Pricing', :class => 'pricing') do
+      = f.input(:price, :class => 'small')
+      = f.input(:batch_size, :class => 'small')
+      = f.input(:batch_price, :class => 'small')
+
+    = f.fieldset('Size & Weight', :class => 'size-and-weight') do
+      = f.input(:volume, :class => 'small', :label => 'Volume (ml)')
+      = f.input(:weight, :class => 'small', :label => 'Weight (g)')
+      = f.input(:size, :class => 'small')
+
+    - f.metadata do |attrs|
+      = f.fieldset('Attributes', :class => 'attributes') do
+        - attrs.each do |name, opts|
+          = f.metadata_input(name, opts)
+
+  = footer do
+    = cancel_button(@product)
+    = save_button

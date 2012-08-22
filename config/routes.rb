@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
           resources :product_assets, :path => 'assets'
 
-          resources :sku do
+          resources :skus do
             resources :sku_assets, :path => 'assets'
             get :delete, :on => :member
           end
