@@ -275,7 +275,7 @@ class Sku < ActiveRecord::Base
   #
   # @return String
   def formatted_batch_price
-    format_money(batch_price * batch_size)
+    format_money(batch_price)
   end
 
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
