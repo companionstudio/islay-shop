@@ -5,7 +5,7 @@ Islay::Engine.extensions.register do |e|
   e.admin_scripts false
 
   # Navigation
-  e.nav_entry('Products', :product_categories)
+  e.nav_entry('Products', :catalogue)
   e.nav_entry('Orders', :orders)
   e.nav_entry('Promotions', :promotions)
 
