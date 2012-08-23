@@ -7,6 +7,9 @@ class OrderItem < ActiveRecord::Base
 
   attr_accessible :sku_id, :quantity
 
+  validate :validate_stock_levels
+  validate :validate_purchase_limits
+
   # Used to count the total number of individual SKUs. Most useful when called
   # via an association. In fact, that's probably the only time you should use it.
   #
@@ -25,6 +28,26 @@ class OrderItem < ActiveRecord::Base
       order_items.total, order_items.discount, skus.product_id,
       (SELECT name FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)
+  end
+
+  # Overwrite the existing quantity with a new one.
+  #
+  # @param Integer amount
+  #
+  # @returns Boolean
+  def update_quantity(amount)
+    self.quantity = amount
+    valid?
+  end
+
+  # Increment the existing quantity by the passed-in amount.
+  #
+  # @param Integer amount
+  #
+  # @returns Boolean
+  def increment_quantity(amount)
+    self.quantity = quantity ? quantityt + amount : amount
+    valid?
   end
 
   # Checks to see if the line item has had a discount applied to it.
@@ -56,6 +79,22 @@ class OrderItem < ActiveRecord::Base
   end
 
   private
+
+  # Checks to see that the current quantity for the item doesn't exceed the
+  # amount actually in stock.
+  def validate_stock_levels
+    if quantity > sku.stock_level
+      errors.add(:stock_level, "")
+    end
+  end
+
+  # Checks to see that the current quantity for the item doesn't exceed the
+  # purchase limit — if one is set.
+  def validate_purchase_limit
+    if sku.purchase_limiting? and quantity > sku.purchase_limit
+      errors.add(:purchase_limit, "exceeds the purchase limit of #{sku.purchase_limit}")
+    end
+  end
 
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
   # front and pads the decimals.

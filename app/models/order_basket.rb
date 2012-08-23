@@ -1,60 +1,40 @@
 class OrderBasket < Order
-  # This error class is used when there is an attempt to purchase more of a
-  # particular SKU than is allowed.
-  class PurchaseLimitError < StandardError
-    def initialize(quantity, sku)
-      @quantity = quantity
-      @sku = sku
-    end
-
-    def to_s
-      "The quantity of #{@quantity} exceeds the purchase limit for #{@sku.long_desc}"
-    end
+  # Increments the quantity for an item, specified by it's sku_id.
+  #
+  # @param [Integer, String] sku_id
+  # @param Integer quantity
+  #
+  # @returns OrderItem
+  def increment_item(sku_id, quantity)
+    regular_items.by_sku_id(sku_id).tap {|i| i.increment_quantity(quantity)}
   end
 
-  # Adds or updates an item based on the sku_id. If the item exists, it's
-  # quantity is incremented by the specified amount, otherwise a new item is
-  # created.
+  # Updates the quantity for an item, specified by it's sku_id. A quantity of 0
+  # will result in the order being removed from the order.
   #
-  # @param [Integer] sku_id the SKU to add or update
-  # @param [Integer] quantity to add to the order
-  # @param [Symbol] mode specifies updating or overwriting entries, `:add` or `:update`
+  # @param [Integer, String] sku_id
+  # @param Integer quantity
   #
-  # @raises PurchaseLimitError
-  #
-  # @todo This action needs to account for and handle exhausted stock levels.
-  def add_or_update_item(sku_id, quantity, mode = :add)
-    sku_id    = sku_id.to_i
-    quantity  = quantity.to_i
-
+  # @returns OrderItem
+  def update_item(sku_id, quantity)
     item = regular_items.by_sku_id(sku_id)
-
-    if item and quantity == 0
-      regular_items.delete(item)
-    else
-      item ||= regular_items.build(:sku_id => sku_id)
-      item.quantity = if item.quantity.blank?
-        quantity
-      else
-        case mode
-        when :add     then item.quantity + quantity
-        when :update  then quantity
-        end
-      end
-
-      if item.sku.purchase_limiting? and item.quantity > item.sku.purchase_limit
-        raise PurchaseLimitError.new(quantity, item.sku)
-      end
-    end
+    quantity == 0 ? regular_items.delete(item) : item.update_quantity(quantity)
   end
 
   # This is a shortcut for updating multiple items in one go. It replaces any
   # existing item quantities with the passed in values.
   #
   # @param [Hash] items raw values for items
-  def update_items(items)
-    items.each {|k, i| add_or_update_item(i[:sku_id], i[:quantity], :update)}
-    nil
+  #
+  # @return Boolean
+  def update_items(updates)
+    # #update_item returns an OrderItem, which will have been validated, so here
+    # we are constructing an array or booleans which indicate an error on the
+    # items. We then reduce this to a single boolean using #any?, thus indicating
+    # an error on at least one item.
+    updates.map do |sku_id, quantity|
+      !update_item(sku_id, quantity).errors.blank?
+    end.any?
   end
 
   # Removes the a regular item specified by it's sku_id.

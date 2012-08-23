@@ -6,12 +6,12 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def add
-    @order.add_or_update_item(params[:sku_id], params[:quantity])
+    @order.increment_item(params[:sku_id], params[:quantity])
     store_and_redirect
   end
 
   def remove
-    @order.add_or_update_item(params[:sku_id], 0)
+    @order.remove_item(params[:sku_id])
     store_and_redirect
   end
 
