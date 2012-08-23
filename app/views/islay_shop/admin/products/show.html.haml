@@ -3,12 +3,14 @@
 = content do
   %ul#summary
     %li
+      %span.key Published
       - if @product.published?
-        %span.value.indicator.ok Published
+        %span.value.indicator.ok Yes
       - else
-        %span.value.indicator Unpublished
+        %span.value.indicator No
 
     %li
+      %span.key Status
       - if @product.for_sale?
         %span.value.indicator.ok For Sale
       - elsif @product.discontinued?
@@ -17,8 +19,8 @@
         %span.value.indicator Not for Sale
 
     %li
+      %span.key Stock Level
       %span(class="value indicator #{@product.stock_warning? ? 'warning' : 'ok'}")
-        Stock Level:
         = @product.stock_level_status.capitalize
 
   %div.overview
@@ -66,9 +68,9 @@
             = boolean_indicator(sku.for_sale?)
           %td
             %span.title= sku.short_desc
-            = link_to('Edit', path(:edit, @product, sku))
+            = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
             - if sku.destroyable?
-              = link_to('Delete', path(:delete, @product, sku))
+              = link_to('Delete', path(:delete, @product, sku), :class => 'delete')
           %td.indicator
             %span.indicator
               = sku.formatted_price

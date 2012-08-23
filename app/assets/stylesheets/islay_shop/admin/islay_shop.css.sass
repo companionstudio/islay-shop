@@ -174,14 +174,12 @@
   .key
     font-size: 1.2em
     color: $dark-grey
-    margin: 0.4em 0 0 0.5em
+    margin: 0.3em 0.5em 0 0
     float: left
 
   .value
-    border-width: 0.15em !important
-    font-size: 1.5em
-    border-width: 0.15em
-    padding: 0.1em 0.5em
+    font-size: 1.4em
+    padding: 0.2em 0.3em
 
   .expiring .key
     font-weight: bold
@@ -234,9 +232,9 @@ table
 /* -------------------------------------------------------------------------- */
 span.indicator
   +border-radius(0.2em)
-  border: 0.15em solid $mid-grey
   text-transform: uppercase
-  background: white
+  background-color: $mid-grey
+  color: white
   text-align: center
   font-size: 1.2em
   font-family: 'Ropa Sans'
@@ -244,13 +242,10 @@ span.indicator
   float: left
 
   &.neutral
-    border-color: $neutral-color
-    color: $neutral-color
+    background-color: $neutral-color
 
   &.ok
-    border-color: $positive-color
-    color: $positive-color
+    background-color: $positive-color
 
   &.warning
-    border-color: $negative-color
-    color: $negative-color
+    background-color: $negative-color

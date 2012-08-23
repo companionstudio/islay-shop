@@ -2,15 +2,17 @@
 
 %ul#summary
   %li
+    %span.key Order #
     %span.value.indicator.reference= @order.reference
   %li
+    %span.key Status
     %span.value.indicator.neutral= @order.status
   %li
+    %span.key Total items
     %span.value.indicator.neutral= @order.sku_total_quantity
-    %span.key items
   %li
+    %span.key Total
     %span.value.indicator.neutral= @order.formatted_total
-    %span.key total
 
 = content do
   %div.billing

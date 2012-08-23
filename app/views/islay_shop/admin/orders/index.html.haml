@@ -7,18 +7,18 @@
 = content do
   %ul#summary
     %li
+      %span.key To bill
       %span.value.indicator.neutral= @counts[:billing]
-      %span.key to Bill
     %li
+      %span.key To pack
       %span.value.indicator.neutral= @counts[:packing]
-      %span.key to Pack
     %li
+      %span.key To ship
       %span.value.indicator.neutral= @counts[:shipping]
-      %span.key to Ship
 
     %li.expiring
+      %span.key Expiring soon
       %span.value.indicator.warning 1
-      %span.key Expiring Soon
 
   = render :partial => 'table'
 
