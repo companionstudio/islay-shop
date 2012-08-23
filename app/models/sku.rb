@@ -13,13 +13,14 @@ class Sku < ActiveRecord::Base
   attr_accessible(
     :product_id, :description, :unit, :amount, :price, :stock_level, :status,
     :published, :template, :position, :name, :weight, :volume, :size,
-    :batch_size, :batch_price
+    :batch_size, :batch_price, :purchase_limiting, :purchase_limit
   )
 
   track_user_edits
 
   validations_from_schema
   validate :batch_size_and_pricing
+  validates_presence_of :purchase_limit, :if => :purchase_limiting?, :message => "required when limiting is on"
 
   before_update :log_price
 

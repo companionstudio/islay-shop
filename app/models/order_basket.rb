@@ -1,4 +1,17 @@
 class OrderBasket < Order
+  # This error class is used when there is an attempt to purchase more of a
+  # particular SKU than is allowed.
+  class PurchaseLimitError < StandardError
+    def initialize(quantity, sku)
+      @quantity = quantity
+      @sku = sku
+    end
+
+    def to_s
+      "The quantity of #{@quantity} exceeds the purchase limit for #{@sku.long_desc}"
+    end
+  end
+
   # Adds or updates an item based on the sku_id. If the item exists, it's
   # quantity is incremented by the specified amount, otherwise a new item is
   # created.
@@ -6,6 +19,8 @@ class OrderBasket < Order
   # @param [Integer] sku_id the SKU to add or update
   # @param [Integer] quantity to add to the order
   # @param [Symbol] mode specifies updating or overwriting entries, `:add` or `:update`
+  #
+  # @raises PurchaseLimitError
   #
   # @todo This action needs to account for and handle exhausted stock levels.
   def add_or_update_item(sku_id, quantity, mode = :add)
@@ -25,6 +40,10 @@ class OrderBasket < Order
         when :add     then item.quantity + quantity
         when :update  then quantity
         end
+      end
+
+      if item.sku.purchase_limiting? and item.quantity > item.sku.purchase_limit
+        raise PurchaseLimitError.new(quantity, item.sku)
       end
     end
   end

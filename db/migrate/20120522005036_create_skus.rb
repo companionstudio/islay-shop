@@ -14,6 +14,8 @@ class CreateSkus < ActiveRecord::Migration
       t.float       :batch_price,         :null => true,  :precision => 7, :scale => 2
       t.integer     :stock_level,         :null => false, :limit => 5, :default => 1
       t.string      :status,              :null => false, :limit => 20, :default => 'for_sale'
+      t.boolean     :purchase_limiting,   :null => false, :default => false
+      t.integer     :purchase_limit,      :null => true,  :limit => 5
 
       t.publishing
       t.user_tracking

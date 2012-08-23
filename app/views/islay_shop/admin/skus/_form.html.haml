@@ -11,6 +11,10 @@
       = f.input(:batch_size, :class => 'small', :col => 'inline')
       = f.input(:batch_price, :class => 'small', :col => 'inline')
 
+    = f.fieldset('Purchase Limit') do
+      = f.input(:purchase_limiting, :label => 'Limiting', :col => 'first-inline')
+      = f.input(:purchase_limit, :label => 'Limit', :class => 'small', :col => 'inline')
+
     = f.fieldset('Size & Weight', :class => 'size-and-weight') do
       = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
       = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
