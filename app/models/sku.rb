@@ -335,4 +335,6 @@ class Sku < ActiveRecord::Base
       )
     end
   end
+
+  check_for_extensions
 end

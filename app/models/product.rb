@@ -129,4 +129,6 @@ class Product < ActiveRecord::Base
   def new_sku?(params)
     params.delete(:template) == "true"
   end
+
+  check_for_extensions
 end
