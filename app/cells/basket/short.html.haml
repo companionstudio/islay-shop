@@ -2,10 +2,15 @@
   %h3 Items
   - if @order.regular_items[0]
     = form_for(@order, :url => public_order_basket_update_path) do |f|
-      = f.fields_for(:regular_items) do |i|
-        = i.label(:quantity, i.object.sku_id)
-        = i.text_field(:quantity)
-        = i.hidden_field(:sku_id)
+      %ul
+        = f.fields_for(:regular_items) do |i|
+          %li
+            = i.label(:quantity, i.object.sku_id)
+            = i.text_field(:quantity)
+            = i.hidden_field(:sku_id)
+            - unless i.object.errors.empty?
+              - i.object.errors.each do |attr, msgs|
+                = i.label(:quantity, msgs, :class => 'error')
 
       %button Update
 

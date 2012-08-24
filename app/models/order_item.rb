@@ -86,7 +86,7 @@ class OrderItem < ActiveRecord::Base
   # amount actually in stock.
   def validate_stock_level
     if quantity > sku.stock_level
-      errors.add(:stock_level, "")
+      errors.add(:stock_level, "exceeds available stock")
     end
   end
 

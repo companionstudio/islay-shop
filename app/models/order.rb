@@ -197,7 +197,7 @@ class Order < ActiveRecord::Base
   #
   # @param [Array<Hash>] items raw values for order items
   def items_dump=(items)
-    items.each {|i| regular_items.build(i)}
+    items.each {|i| regular_items.build(i).valid? }
   end
 
   # Provides an array of SKU ids which are in the order, but have gone out of
