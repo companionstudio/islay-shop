@@ -45,13 +45,19 @@ class Order < ActiveRecord::Base
   # only, or where they are persisted in the DB.
   has_many :regular_items, :class_name => 'OrderRegularItem' do
     def by_sku_id(sku_id)
+      id = sku_id.to_i
+
       # We check for existance like this, since this catches records that have
       # both been loaded from the DB and new instances built on the assocation.
       if self[0]
-        select {|i| i.sku_id == sku_id}.first
+        select {|i| i.sku_id == id}.first
       else
         where(:sku_id => sku_id).first
       end
+    end
+
+    def find_or_initialize(sku_id)
+      by_sku_id(sku_id) || build(:sku_id => sku_id)
     end
   end
 

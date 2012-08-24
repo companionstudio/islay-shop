@@ -16,7 +16,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def update
-    @order.update_items(params[:order_basket][:regular_items_attributes])
+    @order.update_items(params[:order_basket][:regular_items_attributes].values)
     store_and_redirect
   end
 

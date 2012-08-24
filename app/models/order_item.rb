@@ -7,8 +7,8 @@ class OrderItem < ActiveRecord::Base
 
   attr_accessible :sku_id, :quantity
 
-  validate :validate_stock_levels
-  validate :validate_purchase_limits
+  validate :validate_stock_level
+  validate :validate_purchase_limit
 
   # Used to count the total number of individual SKUs. Most useful when called
   # via an association. In fact, that's probably the only time you should use it.
@@ -34,20 +34,22 @@ class OrderItem < ActiveRecord::Base
   #
   # @param Integer amount
   #
-  # @returns Boolean
+  # @returns self
   def update_quantity(amount)
     self.quantity = amount
     valid?
+    self
   end
 
   # Increment the existing quantity by the passed-in amount.
   #
   # @param Integer amount
   #
-  # @returns Boolean
+  # @returns self
   def increment_quantity(amount)
     self.quantity = quantity ? quantityt + amount : amount
     valid?
+    self
   end
 
   # Checks to see if the line item has had a discount applied to it.
@@ -82,7 +84,7 @@ class OrderItem < ActiveRecord::Base
 
   # Checks to see that the current quantity for the item doesn't exceed the
   # amount actually in stock.
-  def validate_stock_levels
+  def validate_stock_level
     if quantity > sku.stock_level
       errors.add(:stock_level, "")
     end

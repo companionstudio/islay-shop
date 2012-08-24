@@ -6,7 +6,7 @@ class OrderBasket < Order
   #
   # @returns OrderItem
   def increment_item(sku_id, quantity)
-    regular_items.by_sku_id(sku_id).tap {|i| i.increment_quantity(quantity)}
+    regular_items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity)}
   end
 
   # Updates the quantity for an item, specified by it's sku_id. A quantity of 0
@@ -17,14 +17,14 @@ class OrderBasket < Order
   #
   # @returns OrderItem
   def update_item(sku_id, quantity)
-    item = regular_items.by_sku_id(sku_id)
+    item = regular_items.find_or_initialize(sku_id)
     quantity == 0 ? regular_items.delete(item) : item.update_quantity(quantity)
   end
 
   # This is a shortcut for updating multiple items in one go. It replaces any
   # existing item quantities with the passed in values.
   #
-  # @param [Hash] items raw values for items
+  # @param Array<Hash, HashWithIndifferentAccess> items raw values for items
   #
   # @return Boolean
   def update_items(updates)
@@ -32,8 +32,8 @@ class OrderBasket < Order
     # we are constructing an array or booleans which indicate an error on the
     # items. We then reduce this to a single boolean using #any?, thus indicating
     # an error on at least one item.
-    updates.map do |sku_id, quantity|
-      !update_item(sku_id, quantity).errors.blank?
+    updates.map do |i|
+      !update_item(i[:sku_id], i[:quantity]).errors.blank?
     end.any?
   end
 
