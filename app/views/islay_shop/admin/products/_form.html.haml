@@ -8,7 +8,7 @@
     = f.fieldset('Product') do
       = f.input(:description, :as => 'text')
       = f.input(:product_category_id, :collection => @categories, :label => 'Category')
-      = f.input(:product_range_id, :collection => @ranges, :label => 'Range')
+      = f.input(:product_range_id, :collection => @ranges, :include_blank => true, :label => 'Range')
 
       = asset_picker(f)
 

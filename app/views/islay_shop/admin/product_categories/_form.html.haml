@@ -7,7 +7,7 @@
     = f.fieldset do
       = f.input(:description, :as => 'text')
       = f.input(:status, :collection => @product_category.statuses, :label => 'Status', :include_blank => false)
-      = f.input(:product_category_id, :collection => @product_categories, :label => 'Parent', :include_blank => false)
+      = f.input(:product_category_id, :collection => @product_categories, :label => 'Parent', :include_blank => true)
 
   = footer do
     %button Save
