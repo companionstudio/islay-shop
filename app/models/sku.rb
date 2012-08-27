@@ -11,9 +11,24 @@ class Sku < ActiveRecord::Base
   has_many :order_items
 
   if Islay::Engine.config.integrate_shop_and_blog
-    has_many :sku_blog_entries
-    has_many :blog_entries, :through => :sku_blog_entries
     attr_accessible :blog_entry_ids
+    has_many :sku_blog_entries
+    has_many :blog_entries, :through => :sku_blog_entries do
+      # Filters the blog entries by tag.
+      #
+      # @param String tag
+      #
+      # @return Array<BlogEntry>
+      def tagged(tag)
+        where([%{
+          ? IN (
+            SELECT LOWER(blog_tags.name) FROM blog_taggings
+            JOIN blog_tags ON blog_tags.id = blog_taggings.blog_tag_id
+            WHERE blog_entry_id = blog_entries.id
+          )
+        }, tag.downcase])
+      end
+    end
   end
 
   attr_accessible(
