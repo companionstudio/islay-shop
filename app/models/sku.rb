@@ -13,7 +13,7 @@ class Sku < ActiveRecord::Base
   if Islay::Engine.config.integrate_shop_and_blog
     attr_accessible :blog_entry_ids
     has_many :sku_blog_entries
-    has_many :blog_entries, :through => :sku_blog_entries do
+    has_many :blog_entries, :through => :sku_blog_entries, :order => 'published_at DESC' do
       # Filters the blog entries by tag.
       #
       # @param String tag
