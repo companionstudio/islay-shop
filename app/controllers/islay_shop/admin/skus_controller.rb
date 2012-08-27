@@ -5,6 +5,12 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
 
   private
 
+  def dependencies
+    if integrate_blog?
+      @blog_entries = BlogEntry.order('published DESC')
+    end
+  end
+
   def redirect_for(record)
     path(@product)
   end

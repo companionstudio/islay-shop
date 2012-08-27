@@ -10,6 +10,12 @@ class Sku < ActiveRecord::Base
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
   has_many :order_items
 
+  if Islay::Engine.config.integrate_shop_and_blog
+    has_many :sku_blog_entries
+    has_many :blog_entries, :through => :sku_blog_entries
+    attr_accessible :blog_entry_ids
+  end
+
   attr_accessible(
     :product_id, :description, :unit, :amount, :price, :stock_level, :status,
     :published, :template, :position, :name, :weight, :volume, :size,
