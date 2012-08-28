@@ -72,6 +72,23 @@ module IslayShop
         define_attribute(name, :boolean, :boolean, opts)
       end
 
+      def date(name, opts = {})
+        # Using composed of here is a dirty hack to get around a bug in
+        # ActiveRecord i.e. MultiAttributeAssignmentError. A long lived and
+        # still to be fixed issue. Derp.
+        @model.class_eval do
+          composed_of(
+            name,
+            :class_name   => 'Date',
+            :mapping      => %w(Date to_s),
+            :constructor  => Proc.new {|item| item },
+            :converter    => Proc.new {|item| item }
+          )
+        end
+
+        define_attribute(name, :date, :date, opts)
+      end
+
       def integer(name, opts = {})
         define_attribute(name, :integer, :integer, opts)
       end
