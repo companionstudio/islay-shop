@@ -1,5 +1,16 @@
 namespace :islay_shop do
   namespace :db do
+    desc "Fixes ordering of product categories and products"
+    task :order_fix => :environment do
+      Product.all.group_by {|p| p.product_category_id}.each do |g, a|
+        a.each_with_index {|p, i| p.update_attribute :position, i + 1}
+      end
+
+      ProductCategory.all.group_by {|p| p.product_category_id || 'NULL'}.each do |g, a|
+        a.each_with_index {|p, i| p.update_attribute :position, i + 1}
+      end
+    end
+
     desc "Loads in seed data for bootstrapping a fresh Islay app."
     task :seed => :environment do
       require 'islay/spec'
