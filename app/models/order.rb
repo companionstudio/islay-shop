@@ -387,4 +387,6 @@ class Order < ActiveRecord::Base
     total
     actual_total
   end
+
+  check_for_extensions
 end
