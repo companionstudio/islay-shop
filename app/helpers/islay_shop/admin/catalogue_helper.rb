@@ -4,17 +4,17 @@ module IslayShop::Admin::CatalogueHelper
     case source.class.name
     when 'ProductCategory'
       source.parent_categories.each do |c|
-        sub_header link_to(c.name, admin_product_category_url(c))
+        sub_header(c.name, admin_product_category_url(c))
       end
       
     when 'Product'
       source.parent_categories.each do |c|
-        sub_header link_to(c.name, admin_product_category_url(c))
+        sub_header(c.name, admin_product_category_url(c))
       end
 
     when 'Sku'
       source.product.parent_categories.each do |c|
-        sub_header link_to(c.name, admin_product_category_url(c))
+        sub_header(c.name, admin_product_category_url(c))
       end
     end
   end

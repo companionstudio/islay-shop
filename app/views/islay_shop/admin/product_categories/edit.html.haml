@@ -1,2 +1,3 @@
-- sub_header('Edit Category', @product_category.name)
+- ancestor_category_links(@product_category)
+- prefixed_sub_header('Edit Category:', @product_category.name)
 = render :partial => 'form'
