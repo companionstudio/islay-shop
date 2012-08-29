@@ -1,6 +1,8 @@
 module IslayShop
   module Admin
     class ProductsController < IslayShop::Admin::ApplicationController
+      helper CatalogueHelper
+
       resourceful :product
       header 'Shop - Products'
       nav 'islay_shop/admin/shop/nav'

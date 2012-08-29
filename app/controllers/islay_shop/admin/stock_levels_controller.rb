@@ -1,4 +1,5 @@
 class IslayShop::Admin::StockLevelsController < IslayShop::Admin::ApplicationController
+  helper CatalogueHelper
   header 'Shop - Stock Levels'
   nav 'islay_shop/admin/shop/nav'
 

@@ -11,7 +11,7 @@
         %th.boolean Published
         %th Category
         %th Stock Level
-        %th Updated At
+        %th.meta Updated At
 
     %tbody
       = render :partial => 'category', :collection => @product_categories, :locals => {:level => 0, :published => true}

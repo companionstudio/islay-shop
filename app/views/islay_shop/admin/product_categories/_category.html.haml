@@ -6,7 +6,7 @@
     = link_to(category.name, path(category), :class => 'title')
   %td
     %span.count.indicator= category.products.count
-  %td
+  %td.meta
     %span.time= category.created_at
 
 - unless category.children.empty?

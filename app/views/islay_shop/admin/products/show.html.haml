@@ -1,4 +1,5 @@
-- sub_header('Product', @product.name)
+- ancestor_category_links(@product)
+- sub_header(@product.name)
 
 = content do
   %ul#summary
@@ -31,11 +32,8 @@
         - else
           = image_tag(@product.images.first.previews.url(:thumb))
 
-    = column(8) do
+    = column(8, :class => 'product-description') do
       %ul.key-value
-        %li
-          %span.key Category
-          %span.value= @product.category.name
 
         - if @product.range
           %li
@@ -53,7 +51,7 @@
     %thead
       %tr
         %th.boolean Published
-        %th.boolean For Sale
+        %th.boolean Status
         %th SKU
         %th.indicator Price
         %th.indicator Batch Price
@@ -65,7 +63,8 @@
           %td.boolean
             = boolean_indicator(sku.published?)
           %td.boolean
-            = boolean_indicator(sku.for_sale?)
+            = sku_sale_status(sku)
+            
           %td
             %span.title= sku.short_desc
             = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
@@ -75,7 +74,7 @@
             %span.indicator= sku.formatted_price
           %td.indicator
             - if sku.batch_pricing?
-              %span.indicator #{sku.formatted_batch_price} for #{sku.batch_size}
+              %span.indicator #{sku.formatted_batch_price}/#{sku.batch_size}
             - else
               &nbsp;
           %td.indicator.adjust

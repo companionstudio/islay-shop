@@ -1,4 +1,5 @@
-- sub_header("Category", @product_category.name)
+- ancestor_category_links(@product_category)
+- sub_header(@product_category.name)
 
 - filter_nav(:product_category, 'All')
 - filter_nav(:product_category, 'Published', 'published')

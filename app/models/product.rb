@@ -118,6 +118,21 @@ class Product < ActiveRecord::Base
     status == 'discontinued'
   end
 
+  # Returns all the ancestory categories for this product in descending order
+  #
+  # TODO: Look at doing this at the DB level - important for deep hierarchies.
+  #
+  # @return Array of ProductCategories
+  def parent_categories
+    c = category
+    categories = [c]
+    until c.parent.blank? do
+      c = c.parent
+      categories.unshift c
+    end
+    categories
+  end
+
   private
 
   def store_published_at

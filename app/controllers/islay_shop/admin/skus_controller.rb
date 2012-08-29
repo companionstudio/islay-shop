@@ -1,4 +1,5 @@
 class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
+  helper CatalogueHelper
   resourceful :sku, :parent => :product
   header 'Shop'
   nav 'islay_shop/admin/shop/nav'
