@@ -1,5 +1,6 @@
 - sub_header('Order Processing', @title)
 
+- fold_filter_nav(false)
 - filter_nav(:order_processes, with_count('Billing', @counts[:billing]), 'billing')
 - filter_nav(:order_processes, with_count('Packing', @counts[:packing]), 'packing')
 - filter_nav(:order_processes, with_count('Shipping', @counts[:shipping]), 'shipping')
