@@ -9,10 +9,12 @@
 - sort_nav(:product_category, 'Created', 'created_at')
 - sort_nav(:product_category, 'Updated', 'updated_at')
 
-= content do
-  = render :partial => 'islay_shop/admin/products/table'
+= form_tag(path(:position, :products), :method => :put) do
+  = content do
+    = render :partial => 'islay_shop/admin/products/table'
 
-= footer do
-  = edit_button(@product_category)
-  = delete_button(@product_category)
-  = new_button('Product', :product, :to => @product_category)
+  = footer do
+    = new_button('Product', :product, :to => @product_category)
+    = edit_button(@product_category)
+    = delete_button(@product_category)
+    = position_buttons

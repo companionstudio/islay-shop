@@ -5,7 +5,10 @@ Rails.application.routes.draw do
         get '/' => redirect('/admin/catalogue/categories'), :as => 'catalogue'
 
         resources :products do
-          get '(/filter-:filter)(/sort-:sort)(/page-:page)', :action => :index, :on => :collection, :as => 'filter_and_sort'
+          collection do
+            get '(/filter-:filter)(/sort-:sort)(/page-:page)', :action => :index, :as => 'filter_and_sort'
+            put 'position', :action => :update_position, :as => 'position'
+          end
 
           get :delete, :on => :member
 
@@ -18,7 +21,10 @@ Rails.application.routes.draw do
         end
 
         resources :product_categories, :path => 'categories' do
-          get '(/filter-:filter)', :action => :index, :on => :collection, :as => 'filter_and_sort'
+          collection do
+            get '(/filter-:filter)',  :action => :index,           :as => 'filter_and_sort'
+            put 'position',           :action => :update_position, :as => 'position'
+          end
 
           member do
             get :delete
