@@ -17,3 +17,6 @@
             = link_to(range.name, path(range), :class => 'title')
           %td
             %span.time= range.updated_at
+
+= footer do
+  = new_button('Range', :product_range)

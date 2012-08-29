@@ -12,4 +12,5 @@
   = render :partial => 'table'
 
 = footer do
+  = new_button('Product', :product)
   = paginate(@products, :theme => 'admin')
