@@ -1,6 +1,7 @@
 %table(cellpadding=0 cellspacing=0)
   %thead
     %tr
+      %th.select &nbsp;
       %th.boolean Published
       %th.boolean For Sale
       %th Product
@@ -9,6 +10,8 @@
   %tbody
     - @products.each do |product|
       %tr
+        %td.select
+          = check_box_tag('ids[]', product.id, selected?(product.id))
         %td.boolean
           %span(class="boolean #{product.published?}")
             %span= friendly_bool(product.published?)

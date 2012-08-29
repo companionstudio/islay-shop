@@ -8,6 +8,7 @@ class Product < ActiveRecord::Base
 
   extend FriendlyId
   friendly_id :name, :use => :slugged
+  positioning :product_category
 
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
@@ -25,7 +26,10 @@ class Product < ActiveRecord::Base
   has_many   :documents,  :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
 
 
-  attr_accessible :name, :description, :product_category_id, :product_range_id, :published, :status, :skus_attributes, :asset_ids
+  attr_accessible(
+    :name, :description, :product_category_id, :product_range_id, :published,
+    :status, :skus_attributes, :asset_ids, :position
+  )
 
   track_user_edits
   validations_from_schema
