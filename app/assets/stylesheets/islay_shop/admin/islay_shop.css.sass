@@ -158,6 +158,18 @@
     .button
       float: right
 
+  .product-description
+    .key-value
+      border-top: 0
+      width: 100%
+      max-width: 45em
+
+    .key,
+    .value
+      margin-bottom: 0.6em
+      width: 100%
+
+
 /* -------------------------------------------------------------------------- */
 /* SUMMARY
 /* Appears above tables and lists with summary counts
@@ -172,11 +184,19 @@
     float: left
 
   .key
+    +border-radius(0.2em 0 0 0.2em)
+    background: $very-light-grey
+    border: 0.1em solid $light-grey
     color: $dark-grey
-    margin: 0.35em 0.5em 0 0
+    display: inline-block
+    line-height: 1
+    margin: 0
+    padding: 0.27em 0.5em
     float: left
 
   .value
+    +border-radius(0 0.2em 0.2em 0)
+    min-width: 1.1em
     padding: 0.3em 0.4em
 
   .expiring .key
@@ -231,6 +251,7 @@ table
 /* -------------------------------------------------------------------------- */
 span.indicator
   +border-radius(0.2em)
+  +islay-text-shadow
   text-transform: uppercase
   background-color: $mid-grey
   color: white
@@ -249,3 +270,16 @@ span.indicator
 
   &.warning
     background-color: $negative-color
+
+  &.for_sale
+    background-color: $positive-color
+  
+  &.discontinued
+    background-color: $neutral-color
+
+  &.not_for_sale
+    background-color: $negative-color
+
+.indicator.status
+  font-size: 0.9em
+  white-space: nowrap
