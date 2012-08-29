@@ -10,7 +10,7 @@ module IslayShop
         when 'published'    then ProductCategory.where(:product_category_id => nil, :published => true)
         when 'unpublished'  then ProductCategory.where(:product_category_id => nil, :published => false)
         else ProductCategory.where(:product_category_id => nil)
-        end
+        end.order('position')
       end
 
       def show
