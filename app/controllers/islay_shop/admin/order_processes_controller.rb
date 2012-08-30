@@ -4,7 +4,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   helper 'islay_shop/admin/orders'
 
   before_filter :status_counts
-  before_filter :find_order, :only => [:review_billing, :bill, :pack, :ship, :review_cancellation, :cancel]
+  before_filter :find_order, :only => [:review_billing, :bill, :review_cancellation, :cancel, :pack, :ship, :review_cancellation, :cancel]
 
   def index
     redirect_to path(:billing, :order_processes)
@@ -21,6 +21,15 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def bill
     @order.run!(:bill)
+    redirect_to path(:order, :id => @order)
+  end
+
+  def review_cancellation
+
+  end
+
+  def cancel
+    @order.run!(:cancel)
     redirect_to path(:order, :id => @order)
   end
 
@@ -64,14 +73,6 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
     end
 
     redirect_to path(:shipping, :order_processes)
-  end
-
-  def review_cancellation
-
-  end
-
-  def cancel
-
   end
 
   def recent

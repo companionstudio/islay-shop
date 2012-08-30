@@ -1,0 +1,15 @@
+- prefixed_sub_header('Confirm Order Cancellation', @order.name)
+
+= resource_form(@order, :url => path(:cancel, @order)) do |f|
+  = content do
+    %h3 Are you Sure?
+    %p
+      When this order is cancelled, the customer will have their payment
+      refunded and the order contents will be placed back into stock.
+
+    %p
+      Because of the payment refund, this action cannot be undone.
+
+  = footer do
+    = link_to('Cancel', path(:order, :id => @order), :class => 'button cancel')
+    = save_button('Cancel & Refund')

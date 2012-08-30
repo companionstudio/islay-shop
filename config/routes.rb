@@ -61,14 +61,14 @@ Rails.application.routes.draw do
           end
 
           member do
-            get 'billing/:id',  :action => 'review_billing', :as => 'bill'
-            put 'billing/:id',  :action => 'bill'
+            get 'billing',  :action => 'review_billing', :as => 'bill'
+            put 'billing',  :action => 'bill'
 
-            put 'packing/:id',  :action => 'pack', :as => 'pack'
-            put 'shipping/:id', :action => 'ship',     :as => 'ship'
+            put 'packing',  :action => 'pack', :as => 'pack'
+            put 'shipping', :action => 'ship',     :as => 'ship'
 
-            get 'cancel/:id',   :action => 'review_cancellation', :as => 'cancel'
-            put 'cancel/:id',   :action => 'cancel'
+            get 'cancel',   :action => 'review_cancellation', :as => 'cancel'
+            put 'cancel',   :action => 'cancel'
           end
         end
 
@@ -103,11 +103,11 @@ Rails.application.routes.draw do
       end
 
       scope :path => 'checkout', :controller => 'checkout' do
-        get   '/',                :action => 'details',       :as => 'order_checkout'
+        get   '/',                :action => 'details',         :as => 'order_checkout'
         post  '/',                :action => 'update'
-        get   '/payment',         :action => 'payment',       :as => 'order_checkout_payment'
-        get   '/payment/process', :action => 'payment_error', :as => 'order_checkout_payment_process'
-        get   '/thank-you',       :action => 'thank_you',     :as => 'order_checkout_thank_you'
+        get   '/payment',         :action => 'payment',         :as => 'order_checkout_payment'
+        get   '/payment/process', :action => 'payment_process', :as => 'order_checkout_payment_process'
+        get   '/thank-you',       :action => 'thank_you',       :as => 'order_checkout_thank_you'
       end
     end
   end # scope
