@@ -1,12 +1,11 @@
 class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationController
-  before_filter :check_for_order, :except => [:payment_complete]
+  before_filter :check_for_order, :except => [:thank_you]
 
   def details
-    @basket = OrderBasket.load(session['order'])
   end
 
   def update
-    @order.attributes = params[:order_checkout]
+    @order.attributes = params[:order_basket]
     if @order.valid?
       session['order'] = @order.dump
       redirect_to path(:order_checkout_payment)
@@ -31,7 +30,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
 
   def check_for_order
     if session['order']
-      @order = OrderCheckout.load(session['order'])
+      @order = OrderBasket.load(session['order'])
       redirect_to path(:order_basket) if @order.empty?
     else
       redirect_to path(:order_basket)

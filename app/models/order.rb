@@ -72,6 +72,18 @@ class Order < ActiveRecord::Base
   before_save :calculate_totals
   track_user_edits
 
+  validations_from_schema
+
+  # Require shipping address if the user wants to use it.
+  validates :shipping_street,    :presence => true, :if => :use_shipping_address?
+  validates :shipping_city,      :presence => true, :if => :use_shipping_address?
+  validates :shipping_state,     :presence => true, :if => :use_shipping_address?
+  validates :shipping_postcode,  :presence => true, :if => :use_shipping_address?
+
+  # Require recipient and message for gifts
+  validates :gifted_to,     :presence => true, :if => :is_gift?
+  validates :gift_message,  :presence => true, :if => :is_gift?
+
   # Used to track any items that have gone out of stock.
   #
   # @return Array<Sku>
@@ -147,6 +159,13 @@ class Order < ActiveRecord::Base
   # @return [String] JSON representation of order
   def dump
     to_json(DUMP_OPTS)
+  end
+
+  # Returns the shipping total for the order.
+  #
+  # @return Float
+  def shipping_total
+    self[:shipping_total] ||= 0
   end
 
   # The shipping total without any discounts applied to it.

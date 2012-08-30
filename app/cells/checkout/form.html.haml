@@ -1,0 +1,34 @@
+= simple_form_for(@order, :url => public_order_checkout_path) do |f|
+  - unless @order.errors.empty?
+    %p There are some problems with your order details.
+
+  %fieldset
+    %legend Contact Details
+    = f.input(:name)
+    = f.input(:phone)
+    = f.input(:email)
+
+  %fieldset
+    %legend Billing Address
+    = f.input(:billing_street, :label => 'Street')
+    = f.input(:billing_city, :label => 'City')
+    = f.input(:billing_state, :label => 'State')
+    = f.input(:billing_postcode, :label => 'Postcode')
+
+  %fieldset
+    %legend Shipping Address
+    = f.input(:use_shipping_address)
+    = f.input(:shipping_street, :label => 'Street')
+    = f.input(:shipping_city, :label => 'City')
+    = f.input(:shipping_state, :label => 'State')
+    = f.input(:shipping_postcode, :label => 'Postcode')
+
+    = f.input(:shipping_instructions, :as => :text)
+
+  %fieldset
+    %legend Gifts
+    = f.input(:is_gift, :label => 'Order is a gift')
+    = f.input(:gifted_to, :label => 'Recipient')
+    = f.input(:gift_message, :label => 'Message', :as => 'text')
+
+  %button(type="submit") Next: Payment
