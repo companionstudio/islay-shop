@@ -24,7 +24,7 @@ class OrderItem < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      order_items.type, order_items.quantity, order_items.price,
+      order_items.quantity, order_items.price,
       order_items.total, order_items.discount, skus.product_id,
       (SELECT name FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)

@@ -10,7 +10,6 @@ class Order < ActiveRecord::Base
 
   belongs_to  :person
   has_one     :credit_card_payment
-  has_one     :spreedly_core_payment
   has_many    :logs, :class_name => 'OrderLog'
 
   # This association has an extra method attached to it. This is so we can
@@ -72,7 +71,7 @@ class Order < ActiveRecord::Base
   before_save :calculate_totals
   track_user_edits
 
-  validations_from_schema
+  validations_from_schema :except => [:reference]
 
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?

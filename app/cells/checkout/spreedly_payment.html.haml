@@ -1,0 +1,18 @@
+= simple_form_for(@payment, :as => :credit_card, :url => 'https://spreedlycore.com/v1/payment_methods') do |f|
+  - unless @payment.errors.empty?
+    %p There was a problem processing your payment details.
+
+  = hidden_field_tag(:redirect_url, public_order_checkout_payment_process_url(:host => request.host))
+  = hidden_field_tag(:api_login, Settings.for(:shop, :spreedly_login))
+
+  - if params[:token]
+    = hidden_field_tag(:payment_method_token, params[:token])
+
+  = f.input(:first_name)
+  = f.input(:last_name)
+  = f.input(:number)
+  = f.input(:verification_value)
+  = f.input(:month, :as => :select, :collection => @months)
+  = f.input(:year, :as => :select, :collection => @years)
+
+  %button(type="submit") Place order & Pay

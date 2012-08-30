@@ -15,11 +15,20 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   def payment
-
+    @payment = CreditCardPayment.new
   end
 
   def payment_process
+    @payment = CreditCardPayment.new(:gateway_id => params[:token], :amount => @order.total)
+    @order.credit_card_payment = @payment
 
+    if @order.run(:add)
+      @order.save!
+      session.delete('order')
+      redirect_to path(:order_checkout_thank_you)
+    else
+      render :payment
+    end
   end
 
   def thank_you

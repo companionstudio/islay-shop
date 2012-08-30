@@ -9,14 +9,29 @@ class OrderProcess < Order
     next!
   end
 
+  # Captures the funds that were previously authorized.
+  #
+  # @return Boolean
   def process_billing!
-    next!
+    if credit_card_payment.capture!
+      next!
+    else
+      fail!
+    end
   end
 
+  # Cancels an order. This will release authorization or credit payments, then
+  # return all the SKUs from the order back into stock.
+  #
+  # @return Boolean
   def process_cancellation!
-    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
-    Sku.return_stock!(skus)
-    next!
+    if credit_card_payment.cancel!
+      skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+      Sku.return_stock!(skus)
+      next!
+    else
+      fail!
+    end
   end
 
   def process_shipping!

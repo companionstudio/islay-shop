@@ -1,6 +1,7 @@
 = simple_form_for(@order, :url => public_order_checkout_path) do |f|
   - unless @order.errors.empty?
     %p There are some problems with your order details.
+    = @order.errors.inspect
 
   %fieldset
     %legend Contact Details
@@ -14,6 +15,7 @@
     = f.input(:billing_city, :label => 'City')
     = f.input(:billing_state, :label => 'State')
     = f.input(:billing_postcode, :label => 'Postcode')
+    = f.hidden_field(:billing_country, :value => 'AU')
 
   %fieldset
     %legend Shipping Address
@@ -22,6 +24,7 @@
     = f.input(:shipping_city, :label => 'City')
     = f.input(:shipping_state, :label => 'State')
     = f.input(:shipping_postcode, :label => 'Postcode')
+    = f.hidden_field(:shipping_country, :value => 'AU')
 
     = f.input(:shipping_instructions, :as => :text)
 
