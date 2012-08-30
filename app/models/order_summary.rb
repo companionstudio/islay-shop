@@ -62,7 +62,7 @@ class OrderSummary < ActiveRecord::Base
     if s
       order(s)
     else
-      order(:updated_at)
+      order("updated_at DESC")
     end
   end
 end
