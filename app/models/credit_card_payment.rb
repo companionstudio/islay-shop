@@ -8,7 +8,7 @@ class CreditCardPayment < ActiveRecord::Base
   validate  :check_card_number, :if => :number_changed?
   before_validation :set_payment_details
 
-  attr_accessor :verification_value, :_blueprint
+  attr_accessor :verification_value
 
   attr_accessible(
     :first_name, :last_name, :number, :verification_value,
@@ -52,12 +52,35 @@ class CreditCardPayment < ActiveRecord::Base
   #
   # @return Boolean
   def cancel!
-    if latest_transaction.authorizing?
+    if authorized?
       true
-    elsif latest_transaction.capturing?
+    elsif captured?
       result = latest_transaction.credit!
       log_result(result)
     end
+  end
+
+  # Indicates if the payment is in an authorized state. Once the payment is
+  # captured or credited, this will no longer be true.
+  #
+  # @return Boolean
+  def authorized?
+    latest_transaction.authorizing?
+  end
+
+  # Indicates if the payment is in an captured state. If the payment is
+  # credited/refunded, this will no longer be true.
+  #
+  # @return Boolean
+  def authorized?
+    latest_transaction.capturing?
+  end
+
+  # Indicates if the payment has been credited.
+  #
+  # @return Boolean
+  def authorized?
+    latest_transaction.crediting?
   end
 
   private
@@ -114,8 +137,6 @@ class CreditCardPayment < ActiveRecord::Base
   #
   # @return Hash
   def set_payment_details
-    return if _blueprint
-
     self.attributes = {
       :gateway_expiry     => Time.now.next_month,
       :number             => payment_method.number,

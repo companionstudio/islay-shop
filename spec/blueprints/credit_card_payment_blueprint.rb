@@ -1,3 +1,10 @@
+CreditCardPayment.class_eval do
+  # These are over-ridden here in order to prevent the models from going
+  # off and hitting up SpreedlyCore during generation.
+  def check_card_number; end
+  def set_payment_details; end
+end
+
 CreditCardPayment.blueprint do
 
   amount      { rand(100.00) + 1 }

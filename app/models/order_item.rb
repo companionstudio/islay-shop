@@ -59,6 +59,13 @@ class OrderItem < ActiveRecord::Base
     discount > 0
   end
 
+  # Either returns the total, or generates it based on the current quantity.
+  #
+  # @return Float
+  def total
+    self[:total] ||= sku.price * quantity
+  end
+
   # Returns a formatted string of the item total.
   #
   # @return String

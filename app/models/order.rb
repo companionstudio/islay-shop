@@ -83,6 +83,9 @@ class Order < ActiveRecord::Base
   validates :gifted_to,     :presence => true, :if => :is_gift?
   validates :gift_message,  :presence => true, :if => :is_gift?
 
+  # Make sure the CC is also valid.
+  validates_associated :credit_card_payment
+
   # Used to track any items that have gone out of stock.
   #
   # @return Array<Sku>
