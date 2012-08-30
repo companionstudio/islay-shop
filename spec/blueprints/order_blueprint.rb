@@ -10,4 +10,6 @@ OrderProcess.blueprint do
   billing_postcode  { Faker::Address.zip_code }
   billing_country   { 'AU' }
   shipping_total    { 0 }
+
+  credit_card_payment
 end

@@ -8,12 +8,26 @@ class CreditCardPayment < ActiveRecord::Base
   validate  :check_card_number, :if => :number_changed?
   before_validation :set_payment_details
 
-  attr_accessor :verification_value
+  attr_accessor :verification_value, :_blueprint
 
   attr_accessible(
     :first_name, :last_name, :number, :verification_value,
     :month, :year, :gateway_id, :amount, :gateway_expiry
   )
+
+  # Does what it says on the tin. Concatenates the first and last name.
+  #
+  # @return String
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
+  # Concatenates the month and year into the standard MM/YYYY format.
+  #
+  # @return String
+  def expiry
+    "#{month}/#{year}"
+  end
 
   # Authorizes a payment. This doesn't bill a card, but essentially says 'hey
   # let me hold onto this'.
@@ -100,6 +114,8 @@ class CreditCardPayment < ActiveRecord::Base
   #
   # @return Hash
   def set_payment_details
+    return if _blueprint
+
     self.attributes = {
       :gateway_expiry     => Time.now.next_month,
       :number             => payment_method.number,
