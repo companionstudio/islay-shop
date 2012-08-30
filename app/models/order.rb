@@ -11,10 +11,41 @@ class Order < ActiveRecord::Base
   belongs_to  :person
   has_one     :credit_card_payment
   has_one     :spreedly_core_payment
-  has_many    :items,            :class_name => 'OrderItem'
-  has_many    :bonus_items,      :class_name => 'OrderBonusItem'
-  has_many    :discount_items,   :class_name => 'OrderDiscountItem'
-  has_many    :logs,             :class_name => 'OrderLog'
+  has_many    :logs, :class_name => 'OrderLog'
+
+  # This association has an extra method attached to it. This is so we can
+  # easily retrieve an item by it's sku_id, which is necessary for both
+  # #add_item and #remove_item.
+  #
+  # It is implemented so it can handle the case the there items are in memory
+  # only, or where they are persisted in the DB.
+  has_many :items, :class_name => 'OrderItem' do
+    # Tries to find an existing item in the order by sku_id
+    #
+    # @param [String, Integer] sku_id
+    #
+    # @return [OrderItem, nil]
+    def by_sku_id(sku_id)
+      id = sku_id.to_i
+
+      # We check for existance like this, since this catches records that have
+      # both been loaded from the DB and new instances built on the assocation.
+      if self[0]
+        select {|i| i.sku_id == id}.first
+      else
+        where(:sku_id => sku_id).first
+      end
+    end
+
+    # Either finds an existing item with the sku_id, or creates a new instance.
+    #
+    # @param [String, Integer] sku_id
+    #
+    # @return OrderItem
+    def find_or_initialize(sku_id)
+      by_sku_id(sku_id) || build(:sku_id => sku_id)
+    end
+  end
 
   # These are the only attributes that we want to expose publically.
   attr_accessible(
@@ -37,31 +68,7 @@ class Order < ActiveRecord::Base
     event :cancel, {[:pending, :billed, :packed] => :cancelled}, :process_cancellation!
   end
 
-  # This association has an extra method attached to it. This is so we can
-  # easily retrieve an item by it's sku_id, which is necessary for both
-  # #add_item and #remove_item.
-  #
-  # It is implemented so it can handle the case the there items are in memory
-  # only, or where they are persisted in the DB.
-  has_many :regular_items, :class_name => 'OrderRegularItem' do
-    def by_sku_id(sku_id)
-      id = sku_id.to_i
-
-      # We check for existance like this, since this catches records that have
-      # both been loaded from the DB and new instances built on the assocation.
-      if self[0]
-        select {|i| i.sku_id == id}.first
-      else
-        where(:sku_id => sku_id).first
-      end
-    end
-
-    def find_or_initialize(sku_id)
-      by_sku_id(sku_id) || build(:sku_id => sku_id)
-    end
-  end
-
-  accepts_nested_attributes_for :regular_items
+  accepts_nested_attributes_for :items
   before_save :calculate_totals
   track_user_edits
 
@@ -89,7 +96,7 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def empty?
-    regular_items.empty?
+    items.empty?
   end
 
   # Indicates if the order is editable at all. This could mean only partially
@@ -155,7 +162,7 @@ class Order < ActiveRecord::Base
   #
   # @return [Integer] total value of 'purchasable' items in order
   def product_total
-    self[:product_total] = (regular_items.map(&:total) + discount_items.map(&:total)).sum
+    self[:product_total] = items.map(&:total).sum
   end
 
   # The product totals without any discounts applied to the items.
@@ -186,10 +193,7 @@ class Order < ActiveRecord::Base
   #
   # @return [String] JSON representation of order items
   def items_dump
-    regular   = regular_items.map   {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
-    discount  = discount_items.map  {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
-
-    regular + discount
+    items.map {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
   end
 
   # When loading up an order from session, this accessor is used to generate the
@@ -197,7 +201,7 @@ class Order < ActiveRecord::Base
   #
   # @param [Array<Hash>] items raw values for order items
   def items_dump=(items)
-    items.each {|i| regular_items.build(i).valid? }
+    items.each {|i| self.items.build(i).valid? }
   end
 
   # Provides an array of SKU ids which are in the order, but have gone out of
@@ -344,10 +348,10 @@ class Order < ActiveRecord::Base
   # are in stock. Where they are out of stock, the item is removed and we add a
   # stock alert for that item to the order.
   def check_stock_levels
-    regular_items.each do |item|
+    items.each do |item|
       if item.sku.out_of_stock?
         stock_alerts << item.sku
-        regular_items.delete(item)
+        items.delete(item)
       end
     end
   end

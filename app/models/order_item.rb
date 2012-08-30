@@ -47,7 +47,7 @@ class OrderItem < ActiveRecord::Base
   #
   # @returns self
   def increment_quantity(amount)
-    self.quantity = quantity ? quantityt + amount : amount
+    self.quantity = quantity ? quantity + amount : amount
     valid?
     self
   end
