@@ -3,12 +3,22 @@ class OrderSummary < Order
     select(%{
       id, status, name, updated_at, reference,
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
-      (SELECT name FROM users WHERE id = updater_id) AS updater_name,
+      CASE
+        WHEN orders.updater_id IS NOT NULL THEN (SELECT name FROM users WHERE id = updater_id)
+        ELSE 'Customer'
+      END AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(ps.name::text || ' (' || ois.quantity::text || ')'), ', ')
        FROM order_items AS ois
        JOIN skus ON skus.id = ois.sku_id
        JOIN products AS ps ON ps.id = skus.product_id
-       GROUP BY order_id HAVING order_id = orders.id) AS items_summary
+       GROUP BY order_id HAVING order_id = orders.id) AS items_summary,
+       CASE
+         WHEN orders.status = 'pending' AND EXISTS (
+           SELECT 1 FROM credit_card_payments AS ccps
+           WHERE ccps.order_id = orders.id AND ccps.gateway_expiry < (NOW() - '3 days'::interval)
+         ) THEN true
+         ELSE false
+       END AS expiring
     })
   end
 

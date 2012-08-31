@@ -8,11 +8,13 @@
 
   %tbody
     - @orders.each do |order|
-      %tr
+      %tr(class="alert #{order.expiring?}")
         %td
           %span.indicator= order.status
         %td
           = link_to(order.name, path(order), :class => 'title')
+          - if order.expiring?
+            %span.expiry-warning Expiring Soon!
           %span.reference.numeric= order.reference
           %span.summary= order.items_summary
         %td
