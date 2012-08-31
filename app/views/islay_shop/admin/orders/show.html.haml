@@ -151,5 +151,5 @@
     = link_to('Edit Payment', path(:payment, @order), :class => 'button edit')
 
   - if @order.run?(:cancel)
-    = link_to('Cancel', path(:cancel, :order_process, :id => @order), :class => 'button cancel')
+    = link_to('Cancel', path(:cancel, :order_process, :id => @order), :title => 'Cancel Order', :class => 'button delete')
 

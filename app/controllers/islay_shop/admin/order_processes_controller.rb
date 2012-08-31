@@ -25,7 +25,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   end
 
   def review_cancellation
-
+    render :layout => !request.xhr?
   end
 
   def cancel
