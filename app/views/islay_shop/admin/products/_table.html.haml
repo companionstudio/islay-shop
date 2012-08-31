@@ -6,7 +6,7 @@
       %th.boolean For Sale
       %th Product
       %th.indicator Stock Level
-      %th Updated At
+      %th.meta Updated At
   %tbody
     - @products.each do |product|
       %tr
@@ -24,6 +24,6 @@
         %td.indicator
           %span(class="indicator #{product.stock_level_status}")
             = product.friendly_stock_level_status
-        %td
+        %td.meta
           %span.time= product.updated_at
           by #{product.updater_name}

@@ -11,7 +11,7 @@
           %th Name
           %th Ship To
           %th Total
-          %th Updated At
+          %th.meta Updated At
 
       %tbody
         - @orders.each do |order|
@@ -32,7 +32,7 @@
                 #{order.shipping_state} #{order.shipping_postcode}
             %td
               %span.numeric= order.formatted_total
-            %td
+            %td.meta
               %span.time= order.updated_at
               by #{order.updater_name}
 
