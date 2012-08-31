@@ -13,6 +13,13 @@
   %li
     %span.key Total
     %span.value.indicator.neutral= @order.formatted_total
+  - if @order.credit_card_payment.authorization_expiry_warning?
+    %li
+      %span.key Authorization
+      - if @order.credit_card_payment.authorization_expired?
+        %span.value.indicator.warning Expired!
+      - else
+        %span.value.indicator.warning Expires Soon!
 
 = content do
   %div.billing

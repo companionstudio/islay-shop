@@ -78,6 +78,57 @@ class CreditCardPayment < ActiveRecord::Base
     latest_transaction.crediting?
   end
 
+  # Indicates if any authorized funds can be captured.
+  #
+  # @return Boolean
+  def capturable?
+    authorized? and !expired?
+  end
+
+  # Indicates if this payment method can be credited. For this to be to, the
+  # funds need to have been captured and the payment method is not expired.
+  #
+  # @return Boolean
+  def creditable?
+    captured? and !expired?
+  end
+
+  # Checks to see if the authorization has expired, meaning the funds can no
+  # longer be captured. Will only be true while the payment is authorized
+  # i.e. once funds are captured, no warnings will be raised.
+  #
+  # @return Boolean
+  def authorization_expired?
+    authorized? and authorization_expires_in < 0
+  end
+
+  # Checks to see if the auth is expired or about to expire. Will only return
+  # true while the payment is authorized i.e. once funds are captured, no
+  # warnings will be raised.
+  #
+  # @return Boolean
+  def authorization_expiry_warning?
+    authorized? and authorization_expires_in < 3
+  end
+
+  # Calculates how many days are available before the authorization expires i.e.
+  # funds will not be able to be captured. This may be a negative number if
+  # the auth has expired.
+  #
+  # @return Integer
+  def authorization_expires_in
+    ((gateway_expiry - Time.now) / 86400).to_i
+  end
+
+  # Indicates if any more transactions can be run agains the payment method.
+  # SpreedlyCore currently has a window of 30 days, there after the method
+  # expires — unless retained, but we don't support that.
+  #
+  # @return Boolean
+  def expired?
+    gateway_expiry < 30.days.ago
+  end
+
   private
 
   # Converts the total from dollars to cents, since some gateways/processors
