@@ -17,7 +17,8 @@ class OrderSummary < Order
       :billing  => billing.count,
       :packing  => packing.count,
       :shipping => shipping.count,
-      :recent   => recently_completed.count
+      :recent   => recently_completed.count,
+      :expiring => expiring.count
     }
   end
 
@@ -32,6 +33,20 @@ class OrderSummary < Order
       billing_postcode, shipping_street, shipping_city, shipping_state, shipping_postcode,
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name
+    })
+  end
+
+  # Creates a scope which will find orders which are pending and have a
+  # payment method which will expire in three or less days.
+  #
+  # @return ActiveRecord::Relation
+  def self.expiring
+    where(%{
+      status = 'pending'
+      AND EXISTS (
+        SELECT 1 FROM credit_card_payments AS ccps
+        WHERE ccps.order_id = orders.id AND ccps.gateway_expiry < (NOW() - '3 days'::interval)
+      )
     })
   end
 

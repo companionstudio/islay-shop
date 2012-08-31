@@ -15,10 +15,10 @@
     %li
       %span.key To ship
       %span.value.indicator.neutral= @counts[:shipping]
-
-    %li.expiring
-      %span.key Expiring soon
-      %span.value.indicator.warning 1
+    - if @counts[:expiring] > 0
+      %li.expiring
+        %span.key Expiring soon
+        %span.value.indicator.warning= @counts[:expiring]
 
   = render :partial => 'table'
 
