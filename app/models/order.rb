@@ -8,6 +8,14 @@ class Order < ActiveRecord::Base
   self.inheritance_column = :_type_disabled
   self.table_name = 'orders'
 
+  # A class attribute used to store a reference to the shipping calculator
+  # class. This can be over-ridden per install using extensions.
+  #
+  # The class should at least have an instance method #calculate, which accepts
+  # an instance of an order and returns an Integer.
+  class_attribute :shipping_calculator
+  self.shipping_calculator = :default_shipping_calculator
+
   belongs_to  :person
   has_one     :credit_card_payment
   has_many    :logs, :class_name => 'OrderLog'
@@ -167,7 +175,7 @@ class Order < ActiveRecord::Base
   #
   # @return Float
   def shipping_total
-    self[:shipping_total] ||= 0
+    self[:shipping_total] ||= calculate_shipping
   end
 
   # The shipping total without any discounts applied to it.
@@ -422,6 +430,20 @@ class Order < ActiveRecord::Base
   end
 
   private
+
+  # Calculates the shipping for the order.
+  #
+  # @return Float
+  def calculate_shipping
+    self.class.shipping_calculator_class.new.calculate(self)
+  end
+
+  # Returns the configured shipping calculator class.
+  #
+  # @return Object
+  def self.shipping_calculator_class
+    @@shipping_calculator ||= self.shipping_calculator.to_s.classify.constantize
+  end
 
   # Forces the model to calculate the total, which in turn calculates the
   # product and shipping totals.
