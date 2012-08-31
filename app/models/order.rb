@@ -244,32 +244,51 @@ class Order < ActiveRecord::Base
     end
   end
 
+  # Determines the shipping name depending on if it is going to the billing
+  # or shipping address and if it is a gift.
+  #
+  # @return String
+  def ship_to
+    if use_shipping_address? and is_gift?
+      gifted_to
+    else
+      name
+    end
+  end
+
   # An accessor which falls back to billing details
   #
   # @return String
   def shipping_street
-    self[:shipping_street] || self[:billing_street]
+    use_shipping_address? ? self[:shipping_street] : self[:billing_street]
   end
 
   # An accessor which falls back to billing details
   #
   # @return String
   def shipping_city
-    self[:shipping_city] || self[:billing_city]
+    use_shipping_address? ? self[:shipping_city] : self[:billing_city]
   end
 
   # An accessor which falls back to billing details
   #
   # @return String
   def shipping_state
-    self[:shipping_state] || self[:billing_state]
+    use_shipping_address? ? self[:shipping_state] : self[:billing_state]
   end
 
   # An accessor which falls back to billing details
   #
   # @return String
   def shipping_postcode
-    self[:shipping_postcode] || self[:billing_postcode]
+    use_shipping_address? ? self[:shipping_postcode] : self[:billing_postcode]
+  end
+
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_country
+    use_shipping_address? ? self[:shipping_country] : self[:billing_country]
   end
 
   # Counts the number of individual SKUs in an order.

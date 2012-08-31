@@ -1,4 +1,4 @@
-- sub_header('Order', @order.name)
+- prefixed_sub_header('Order', @order.name)
 
 %ul#summary
   %li
@@ -40,7 +40,7 @@
     %h3 Shipping Address
 
     %p
-      %strong= @order.name
+      %strong= @order.ship_to
       %br/
       = @order.shipping_street
       %br/
