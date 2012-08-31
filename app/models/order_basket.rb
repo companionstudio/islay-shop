@@ -42,7 +42,7 @@ class OrderBasket < Order
   #
   # @returns OrderItem
   def increment_item(sku_id, quantity)
-    items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity)}
+    items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity.to_i)}
   end
 
   # Updates the quantity for an item, specified by it's sku_id. A quantity of 0
