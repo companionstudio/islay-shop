@@ -357,7 +357,7 @@ class Order < ActiveRecord::Base
   #
   # @return String
   def formatted_total
-    format_money(total)
+    self[:formatted_total] || format_money(total)
   end
 
   # Returns a formatted string of the order product total.

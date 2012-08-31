@@ -23,7 +23,7 @@
               %span.reference.numeric= order.reference
             %td
               %p
-                %strong= order.name
+                %strong= order.ship_to
                 %br/
                 = order.shipping_street
                 %br/
@@ -31,7 +31,7 @@
                 %br/
                 #{order.shipping_state} #{order.shipping_postcode}
             %td
-              = order.formatted_total
+              %span.numeric= order.formatted_total
             %td
               %span.time= order.updated_at
               by #{order.updater_name}
