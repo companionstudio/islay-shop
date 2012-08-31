@@ -14,7 +14,7 @@ class OrderProcess < Order
   # @return Boolean
   def process_billing!
     if credit_card_payment.capture!
-      next!
+      next!("Captured #{formatted_total}")
     else
       fail!
     end
@@ -25,13 +25,23 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_cancellation!
-    if credit_card_payment.cancel!
-      skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
-      Sku.return_stock!(skus)
-      next!
+    if credit_card_payment.authorized?
+      return_stock
+      next!("Funds were not captured; authorization must be allowed to expire")
+    elsif credit_card_payment.captured? and credit_card_payment.credit!
+      return_stock
+      next!("Credited #{formatted_total}")
     else
       fail!
     end
+  end
+
+  # A helper which will return all the items in this order back into stock.
+  #
+  # @return Hash
+  def return_stock
+    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    Sku.return_stock!(skus)
   end
 
   def process_shipping!

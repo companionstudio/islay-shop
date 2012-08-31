@@ -47,17 +47,12 @@ class CreditCardPayment < ActiveRecord::Base
     log_result(result, :capture)
   end
 
-  # Cancels a payment method. Authorized method are allowed to lapse. Captured
-  # funds are credited.
+  # Credits a previously captured/billed payment.
   #
   # @return Boolean
-  def cancel!
-    if authorized?
-      true
-    elsif captured?
-      result = latest_transaction.credit!
-      log_result(result)
-    end
+  def credit!
+    result = latest_transaction.credit!
+    log_result(result, :credit)
   end
 
   # Indicates if the payment is in an authorized state. Once the payment is
@@ -72,14 +67,14 @@ class CreditCardPayment < ActiveRecord::Base
   # credited/refunded, this will no longer be true.
   #
   # @return Boolean
-  def authorized?
+  def captured?
     latest_transaction.capturing?
   end
 
   # Indicates if the payment has been credited.
   #
   # @return Boolean
-  def authorized?
+  def credited?
     latest_transaction.crediting?
   end
 
@@ -107,13 +102,17 @@ class CreditCardPayment < ActiveRecord::Base
   #
   # @return Boolean
   def log_result(result, transaction)
-    transactions.build(
+    log = transactions.build(
       # :successful       => result.succeeded?,
       :amount           => amount,
       :currency         => 'AUD',
       :transaction_type => transaction,
       :transaction_id   => result.token
     )
+
+    unless new_record?
+      log.save!
+    end
 
     unless result.succeeded?
       errors.add :base, result.message
