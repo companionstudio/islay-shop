@@ -1,9 +1,9 @@
 %div.basket
   %h3 Items
-  - if @order.regular_items[0]
+  - if @order.items[0]
     = form_for(@order, :url => public_order_basket_update_path) do |f|
       %ul
-        = f.fields_for(:regular_items) do |i|
+        = f.fields_for(:items) do |i|
           %li
             = i.label(:quantity, i.object.sku_id)
             = i.text_field(:quantity)
@@ -14,20 +14,7 @@
 
       %button Update
 
+    %p= link_to('Checkout', public_order_checkout_path)
+
   - else
     %p Empty
-
-  - if @order.stock_alerts?
-    %h3 Unfortunately, these items are now out of stock
-    = form_for(@order, :url => public_order_basket_delete_alerts_path, :method => :delete) do |f|
-      %ul
-        - @order.stock_alerts.each do |sku|
-          %li= link_to(sku.id, public_product_path(sku.product))
-
-      %button Clear
-
-  - if @order.bonus_items[0]
-    %h3 Bonus Items
-    %ul
-      - @order.bonus_items.each do |item|
-        %li #{item.sku_id} (#{item.quantity})

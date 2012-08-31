@@ -1,7 +1,4 @@
-class OrderSummary < ActiveRecord::Base
-  self.table_name = 'orders'
-  has_many :items, :class_name => 'OrderItem', :foreign_key => 'order_id'
-
+class OrderSummary < Order
   def self.summary
     select(%{
       id, status, name, updated_at, reference,
@@ -62,7 +59,7 @@ class OrderSummary < ActiveRecord::Base
     if s
       order(s)
     else
-      order(:updated_at)
+      order("updated_at DESC")
     end
   end
 end

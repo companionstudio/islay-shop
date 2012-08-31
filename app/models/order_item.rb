@@ -24,7 +24,7 @@ class OrderItem < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      order_items.type, order_items.quantity, order_items.price,
+      order_items.quantity, order_items.price,
       order_items.total, order_items.discount, skus.product_id,
       (SELECT name FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)
@@ -47,7 +47,7 @@ class OrderItem < ActiveRecord::Base
   #
   # @returns self
   def increment_quantity(amount)
-    self.quantity = quantity ? quantityt + amount : amount
+    self.quantity = quantity ? quantity + amount : amount
     valid?
     self
   end
@@ -57,6 +57,13 @@ class OrderItem < ActiveRecord::Base
   # @return Boolean
   def discounted?
     discount > 0
+  end
+
+  # Either returns the total, or generates it based on the current quantity.
+  #
+  # @return Float
+  def total
+    self[:total] ||= sku.price * quantity
   end
 
   # Returns a formatted string of the item total.

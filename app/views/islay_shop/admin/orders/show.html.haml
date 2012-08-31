@@ -1,4 +1,4 @@
-- sub_header('Order', @order.name)
+- prefixed_sub_header('Order', @order.name)
 
 %ul#summary
   %li
@@ -19,10 +19,10 @@
     %h3 Billing Details
 
     %p
-      %span.type.mastercard Mastercard
-      %span.number XXXXXX-XXXXX-34236
-      %span.name Luke M Sutton
-      %span.expiry Expiry: 13/2013
+      %span.type.mastercard --
+      %span.number= @order.credit_card_payment.number
+      %span.name= @order.credit_card_payment.full_name
+      %span.expiry Expiry: #{@order.credit_card_payment.expiry}
 
   %div.address
     %h3 Billing Address
@@ -40,7 +40,7 @@
     %h3 Shipping Address
 
     %p
-      %strong= @order.name
+      %strong= @order.ship_to
       %br/
       = @order.shipping_street
       %br/
@@ -151,5 +151,5 @@
     = link_to('Edit Payment', path(:payment, @order), :class => 'button edit')
 
   - if @order.run?(:cancel)
-    = link_to('Cancel', path(:cancel, :order_process, :id => @order), :class => 'button delete')
+    = link_to('Cancel', path(:cancel, :order_process, :id => @order), :class => 'button cancel')
 

@@ -1,4 +1,40 @@
 class OrderBasket < Order
+  before_create :store_reference
+
+  # Attempts to authorize a payment method on spreedly core.
+  #
+  # @return Boolean
+  def process_add!
+    if credit_card_payment.valid? and credit_card_payment.authorize!
+      skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+      Sku.purchase_stock!(skus)
+      next!
+    else
+      fail!
+    end
+  end
+
+  # Attempts to generate a reference for the order. Since the reference needs to
+  # be unique and is generated rather than being a serial value, we attempt to
+  # generate it five times. On failure, we raise an error.
+  #
+  # @return String
+  def store_reference
+    5.times do
+      self[:reference] = generate_reference
+      return reference unless self.class.where(:reference => reference).first
+    end
+
+    raise "Could not generate unique reference for order"
+  end
+
+  # Generates a reference using the time, and a 6 char hex string.
+  #
+  # @return String
+  def generate_reference
+    "#{Time.now.strftime('%y%m')}-#{SecureRandom.hex(3).upcase}"
+  end
+
   # Increments the quantity for an item, specified by it's sku_id.
   #
   # @param [Integer, String] sku_id
@@ -6,19 +42,21 @@ class OrderBasket < Order
   #
   # @returns OrderItem
   def increment_item(sku_id, quantity)
-    regular_items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity)}
+    items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity)}
   end
 
   # Updates the quantity for an item, specified by it's sku_id. A quantity of 0
   # will result in the order being removed from the order.
   #
   # @param [Integer, String] sku_id
-  # @param Integer quantity
+  # @param [Integer, String] quantity
   #
   # @returns OrderItem
   def update_item(sku_id, quantity)
-    item = regular_items.find_or_initialize(sku_id)
-    quantity == 0 ? regular_items.delete(item) : item.update_quantity(quantity)
+    n = quantity.to_i
+    item = items.find_or_initialize(sku_id)
+    n == 0 ? items.delete(item) : item.update_quantity(n)
+    item
   end
 
   # This is a shortcut for updating multiple items in one go. It replaces any
@@ -41,7 +79,7 @@ class OrderBasket < Order
   #
   # @param [Integer] sku_id
   def remove_item(sku_id)
-    regular_items.delete(regular_items.by_sku_id(sku_id))
+    items.delete(items.by_sku_id(sku_id))
   end
 
   # Apply a discount to a regular item by replacing it with an instance of a
@@ -50,23 +88,20 @@ class OrderBasket < Order
   # @param [Integer] sku_id to discount
   # @param [Integer] discount_price in cents
   # @param [Integer] discount_percentage in cents (proportion of discount_price of total)
+  #
+  # @todo Actually implment this guy.
   def discount_item(sku_id, discount_price, discount_percentage)
-    item = regular_items.by_sku_id(sku_id)
-    discount_items.build(
-      :sku_id   => sku_id,
-      :quantity => item.quantity,
-      :price    => discount_price,
-      :discount => discount_percentage
-    )
-    regular_items.delete(item)
+
   end
 
   # Does what it says on the tin.
   #
   # @param [Integer] sku_id
   # @param [Integer] quantity
+  #
+  # @todo Actually implment this guy.
   def add_bonus_item(sku_id, quantity)
-    bonus_items.build(:sku_id => sku_id, :quantity => quantity)
+
   end
 
   # Is a convenience method for promotion conditions. It returns a duplicate of
@@ -74,8 +109,8 @@ class OrderBasket < Order
   # stupid things with association collections that haven't been saved to the
   # DB e.g. they don't actually respond to all the array methods.
   #
-  # @return [Array<OrderRegularItem>] duplicate array of order items
+  # @return [Array<OrderItem>] duplicate array of order items
   def candidate_items
-    @candidate_items ||= regular_items.dup
+    @candidate_items ||= items.dup
   end
 end

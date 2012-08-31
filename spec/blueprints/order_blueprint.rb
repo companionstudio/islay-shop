@@ -10,4 +10,13 @@ OrderProcess.blueprint do
   billing_postcode  { Faker::Address.zip_code }
   billing_country   { 'AU' }
   shipping_total    { 0 }
+
+  credit_card_payment do
+    CreditCardPayment.make(
+      :order      => object,
+      :amount     => object.total,
+      :first_name => object.name.split(' ').first,
+      :last_name  => object.name.split(' ').last
+    )
+  end
 end

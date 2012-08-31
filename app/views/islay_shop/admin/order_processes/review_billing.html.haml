@@ -1,14 +1,14 @@
-- sub_header('Confirm Order Billing', @order.name)
+- prefixed_sub_header('Confirm Order Billing', @order.name)
 
 = resource_form(@order, :url => path(:bill, @order)) do |f|
   = content do
     = column(4, :class => 'billing') do
       %h3 Payment Details
       %p
-        %span.type.mastercard Mastercard
-        %span.number XXXXXX-XXXXX-34236
-        %span.name Luke M Sutton
-        %span.expiry Expiry: 13/2013
+        %span.type.mastercard --
+        %span.number= @order.credit_card_payment.number
+        %span.name= @order.credit_card_payment.full_name
+        %span.expiry Expiry: #{@order.credit_card_payment.expiry}
 
     = column(8, :class => 'totals') do
       %h3 Payment Due
@@ -28,4 +28,4 @@
 
   = footer do
     = link_to('Cancel', path(:order, :id => @order), :class => 'button cancel')
-    = save_button
+    = save_button('Bill')
