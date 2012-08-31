@@ -15,7 +15,11 @@
     = render :partial => 'islay_shop/admin/products/table'
 
   = footer do
-    = new_button('Product', :product, :to => @product_category)
-    = edit_button(@product_category)
-    = delete_button(@product_category)
-    = position_buttons
+  
+    .default-controls
+      = new_button('Product', :product, :to => @product_category)
+      = edit_button(@product_category)
+      = delete_button(@product_category)
+
+    .selection-controls
+      = position_buttons

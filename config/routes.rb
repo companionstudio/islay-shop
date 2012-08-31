@@ -15,8 +15,13 @@ Rails.application.routes.draw do
           resources :product_assets, :path => 'assets'
 
           resources :skus do
-            resources :sku_assets, :path => 'assets'
+            collection do
+              put 'position', :action => :update_position, :as => 'position'
+            end
+
             get :delete, :on => :member
+            
+            resources :sku_assets, :path => 'assets'
           end
         end
 

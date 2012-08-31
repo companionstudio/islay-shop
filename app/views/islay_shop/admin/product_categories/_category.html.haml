@@ -1,6 +1,5 @@
 %tr(class="enable-#{published} level-#{level}")
-  %td.select
-    = check_box_tag('ids[]', category.id, selected?(category.id))
+  %td.select= check_box_tag('ids[]', category.id, selected?(category.id), :class => 'toggle')
   %td.boolean
     %span(class="boolean #{category.published?}")
       %span= friendly_bool(category.published?)

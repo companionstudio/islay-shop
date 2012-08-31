@@ -54,9 +54,9 @@
       %tr
         %th Product/SKU
         %th Quantity
-        %th Price
-        %th Total
-        %th Discount
+        %th.currency Price
+        %th.currency Total
+        %th.currency Discount
 
     %tbody
       - @order.items.summary.each do |item|
@@ -65,11 +65,11 @@
             = link_to(item.sku_name, path(:product, :id => item.product_id), :class => 'title')
           %td
             %span.numeric= item.quantity
-          %td
+          %td.currency
             %span.numeric= item.formatted_price
-          %td
+          %td.currency
             %span.numeric= item.formatted_total
-          %td
+          %td.currency
             - if item.discounted?
               %span.numeric.discount #{item.formatted_discount} discount
             - else
@@ -79,9 +79,9 @@
       %tr
         %th(colspan=3)
           Product Total
-        %td
+        %td.currency
           %span.numeric= @order.formatted_product_total
-        %td
+        %td.currency
           - if @order.discounted_total?
             %span.numeric.discount #{@order.formatted_product_discount} discount
           - else
@@ -90,7 +90,7 @@
       %tr
         %th(colspan=3)
           Shipping
-        %td
+        %td.currency
           - if @order.free_shipping?
             FREE
           - else
@@ -98,10 +98,10 @@
         %td
           &nbsp;
 
-      %tr
+      %tr.total
         %th(colspan=3)
           Total
-        %td
+        %td.currency
           %span.numeric= @order.formatted_total
         %td
           &nbsp;
@@ -113,7 +113,7 @@
         %th.boolean Succeeded?
         %th Action
         %th.notes Notes
-        %th On
+        %th.meta On
 
     %tbody
       - @order.logs.summary.each do |log|
@@ -128,7 +128,7 @@
               = simple_format(log.notes)
             - else
               &nbsp;
-          %td
+          %td.meta
             %span.time= log.created_at
             by #{log.updater_name}
 

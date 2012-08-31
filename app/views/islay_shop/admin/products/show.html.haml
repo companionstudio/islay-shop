@@ -23,110 +23,121 @@
       %span.key Stock Level
       %span(class="value indicator #{@product.stock_warning? ? 'warning' : 'ok'}")
         = @product.stock_level_status.capitalize
+  .tab
+    %div.overview
+      = column(4, :class => 'asset-preview') do
+        %div.frame
+          - if @product.images.empty?
+            %span(class='no-preview image') &nbsp;
+          - else
+            = image_tag(@product.images.first.previews.url(:thumb))
 
-  %div.overview
-    = column(4, :class => 'asset-preview') do
-      %div.frame
-        - if @product.images.empty?
-          %span(class='no-preview image') &nbsp;
-        - else
-          = image_tag(@product.images.first.previews.url(:thumb))
+      = column(8, :class => 'product-description') do
+        %ul.key-value
 
-    = column(8, :class => 'product-description') do
-      %ul.key-value
+          - if @product.range
+            %li
+              %span.key Ranges
+              %span.value= @product.range.name
 
-        - if @product.range
           %li
-            %span.key Ranges
-            %span.value= @product.range.name
+            %span.key Description
+            %div.value
+              = simple_format(@product.description)
 
-        %li
-          %span.key Description
-          %div.value
-            = simple_format(@product.description)
+  .tab
+    = form_tag(path(:position, @product, :skus), :method => :put) do
+      %h3.inset SKUs
 
-  %h3.inset SKUs
+      %table.inset.sortable
+        %thead
+          %tr
+            %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+            %th.boolean Published
+            %th.boolean Status
+            %th SKU
+            %th.currency Price
+            %th.currency Batch Price
+            %th.meta.indicator Stock
 
-  %table.inset
-    %thead
-      %tr
-        %th.boolean Published
-        %th.boolean Status
-        %th SKU
-        %th.indicator Price
-        %th.indicator Batch Price
-        %th.indicator Stock
+        %tbody
+          - @product.skus.summary.each do |sku|
+            %tr
+              %td.select
+                = check_box_tag('ids[]', sku.id, selected?(sku.id), :class => 'toggle')
+              %td.boolean
+                = boolean_indicator(sku.published?)
+              %td.boolean
+                = sku_sale_status(sku)
+                
+              %td
+                %span.title= sku.short_desc
+                = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
+                - if sku.destroyable?
+                  = link_to('Delete', path(:delete, @product, sku), :class => 'delete')
+              %td.currency
+                %span= sku.formatted_price
+              %td.currency
+                - if sku.batch_pricing?
+                  %span #{sku.formatted_batch_price}/#{sku.batch_size}
+                - else
+                  &nbsp;
+              %td.meta.adjust
+                = link_to('Adjust stock', path(:stock_levels, :anchor => "sku-#{sku.id}"))
 
-    %tbody
-      - @product.skus.summary.each do |sku|
+      .table-footer
+        .selection-controls(colspan=7)
+          = position_buttons
+
+
+  .tab
+    %h3.inset Stock Logs
+
+    %table.inset
+      %thead
         %tr
-          %td.boolean
-            = boolean_indicator(sku.published?)
-          %td.boolean
-            = sku_sale_status(sku)
-            
-          %td
-            %span.title= sku.short_desc
-            = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
-            - if sku.destroyable?
-              = link_to('Delete', path(:delete, @product, sku), :class => 'delete')
-          %td.indicator
-            %span.indicator= sku.formatted_price
-          %td.indicator
-            - if sku.batch_pricing?
-              %span.indicator #{sku.formatted_batch_price}/#{sku.batch_size}
-            - else
-              &nbsp;
-          %td.indicator.adjust
-            = link_to('Adjust', path(:stock_levels, :anchor => "sku-#{sku.id}"), :class => 'button')
+          %th SKU
+          %th Action
+          %th Change
+          %th On
 
-  %h3.inset Stock Logs
+      %tbody
+        - @product.stock_logs.summary.each do |log|
+          %tr
+            %td
+              %span.title= log.short_desc
+            %td
+              = log.action.humanize
+            %td
+              = movement(log.before, log.after, log.direction)
+            %td.meta
+              %span.time= log.created_at
+              by #{log.creator_name}
 
-  %table.inset
-    %thead
-      %tr
-        %th SKU
-        %th Action
-        %th Change
-        %th On
+    %h3.inset Price Adjustments
 
-    %tbody
-      - @product.stock_logs.summary.each do |log|
+    %table.inset
+      %thead
         %tr
-          %td
-            %span.title= log.short_desc
-          %td
-            = log.action.humanize
-          %td
-            = movement(log.before, log.after, log.direction)
-          %td.meta
-            %span.time= log.created_at
-            by #{log.creator_name}
+          %th SKU
+          %th Change
+          %th On
 
-  %h3.inset Price Adjustments
-
-  %table.inset
-    %thead
-      %tr
-        %th SKU
-        %th Change
-        %th On
-
-    %tbody
-      - @product.price_logs.summary.each do |log|
-        %tr
-          %td
-            %span.title= log.short_desc
-          %td
-            - if log.price_moved?
-              = movement(log.formatted_price_before, log.formatted_price_after, log.price_direction, :name => 'Price')
-            - if log.batch_price_moved?
-              = movement(log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction, :name => 'Batch Price')
-            - if log.batch_size_moved?
-              = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
-          %td.meta
-            %span.time= log.created_at
-            by #{log.creator_name}
+      %tbody
+        - @product.price_logs.summary.each do |log|
+          %tr
+            %td
+              %span.title= log.short_desc
+            %td
+              - if log.price_moved?
+                = movement(log.formatted_price_before, log.formatted_price_after, log.price_direction, :name => 'Price')
+              - if log.batch_price_moved?
+                = movement(log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction, :name => 'Batch Price')
+              - if log.batch_size_moved?
+                = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
+            %td.meta
+              %span.time= log.created_at
+              by #{log.creator_name}
 
 = footer do
   = new_button('SKU', @product, :sku)
