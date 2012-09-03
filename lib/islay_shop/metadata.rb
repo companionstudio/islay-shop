@@ -131,7 +131,7 @@ module IslayShop
         end
 
         if opts[:values] and type != :foreign_key
-          values = opts[:values].is_a?(Hash) ? opts[:values].keys : opts[:values]
+          values = opts[:values].is_a?(Hash) ? opts[:values].values : opts[:values]
           @model.validates_inclusion_of(name, :in => values, :allow_nil => true)
         end
       end
