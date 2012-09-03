@@ -94,6 +94,16 @@ class Order < ActiveRecord::Base
   # Make sure the CC is also valid.
   validates_associated :credit_card_payment
 
+  after_initialize :initialize_totals
+
+  # This callback is used to initialize any totals for this order. Will only
+  # run for new records.
+  #
+  # @return nil
+  def initialize_totals
+    calculate_totals if new_record?
+  end
+
   # Used to track any items that have gone out of stock.
   #
   # @return Array<Sku>
@@ -169,50 +179,6 @@ class Order < ActiveRecord::Base
   # @return [String] JSON representation of order
   def dump
     to_json(DUMP_OPTS)
-  end
-
-  # Returns the shipping total for the order.
-  #
-  # @return Float
-  def shipping_total
-    self[:shipping_total] ||= calculate_shipping
-  end
-
-  # The shipping total without any discounts applied to it.
-  #
-  # @return Float
-  # @todo Actually implement it
-  def actual_shipping_total
-    self[:actual_shipping_total] = shipping_total
-  end
-
-  # This either returns the stored product total or it calculates it by summing
-  # the totals from each regular and discounted line item.
-  #
-  # @return [Integer] total value of 'purchasable' items in order
-  def product_total
-    self[:product_total] = items.map(&:total).sum
-  end
-
-  # The product totals without any discounts applied to the items.
-  #
-  # @return Float
-  def actual_product_total
-    self[:actual_product_total] = items.map(&:original_total).sum
-  end
-
-  # Calculates a total based on the product and shipping totals.
-  #
-  # @return Float
-  def total
-    self[:total] = (product_total + shipping_total) - discount
-  end
-
-  # Calculates a total based on the non-discounted product and shipping totals.
-  #
-  # @return Float
-  def actual_total
-    self[:actual_total] = actual_product_total + actual_shipping_total
   end
 
   # Provides a simplified representation of the items in an order, consolidating
@@ -318,14 +284,14 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def discounted_products?
-    actual_product_total > product_total
+    original_product_total > product_total
   end
 
   # The total discount applied to the products in an order.
   #
   # @return Float
   def product_discount
-    actual_product_total - product_total
+    original_product_total - product_total
   end
 
   # Discount formatted to a money string
@@ -339,12 +305,12 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def discounted_total?
-    actual_total > total
+    original_total > total
   end
 
   # The discount applied to the entire order.
   def total_discount
-    actual_total - total
+    original_total - total
   end
 
   # Discount formatted to a money string
@@ -445,13 +411,20 @@ class Order < ActiveRecord::Base
     @@shipping_calculator ||= self.shipping_calculator.to_s.classify.constantize
   end
 
-  # Forces the model to calculate the total, which in turn calculates the
-  # product and shipping totals.
+  # Calculate the shipping, product and order totals. This includes both the
+  # original and potentially discounted totals.
   #
-  # @return Float
+  # @return nil
   def calculate_totals
-    total
-    actual_total
+    self.shipping_total = self.original_shipping_total = calculate_shipping
+
+    self.original_product_total = items.map(&:original_total).sum
+    self.product_total = items.map(&:total).sum
+
+    self.original_total = original_product_total + original_shipping_total
+    self.total = product_total + shipping_total
+
+    nil
   end
 
   check_for_extensions

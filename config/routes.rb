@@ -98,16 +98,6 @@ Rails.application.routes.draw do
     end # namespace
 
     namespace :public, :path => 'order' do
-            scope :path => 'catalogue', :controller => 'catalogue' do
-        get '/',              :action => 'index',       :as => 'catalogue'
-        get '/categories',    :action => 'categories',  :as => 'product_categories'
-        get '/category/:id',  :action => 'category',    :as => 'product_category'
-        get '/ranges',        :action => 'ranges',      :as => 'product_ranges'
-        get '/range/:id',     :action => 'range',       :as => 'product_range'
-        get '/products',      :action => 'products',    :as => 'products'
-        get '/product/:id',   :action => 'product',     :as => 'product'
-      end
-
       scope :path => 'basket', :controller => 'basket' do
         get     '/',                :action => 'contents',        :as => 'order_basket'
         post    '/add',             :action => 'add',             :as => 'order_basket_add'

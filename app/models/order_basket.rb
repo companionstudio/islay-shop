@@ -41,8 +41,11 @@ class OrderBasket < Order
   # @param Integer quantity
   #
   # @returns OrderItem
-  def increment_item(sku_id, quantity)
-    items.find_or_initialize(sku_id).tap {|i| i.increment_quantity(quantity.to_i)}
+  def increment_item(sku_id, quantity, recalculate = true)
+    items.find_or_initialize(sku_id).tap do |i|
+      i.increment_quantity(quantity.to_i)
+      calculate_totals if recalculate
+    end
   end
 
   # Updates the quantity for an item, specified by it's sku_id. A quantity of 0
@@ -52,11 +55,12 @@ class OrderBasket < Order
   # @param [Integer, String] quantity
   #
   # @returns OrderItem
-  def update_item(sku_id, quantity)
+  def update_item(sku_id, quantity, recalculate = true)
     n = quantity.to_i
-    item = items.find_or_initialize(sku_id)
-    n == 0 ? items.delete(item) : item.update_quantity(n)
-    item
+    items.find_or_initialize(sku_id).tap do |i|
+      n == 0 ? items.delete(i) : i.update_quantity(n)
+      calculate_totals if recalculate
+    end
   end
 
   # This is a shortcut for updating multiple items in one go. It replaces any
@@ -70,9 +74,9 @@ class OrderBasket < Order
     # we are constructing an array or booleans which indicate an error on the
     # items. We then reduce this to a single boolean using #any?, thus indicating
     # an error on at least one item.
-    updates.map do |i|
-      !update_item(i[:sku_id], i[:quantity]).errors.blank?
-    end.any?
+    result = updates.map {|i| !update_item(i[:sku_id], i[:quantity], false).errors.blank? }.any?
+    calculate_totals
+    result
   end
 
   # Removes the a regular item specified by it's sku_id.
