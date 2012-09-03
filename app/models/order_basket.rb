@@ -36,6 +36,18 @@ class OrderBasket < Order
     "#{Time.now.strftime('%y%m')}-#{SecureRandom.hex(3).upcase}"
   end
 
+  # Updates the details of the order — contact, addresses etc. Also recalculates
+  # the order totals, since shipping calculators might rely on any of the
+  # details in here.
+  #
+  # @return nil
+  def update_details(details)
+    self.attributes = details
+    calculate_totals
+
+    nil
+  end
+
   # Increments the quantity for an item, specified by it's sku_id.
   #
   # @param [Integer, String] sku_id

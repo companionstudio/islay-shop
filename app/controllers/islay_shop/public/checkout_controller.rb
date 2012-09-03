@@ -5,9 +5,9 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   def update
-    @order.attributes = params[:order_basket]
+    @order.update_details(params[:order_basket])
+    session['order'] = @order.dump
     if @order.valid?
-      session['order'] = @order.dump
       redirect_to path(:order_checkout_payment)
     else
       render :details
