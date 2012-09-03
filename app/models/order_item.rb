@@ -18,7 +18,7 @@ class OrderItem < ActiveRecord::Base
   #
   # @return nil
   def initalize_totals
-    if new_record? and !sku_id.blank and !quantity.blank?
+    if new_record? and !sku_id.blank? and !quantity.blank?
       calculate_prices_and_discounts
     end
   end
