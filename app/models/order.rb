@@ -343,9 +343,13 @@ class Order < ActiveRecord::Base
 
   # Returns a formatted string of the order shipping total.
   #
-  # @return String
+  # @return [String, nil]
   def formatted_shipping_total
-    format_money(shipping_total)
+    if shipping_total == 0
+      'Free'
+    elsif shipping_total > 0
+      format_money(shipping_total)
+    end
   end
 
   # Formats a float into a monentary formatted string i.e. sticks a '$' in the
@@ -402,7 +406,7 @@ class Order < ActiveRecord::Base
   # @return [Float, nil]
   def calculate_shipping
     calculator = self.class.shipping_calculator_class.new
-    calculator.calculate(self) if caculator.calculate?(self)
+    calculator.calculate(self) if calculator.calculate?(self)
   end
 
   # Returns the configured shipping calculator class.
