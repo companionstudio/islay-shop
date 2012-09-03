@@ -3,8 +3,7 @@ class CheckoutCell < Cell::Rails
   MONTH_NAMES = %w(January Febuary March April May June July August September October November December).freeze
   MONTHS = MONTH_NAMES.each_with_index.map do |m, i|
     index = i + 1
-    month = index < 10 ? "0#{index}" : index
-    ["#{month} - #{m}", month]
+    ["#{index} - #{m}", index]
   end.freeze
 
   def basket(order)

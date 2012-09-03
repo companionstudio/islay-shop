@@ -1,2 +1,4 @@
-- sub_header(breadcrumb_header(@product, "New SKU #{@sku.short_desc}"))
+- sub_header(@product.category.name, path(@product.category))
+- sub_header(@product.name, path(@product))
+- sub_header("New SKU")
 = render :partial => 'form'

@@ -1,5 +1,5 @@
-- ancestor_category_links(@sku)
-- sub_header(@sku.product.name)
-- sub_header("Edit SKU #{@sku.short_desc}")
+- sub_header(@product.category.name, path(@product.category))
+- sub_header(@product.name, path(@product))
+- prefixed_sub_header("Edit SKU", @sku.short_desc)
 
 = render :partial => 'form'
