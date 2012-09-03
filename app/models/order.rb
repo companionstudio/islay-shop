@@ -399,9 +399,10 @@ class Order < ActiveRecord::Base
 
   # Calculates the shipping for the order.
   #
-  # @return Float
+  # @return [Float, nil]
   def calculate_shipping
-    self.class.shipping_calculator_class.new.calculate(self)
+    calculator = self.class.shipping_calculator_class.new
+    calculator.calculate(self) if caculator.calculate?(self)
   end
 
   # Returns the configured shipping calculator class.
