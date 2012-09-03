@@ -8,6 +8,7 @@ class OrderBasket < Order
     if credit_card_payment.valid? and credit_card_payment.authorize!
       skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
       Sku.purchase_stock!(skus)
+      IslayShop::OrderMailer.thank_you(self).deliver
       next!("Authorizing #{formatted_total}")
     else
       fail!

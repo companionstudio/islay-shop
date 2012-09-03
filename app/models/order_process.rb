@@ -27,6 +27,7 @@ class OrderProcess < Order
   def process_cancellation!
     if credit_card_payment.authorized?
       return_stock
+      IslayShop::OrderMailer.cancelled(self).deliver
       next!("Funds were not captured; authorization must be allowed to expire")
     elsif credit_card_payment.captured? and credit_card_payment.credit!
       return_stock
@@ -45,6 +46,7 @@ class OrderProcess < Order
   end
 
   def process_shipping!
+    IslayShop::OrderMailer.shipped(self).deliver
     next!
   end
 
