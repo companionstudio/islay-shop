@@ -426,8 +426,17 @@ class Order < ActiveRecord::Base
     self.original_product_total = items.map(&:original_total).sum
     self.product_total = items.map(&:total).sum
 
-    self.original_total = original_product_total + original_shipping_total
-    self.total = product_total + shipping_total
+    self.original_total = if self.original_shipping_total
+      original_product_total + original_shipping_total
+    else
+      original_product_total
+    end
+
+    self.total = if self.shipping_total
+      product_total + shipping_total
+    else
+      product_total
+    end
 
     nil
   end
