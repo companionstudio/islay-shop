@@ -1,14 +1,27 @@
 class OrderItem < ActiveRecord::Base
+  # Turn off single-table inheritance
+  self.inheritance_column = :_type_disabled
+
   belongs_to :promotion
   belongs_to :order
   belongs_to :sku
-
-  before_validation :store_actual_price_and_total, :store_price_and_total, :store_discount
 
   attr_accessible :sku_id, :quantity
 
   validate :validate_stock_level
   validate :validate_purchase_limit
+
+  after_initialize :initalize_totals
+
+  # This callback is used to initialize any totals for this item. Will only
+  # run if both a sku_id and quantity is specified and it is a new record.
+  #
+  # @return nil
+  def initalize_totals
+    if new_record? and !sku_id.blank and !quantity.blank?
+      calculate_prices_and_discounts
+    end
+  end
 
   # Used to count the total number of individual SKUs. Most useful when called
   # via an association. In fact, that's probably the only time you should use it.
@@ -24,7 +37,7 @@ class OrderItem < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      order_items.quantity, order_items.price,
+      order_items.quantity, order_items.adjusted_price,
       order_items.total, order_items.discount, skus.product_id,
       (SELECT name FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)
@@ -37,6 +50,7 @@ class OrderItem < ActiveRecord::Base
   # @returns self
   def update_quantity(amount)
     self.quantity = amount
+    calculate_prices_and_discounts
     valid?
     self
   end
@@ -48,6 +62,7 @@ class OrderItem < ActiveRecord::Base
   # @returns self
   def increment_quantity(amount)
     self.quantity = quantity ? quantity + amount : amount
+    calculate_prices_and_discounts
     valid?
     self
   end
@@ -59,11 +74,11 @@ class OrderItem < ActiveRecord::Base
     discount > 0
   end
 
-  # Either returns the total, or generates it based on the current quantity.
+  # Either returns the total or returns the default of 0.0
   #
   # @return Float
   def total
-    self[:total] ||= sku.price * quantity
+    self[:total] || 0.0
   end
 
   # Returns a formatted string of the item total.
@@ -77,7 +92,7 @@ class OrderItem < ActiveRecord::Base
   #
   # @return String
   def formatted_price
-    format_money(price)
+    format_money(adjusted_price)
   end
 
   # Returns a formatted string of the item discount.
@@ -88,6 +103,32 @@ class OrderItem < ActiveRecord::Base
   end
 
   private
+
+  # This method is called when the item is initialized and every time the
+  # quantity is adjusted. It's job is to determing what type of item this is
+  # and calculate and store the various prices, totals and discounts.
+  #
+  # @return nil
+  def calculate_prices_and_discounts
+    self.discount = 0
+    self.adjusted_price = self.original_price = sku.price
+
+    if sku.batch_pricing? and quantity >= sku.batch_size
+      self.type = 'batched'
+      self.batch_price = sku.batch_price
+      self.batch_size  = sku.batch_size
+
+      batches = (quantity / batch_size).to_i
+      remainder = quantity % batch_size
+
+      self.total = self.original_total = (remainder * adjusted_price) + (batches * batch_price)
+    else
+      self.type = 'regular'
+      self.total = self.original_total = adjusted_price * quantity
+    end
+
+    nil
+  end
 
   # Checks to see that the current quantity for the item doesn't exceed the
   # amount actually in stock.
@@ -113,19 +154,5 @@ class OrderItem < ActiveRecord::Base
   # @return String
   def format_money(value)
     "$%.2f" % value
-  end
-
-  def store_actual_price_and_total
-    self.actual_price = sku.price
-    self.actual_total = sku.price * quantity
-  end
-
-  def store_price_and_total
-    self.price = actual_price if price.blank?
-    self.total = actual_total if total.blank?
-  end
-
-  def store_discount
-    self.discount = actual_total - total
   end
 end

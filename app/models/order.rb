@@ -198,7 +198,7 @@ class Order < ActiveRecord::Base
   #
   # @return Float
   def actual_product_total
-    self[:actual_product_total] = items.map(&:actual_total).sum
+    self[:actual_product_total] = items.map(&:original_total).sum
   end
 
   # Calculates a total based on the product and shipping totals.
