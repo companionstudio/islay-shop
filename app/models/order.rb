@@ -345,10 +345,12 @@ class Order < ActiveRecord::Base
   #
   # @return [String, nil]
   def formatted_shipping_total
-    if shipping_total == 0
-      'Free'
-    elsif shipping_total > 0
-      format_money(shipping_total)
+    if shipping_total == nil
+      if shipping_total == 0
+        'Free'
+      elsif shipping_total > 0
+        format_money(shipping_total)
+      end
     end
   end
 
