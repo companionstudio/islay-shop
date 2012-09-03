@@ -79,7 +79,7 @@ class Order < ActiveRecord::Base
   before_save :calculate_totals
   track_user_edits
 
-  validations_from_schema :except => [:reference]
+  validations_from_schema :except => [:reference, :shipping_total, :original_shipping_total]
 
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?
@@ -407,8 +407,7 @@ class Order < ActiveRecord::Base
   #
   # @return [Float, nil]
   def calculate_shipping
-    calculator = self.class.shipping_calculator_class.new
-    calculator.calculate(self) if calculator.calculate?(self)
+    self.class.shipping_calculator_class.new.calculate(self)
   end
 
   # Returns the configured shipping calculator class.
@@ -428,13 +427,13 @@ class Order < ActiveRecord::Base
     self.original_product_total = items.map(&:original_total).sum
     self.product_total = items.map(&:total).sum
 
-    self.original_total = if self.original_shipping_total
+    self.original_total = if original_shipping_total
       original_product_total + original_shipping_total
     else
       original_product_total
     end
 
-    self.total = if self.shipping_total
+    self.total = if shipping_total
       product_total + shipping_total
     else
       product_total
