@@ -2,7 +2,7 @@ module IslayShop
   module Admin
     class ProductCategoriesController < IslayShop::Admin::ApplicationController
       helper CatalogueHelper
-      
+
       resourceful :product_category
       header 'Shop'
       nav 'islay_shop/admin/shop/nav'
@@ -17,7 +17,11 @@ module IslayShop
 
       def show
         super
-        @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
+        if @product_category.products?
+          @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
+        elsif @product_category.children?
+          @product_categories = @product_category.children
+        end
       end
 
       private

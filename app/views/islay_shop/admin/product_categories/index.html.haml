@@ -4,4 +4,13 @@
 - filter_nav(:product_categories, 'Published', 'published')
 - filter_nav(:product_categories, 'Unpublished', 'unpublished')
 
-= render :partial => 'table'
+= form_tag(path(:position, :product_categories), :method => :put) do
+  = content do
+    = render :partial => 'table'
+
+  = footer do
+    .default-controls
+      = new_button('Category', :product_category)
+
+    .selection-controls
+      = position_buttons

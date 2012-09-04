@@ -24,6 +24,30 @@ class ProductCategory < ActiveRecord::Base
     where(:published => true, :product_category_id => nil).order('product_categories.position ASC')
   end
 
+  # Checks to see if the category has either products of categories assigned to
+  # it. If it is empty, this means the users can start assigning either — but
+  # not both — to it.
+  #
+  # @return Boolean
+  def empty?
+    products.empty? and children.empty?
+  end
+
+  # Checks to see if this category has products assigned to it, in which case
+  # it cannot have other categories added to it.
+  #
+  # @return Boolean
+  def products?
+    !products.empty?
+  end
+
+  # Checks for any child categories.
+  #
+  # @return Boolean
+  def children?
+    !children.empty?
+  end
+
   # Returns all the ancestory categories in descending order
   #
   # TODO: Look at doing this at the DB level - important for deep hierarchies.

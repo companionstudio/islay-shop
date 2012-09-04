@@ -1,20 +1,11 @@
-= form_tag(path(:position, :product_categories), :method => :put) do
-  = content do
-    %table(cellpadding=0 cellspacing=0 class='sortable')
-      %thead
-        %tr
-          %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
-          %th.boolean Published
-          %th Category
-          %th Stock Level
-          %th.meta Updated At
+%table(cellpadding=0 cellspacing=0 class='sortable')
+  %thead
+    %tr
+      %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+      %th.boolean Published
+      %th Category
+      %th Stock Level
+      %th.meta Updated At
 
-      %tbody
-        = render :partial => 'category', :collection => @product_categories, :locals => {:level => 0, :published => true}
-
-  = footer do
-    .default-controls
-      = new_button('Category', :product_category)
-
-    .selection-controls
-      = position_buttons
+  %tbody
+    = render :partial => 'category', :collection => @product_categories, :locals => {:level => 0, :published => true}
