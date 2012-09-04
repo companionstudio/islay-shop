@@ -3,7 +3,7 @@
     %tr
       %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
       %th.boolean Published
-      %th.boolean For Sale
+      %th Status
       %th Product
       %th.indicator Stock Level
       %th.meta Updated At
@@ -15,9 +15,8 @@
         %td.boolean
           %span(class="boolean #{product.published?}")
             %span= friendly_bool(product.published?)
-        %td.boolean
-          %span(class="boolean #{product.for_sale?}")
-            %span= friendly_bool(product.for_sale?)
+        %td
+          %span.indicator= product.status.humanize
         %td
           = link_to(product.name, path(product), :class => 'title')
           %span.summary= product.skus_summary
