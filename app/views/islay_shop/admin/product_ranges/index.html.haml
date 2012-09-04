@@ -1,22 +1,29 @@
 - sub_header('Product Ranges')
 
-= content do
-  %table(cellpadding=0 cellspacing=0)
-    %thead
-      %tr
-        %th.boolean Published
-        %th Range
-        %th Updated At
-    %tbody
-      - @product_ranges.each do |range|
-        %tr
-          %td.boolean
-            %span.boolean.true
-              %span Yes
-          %td
-            = link_to(range.name, path(range), :class => 'title')
-          %td
-            %span.time= range.updated_at
+- if @product_ranges.empty?
+  = content do
+    %p#placeholder
+      There are no ranges yet; add a
+      = link_to('new range', path(:new, :product_range))
 
-= footer do
-  = new_button('Range', :product_range)
+- else
+  = content do
+    %table(cellpadding=0 cellspacing=0)
+      %thead
+        %tr
+          %th.boolean Published
+          %th Range
+          %th Updated At
+      %tbody
+        - @product_ranges.each do |range|
+          %tr
+            %td.boolean
+              %span.boolean.true
+                %span Yes
+            %td
+              = link_to(range.name, path(range), :class => 'title')
+            %td
+              %span.time= range.updated_at
+
+  = footer do
+    = new_button('Range', :product_range)
