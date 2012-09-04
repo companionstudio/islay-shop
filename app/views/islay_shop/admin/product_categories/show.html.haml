@@ -11,14 +11,16 @@
       = link_to('category', path(:new, :product_category, :to => @product_category))
       here
 
+  = footer do
+    = new_button('Product', :product, :to => @product_category)
+    = new_button('Category', :product_category, :to => @product_category)
+    = edit_button(@product_category)
+    = delete_button(@product_category)
+
 - elsif @product_category.products?
   - filter_nav(:product_category, 'All')
   - filter_nav(:product_category, 'Published', 'published')
   - filter_nav(:product_category, 'Unpublished', 'unpublished')
-
-  - sort_nav(:product_category, 'Name')
-  - sort_nav(:product_category, 'Created', 'created_at')
-  - sort_nav(:product_category, 'Updated', 'updated_at')
 
   = form_tag(path(:position, :products), :method => :put) do
     = content do
@@ -41,6 +43,8 @@
     = footer do
       .default-controls
         = new_button('Category', :product_category)
+        = edit_button(@product_category)
+        = delete_button(@product_category)
 
       .selection-controls
         = position_buttons
