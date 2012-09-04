@@ -28,11 +28,16 @@ module IslayShop
 
       def dependencies
         @assets = ImageAsset.order('name')
-        @product_categories = if params[:id]
-          ProductCategory.where("product_category_id IS NULL AND slug != ?", params[:id]).order('position')
-        else
-          ProductCategory.where("product_category_id IS NULL").order('position')
+        @product_categories = category_tree([], ProductCategory.no_products.top_level.order('position'))
+      end
+
+      def category_tree(acc, categories, prefix = '')
+        categories.each do |c|
+          acc << [(prefix + c.name).html_safe, c.id]
+          category_tree(acc, c.children, prefix + '&nbsp;&nbsp;') if c.children?
         end
+
+        acc
       end
     end
   end
