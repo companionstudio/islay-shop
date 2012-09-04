@@ -34,9 +34,6 @@ class Product < ActiveRecord::Base
   track_user_edits
   validations_from_schema
 
-  accepts_nested_attributes_for :skus,    :allow_destroy => true, :reject_if => :new_sku?
-  validates_associated :skus
-
   before_save :store_published_at
 
   def self.newest
