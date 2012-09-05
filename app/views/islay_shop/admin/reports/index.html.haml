@@ -4,6 +4,46 @@
 = content(:class => 'inset') do
   %div.cell
     %h3 Order Volume
+    %p.total
+      = @totals['this_volume']
+    %p(class="move-#{@totals['volume_movement']}")
+      #{@totals['volume_movement'].humanize} from #{@totals['previous_volume']}
+    %p.average
+      Average: #{@totals['average_volume']}
+    %p.best
+      Best: #{@totals['best_volume']} for #{@totals['best_volume_month']}
+
+  %div.cell
+    %h3 Revenue
+    %p.total
+      = @totals['this_revenue']
+    %p(class="move-#{@totals['revenue_movement']}")
+      #{@totals['revenue_movement'].humanize} from #{@totals['previous_revenue']}
+    %p.average
+      Average: #{@totals['average_revenue']}
+    %p.best
+      Best: #{@totals['best_revenue']} for #{@totals['best_revenue_month']}
+
+  %div.cell
+    %h3 Average Order Value
+    %p.total
+      = @totals['this_average_value']
+    %p(class="move-#{@totals['average_value_movement']}")
+      #{@totals['average_value_movement'].humanize} from #{@totals['previous_average_value']}
+    %p.average
+      Average: #{@totals['average_value']}
+    %p.best
+      Best: #{@totals['best_average_value']} for #{@totals['best_average_value_month']}
+
+  %div.cell
+    %h3 Total Orders
+    %p.total= @totals['total_volume']
+
+    %h3 Total Revenue
+    %p.total= @totals['total_revenue']
+
+  %div.cell
+    %h3 Order Volume
 
     %table
       %thead
