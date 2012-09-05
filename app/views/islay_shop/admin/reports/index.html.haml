@@ -1,3 +1,63 @@
 - render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop Overview')
 
+= content(:class => 'inset') do
+  %div.cell
+    %h3 Order Volume
 
+    %table
+      %thead
+        %tr
+          %th Day
+          %th Order Value
+          %th Order Volume
+          %th SKU Volume
+
+      %tbody
+        - @series.each do |entry|
+          %tr
+            %th= entry['day']
+            %td= entry['value']
+            %td= entry['volume']
+            %td= entry['sku_volume']
+
+  %div.cell
+    %h3 SKUs by Revenue
+
+    %table
+      %thead
+        %tr
+          %th.rank Rank
+          %th SKU
+          %th Revenue
+          %th Movement
+
+      %tbody
+        - @top_ten[:revenue].each do |entry|
+          %tr
+            %td.rank= entry['position']
+            %td= entry['product_name']
+            %td= entry['revenue']
+            %td
+              = entry['dir']
+              = entry['shift']
+
+    %h3 SKUs by Volume
+
+    %table
+      %thead
+        %tr
+          %th.rank Rank
+          %th SKU
+          %th Volume
+          %th Movement
+
+      %tbody
+        - @top_ten[:volume].each do |entry|
+          %tr
+            %td.rank= entry['position']
+            %td= entry['product_name']
+            %td= entry['volume']
+            %td
+              = entry['dir']
+              = entry['shift']
