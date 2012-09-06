@@ -2,105 +2,105 @@
 - sub_header('Shop Overview')
 
 = content(:class => 'inset') do
-  %div#test
-    &nbsp;
+  = column(8) do
+    %div.report-cell
+      %h3 Order Volume
 
-  %div.cell
-    %h3 Order Volume
-    %p.total
-      = @totals['this_volume']
-    %p(class="move-#{@totals['volume_movement']}")
-      #{@totals['volume_movement'].humanize} from #{@totals['previous_volume']}
-    %p.average
-      Average: #{@totals['average_volume']}
-    %p.best
-      Best: #{@totals['best_volume']} for #{@totals['best_volume_month']}
-
-  %div.cell
-    %h3 Revenue
-    %p.total
-      = @totals['this_revenue']
-    %p(class="move-#{@totals['revenue_movement']}")
-      #{@totals['revenue_movement'].humanize} from #{@totals['previous_revenue']}
-    %p.average
-      Average: #{@totals['average_revenue']}
-    %p.best
-      Best: #{@totals['best_revenue']} for #{@totals['best_revenue_month']}
-
-  %div.cell
-    %h3 Average Order Value
-    %p.total
-      = @totals['this_average_value']
-    %p(class="move-#{@totals['average_value_movement']}")
-      #{@totals['average_value_movement'].humanize} from #{@totals['previous_average_value']}
-    %p.average
-      Average: #{@totals['average_value']}
-    %p.best
-      Best: #{@totals['best_average_value']} for #{@totals['best_average_value_month']}
-
-  %div.cell
-    %h3 Total Orders
-    %p.total= @totals['total_volume']
-
-    %h3 Total Revenue
-    %p.total= @totals['total_revenue']
-
-  %div.cell
-    %h3 Order Volume
-
-    %table.series-graph
-      %thead
-        %tr
-          %th Day
-          %th Order Value
-          %th Order Volume
-          %th SKU Volume
-
-      %tbody
-        - @series.each do |entry|
+      %table.series-graph
+        %thead
           %tr
-            %th= entry['day']
-            %td= entry['value']
-            %td= entry['volume']
-            %td= entry['sku_volume']
+            %th Day
+            %th Order Value
+            %th Order Volume
+            %th SKU Volume
 
-  %div.cell
-    %h3 SKUs by Revenue
+        %tbody
+          - @series.each do |entry|
+            %tr
+              %th= entry['day']
+              %td= entry['value']
+              %td= entry['volume']
+              %td= entry['sku_volume']
 
-    %table
-      %thead
-        %tr
-          %th.rank Rank
-          %th SKU
-          %th Revenue
-          %th Movement
+    %div.report-cell
+      %h3 SKUs by Revenue
 
-      %tbody
-        - @top_ten[:revenue].each do |entry|
+      %table
+        %thead
           %tr
-            %td.rank= entry['position']
-            %td= entry['product_name']
-            %td= entry['revenue']
-            %td
-              = entry['dir']
+            %th.rank Rank
+            %th SKU
+            %th Revenue
+            %th Movement
+
+        %tbody
+          - @top_ten[:revenue].each do |entry|
+            %tr
+              %td.rank= entry['position']
+              %td= entry['product_name']
+              %td= entry['revenue']
+              %td
+                = entry['dir']
+                = entry['shift']
+
+      %h3 SKUs by Volume
+
+      %table
+        %thead
+          %tr
+            %th.rank Rank
+            %th SKU
+            %th Volume
+            %th Movement
+
+        %tbody
+          - @top_ten[:volume].each do |entry|
+            %tr
+              %td.rank= entry['position']
+              %td= entry['product_name']
+              %td= entry['volume']
+              %td
+                = entry['dir']
               = entry['shift']
 
-    %h3 SKUs by Volume
+  = column(4) do
+    %div.report-cell.total
+      %h3 Order Volume
+      %p.total
+        = @totals['this_volume']
+      %p(class="move-#{@totals['volume_movement']}")
+        #{@totals['volume_movement'].humanize} from #{@totals['previous_volume']}
+      %p.average
+        Average: #{@totals['average_volume']}
+      %p.best
+        Best: #{@totals['best_volume']} for #{format_month(@totals['best_volume_month'])}
 
-    %table
-      %thead
-        %tr
-          %th.rank Rank
-          %th SKU
-          %th Volume
-          %th Movement
+    %div.report-cell.total
+      %h3 Revenue
+      %p.total
+        = format_money(@totals['this_revenue'])
+      %p(class="move-#{@totals['revenue_movement']}")
+        #{@totals['revenue_movement'].humanize} from #{format_money(@totals['previous_revenue'])}
+      %p.average
+        Average: #{format_money(@totals['average_revenue'])}
+      %p.best
+        Best: #{format_money(@totals['best_revenue'])} for #{format_month(@totals['best_revenue_month'])}
 
-      %tbody
-        - @top_ten[:volume].each do |entry|
-          %tr
-            %td.rank= entry['position']
-            %td= entry['product_name']
-            %td= entry['volume']
-            %td
-              = entry['dir']
-              = entry['shift']
+    %div.report-cell.total
+      %h3 Average Order Value
+      %p.total
+        = format_money(@totals['this_average_value'])
+      %p(class="move-#{@totals['average_value_movement']}")
+        #{@totals['average_value_movement'].humanize} from #{format_money(@totals['previous_average_value'])}
+      %p.average
+        Average: #{format_money(@totals['average_value'])}
+      %p.best
+        Best: #{format_money(@totals['best_average_value'])} for #{format_month(@totals['best_average_value_month'])}
+
+    %div.report-cell.total
+      %h3 Total Orders
+      %p.total= @totals['total_volume']
+
+    %div.report-cell.total
+      %h3 Total Revenue
+      %p.total= format_money(@totals['total_revenue'])

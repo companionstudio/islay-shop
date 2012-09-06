@@ -139,9 +139,9 @@ class OrderOverviewReport < Report
         volume AS this_volume,
         revenue AS this_revenue,
         average_value AS this_average_value,
-        COALESCE((SELECT volume FROM previous), 0) AS previous_volume,
-        COALESCE((SELECT revenue FROM previous), 0) AS previous_revenue,
-        COALESCE((SELECT average_value FROM previous), 0) AS previous_average_value
+        (SELECT volume FROM previous) AS previous_volume,
+        (SELECT revenue FROM previous) AS previous_revenue,
+        (SELECT average_value FROM previous) AS previous_average_value
       FROM totals
       WHERE within_this('month', month)
     ) AS os
