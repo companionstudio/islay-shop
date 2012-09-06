@@ -13,7 +13,7 @@ class OrderOverviewReport < Report
   #
   # @return Array<Hash>
   def self.series
-    days = (1..Time.days_in_month(Time.now.month)).to_a
+    days = (1..Time.now.month).to_a
     values = Hash[select_all(SERIES).map {|v| [v['day'].to_i, v]}]
     days.map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => '0', 'sku_volume' => 0}}
   end

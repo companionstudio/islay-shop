@@ -2,6 +2,9 @@
 - sub_header('Shop Overview')
 
 = content(:class => 'inset') do
+  %div#test
+    &nbsp;
+
   %div.cell
     %h3 Order Volume
     %p.total
@@ -45,7 +48,7 @@
   %div.cell
     %h3 Order Volume
 
-    %table
+    %table.series-graph
       %thead
         %tr
           %th Day

@@ -2,7 +2,7 @@ Islay::Engine.extensions.register do |e|
   e.namespace :islay_shop
 
   e.admin_styles true
-  e.admin_scripts false
+  e.admin_scripts true
 
   # Navigation
   e.nav_entry('Products', :catalogue)
