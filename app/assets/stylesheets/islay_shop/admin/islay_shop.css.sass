@@ -309,10 +309,47 @@ span.indicator
   float: left
 
 .report-cell.total
-  .total
-    font-size: 3.5em
-    font-family: $alternate-font-family
-    text-align: center
+  p
     width: 100%
     float: left
+
+  .total
+    font-size: 4.5em
+    font-family: $alternate-font-family
+    color: $dark-grey
+    text-align: center
+
+  .move-up,
+  .move-down
+    text-align: center
+    margin: 0.4em 0 1em 0
+
+    &:after
+      font-family: Icons
+      font-size: 1.4em
+
+  .move-up
+    color: $positive-color
+
+    &:after
+      content: "\f0d8"
+
+  .move-down
+    color: $negative-color
+
+    &:after
+      content: "\f0d7"
+
+  .average,
+  .best,
+  .since
+    border-top: 0.1em dashed $light-grey
+    font-size: 1.2em
+    text-indent: 1em
+    color: $dark-grey
+    padding: 0.6em 0
+
+  .since
+    margin-top: 1em
+
 

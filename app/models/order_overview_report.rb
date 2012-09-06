@@ -132,7 +132,8 @@ class OrderOverviewReport < Report
       (SELECT SUM(revenue) FROM totals) AS total_revenue,
       (SELECT SUM(revenue) / SUM(volume) FROM totals) AS average_revenue,
       (SELECT SUM(volume) / COUNT(totals.*) FROM totals)::integer AS average_volume,
-      (SELECT SUM(total) / COUNT(orders) FROM orders WHERE is_revenue(status)) AS average_value
+      (SELECT SUM(total) / COUNT(orders) FROM orders WHERE is_revenue(status)) AS average_value,
+      (SELECT created_at FROM orders WHERE is_revenue(status) ORDER BY created_at ASC LIMIT 1) AS first_order
     FROM (
       SELECT
         month AS this_month,
