@@ -1,41 +1,36 @@
-//= require ../../vendor/d3.min
-//= require ../../vendor/d3.layout.min
-//= require ../../vendor/rickshaw
+//= require ../../vendor/raphael-min
+//= require ../../vendor/g.raphael-min
+//= require ../../vendor/g.pie-min
+//= require ../../vendor/g.line-min
 
 var IslayShop = {};
 
-
+/* -------------------------------------------------------------------------- */
+/* LINE GRAPH
+/* Wraps gRaphael line graphs. Makes it easier to render.
+/* -------------------------------------------------------------------------- */
 IslayShop.LineGraph = Backbone.View.extend({
   className: 'graph',
 
   initialize: function() {
-    this.graph = new Rickshaw.Graph({
-      width: 500,
-      height: 300,
-      renderer: 'line',
-      element: this.el,
-      series: [{color: this.options.color, data: this.options.values}]
-    });
-
-    this.yAxis = new Rickshaw.Graph.Axis.Y({graph: this.graph});
-    var time = new Rickshaw.Fixtures.Time();
-    var days = time.unit('day');
-    this.xAxis = new Rickshaw.Graph.Axis.Time({
-      graph: this.graph,
-      timeUnit: days
-    });
-
-    var hoverDetail = new Rickshaw.Graph.HoverDetail({
-      graph: this.graph,
-      formatter: function(series, x, y) {
-        return y + ' ' + x;
-      }
-    });
+    this.x = this.options.values.x;
+    this.y = this.options.values.y;
+    this.xLabels = this.options.values.xLabels;
   },
 
   render: function() {
-    this.graph.render();
+    this.paper = Raphael(this.el);
+
+    var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10};
+    this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
+    if (this.xLabels) {this.renderXLabels(this.xLabels)};
+
     return this;
+  },
+
+  renderXLabels: function(labels) {
+    var els = this.line.axis[0].text.items;
+    _.each(labels, function(label, i) {els[i].attr({text: label});});
   }
 });
 
@@ -46,34 +41,27 @@ IslayShop.SeriesGraph = Backbone.View.extend({
   className: 'series-graph',
 
   initialize: function() {
-    var value = [],
-        volume = [],
-        sku_volume = [];
+    var value = {x: [], y: [], xLabels: []};
 
     _.each(this.options.table.find('tbody tr'), function(el, i) {
       var values = _.map($(el).find('td:not(:first-child)'), function(el) {
         return parseInt($(el).text());
       })
 
-      value.push({x: i + 1, y: values[0]});
-      volume.push({x: i, y: values[1]});
-      sku_volume.push({x: i, y: values[2]});
+      value.x.push(i);
+      value.xLabels.push(i + 1);
+      value.y.push(values[0]);
     });
 
     this.valueGraph = new IslayShop.LineGraph({color: 'blue', values: value});
-    // this.volumeGraph = new IslayShop.LineGraph({color: 'green', values: volume});
-    // this.skuVolumeGraph = new IslayShop.LineGraph({color: 'red', values: sku_volume});
 
     this.render();
   },
 
   render: function() {
-    // this.$el.append(this.valueGraph.el, this.volumeGraph.el, this.skuVolumeGraph.el);
     this.$el.append(this.valueGraph.el);
     this.options.table.before(this.$el).remove();
     this.valueGraph.render();
-    // this.volumeGraph.render();
-    // this.skuVolumeGraph.render();
     return this;
   }
 });
