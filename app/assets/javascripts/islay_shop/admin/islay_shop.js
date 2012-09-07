@@ -78,6 +78,60 @@ IslayShop.SeriesGraph = Backbone.View.extend({
   }
 });
 
-$SP.where('#islay-shop-admin-reports.index').select('.series-graph').run(function(table) {
-  var graph = window.graph = new IslayShop.SeriesGraph({table: table});
+/* -------------------------------------------------------------------------- */
+/* SKU TOP TEN
+/* -------------------------------------------------------------------------- */
+IslayShop.TopTen = Backbone.View.extend({
+  events: {'click .segmented li': 'click'},
+
+  initialize: function() {
+    this.tables = [];
+
+    _.each(this.$el.find('table'), function(table, i) {
+      var $table = $(table);
+      this.tables.push({table: $table, caption: $table.find('caption').text()});
+    }, this);
+
+    this.render();
+  },
+
+  click: function(e) {
+    var $target = $(e.target),
+        index = parseInt($target.attr('data-index'));
+
+    if (index !== this.current) {
+      var current = this.tables[this.current];
+      current.li.removeClass('current');
+      current.table.hide();
+
+      $target.addClass('current');
+      this.tables[index].table.show();
+      this.current = index;
+    }
+  },
+
+  render: function() {
+    this.links = $H('ul.segmented');
+
+    _.each(this.tables, function(c, i) {
+      var li = $H('li[data-index=' + i + ']', c.caption);
+      this.links.append(li);
+      c.li = li;
+
+      if (i > 0) {
+        c.table.hide();
+        this.current = i;
+        li.addClass('current');
+      }
+    }, this);
+
+    this.$el.find('h3').after(this.links);
+
+    return this;
+  }
+});
+
+$SP.where('#islay-shop-admin-reports.index').run(function() {
+  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
+  var topTen = new IslayShop.TopTen({el: $("#top-ten")});
 });

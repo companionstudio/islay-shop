@@ -397,6 +397,38 @@ span.indicator
     color: $mid-grey
     float: right
 
+  .segmented
+    border-bottom: 0.1em solid $light-grey
+    background-color: $light-grey + 27
+    text-align: center
+
+    li
+      +widget-gradient
+      +input-border
+      border-right-width: 0
+      font-weight: bold
+      padding: 0.45em 1em 0.4em 1em
+      margin: 0.6em 0
+      min-height: 0 !important
+      cursor: pointer
+      clear: none
+      float: none
+      display: inline-block
+      width: auto
+
+      &:first-child
+        +widget-border-radius(left)
+
+      &:last-child
+        border-right-width: $border-width
+        +widget-border-radius(right)
+
+      &.current
+        +background-image(linear_gradient($light-grey - 10, $light-grey + 10))
+
+
+
+
 
 
 

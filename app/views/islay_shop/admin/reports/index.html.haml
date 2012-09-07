@@ -25,8 +25,8 @@
     %div#top-ten.report-cell
       %h3 SKU Top Ten
 
-      %table
-        %caption SKUs by Revenue
+      %table#skus-by-revenue
+        %caption Revenue
 
         %thead
           %tr
@@ -45,8 +45,8 @@
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
                 %span.amount= entry['shift']
 
-      %table
-        %caption SKUs by Volume
+      %table#skus-by-volume
+        %caption Volume
 
         %thead
           %tr
