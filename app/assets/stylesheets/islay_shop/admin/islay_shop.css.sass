@@ -308,6 +308,30 @@ span.indicator
 .graph
   float: left
 
+.report-cell
+  .move-up,
+  .move-down,
+  .move-none
+    &:before
+      font-family: Icons
+      margin: 0.4em 0.4em 0 0
+      block-inline
+
+  .move-up
+    color: $positive-color
+    +icon-arrow-up
+
+  .move-down
+    color: $negative-color
+    +icon-arrow-down
+
+  .move-none
+    color: $dark-grey
+
+    &:before
+      content: "-"
+
+
 .report-cell.total
   p
     width: 100%
@@ -324,22 +348,6 @@ span.indicator
     text-align: center
     margin: 0.4em 0 1em 0
 
-    &:after
-      font-family: Icons
-      font-size: 1.4em
-
-  .move-up
-    color: $positive-color
-
-    &:after
-      content: "\f0d8"
-
-  .move-down
-    color: $negative-color
-
-    &:after
-      content: "\f0d7"
-
   .average,
   .best,
   .since
@@ -351,5 +359,44 @@ span.indicator
 
   .since
     margin-top: 1em
+
+#top-ten
+  h3
+    margin-bottom: 0
+
+  table
+    border-width: 0 !important
+
+  caption
+    +hide
+
+  th.rank,
+  th.movement
+    text-indent: -1000em
+
+  td.rank
+    font-weight: bold
+    text-align: right
+    width: 1em
+
+  .movement
+    width: 6em !important
+
+  .move-up,
+  .move-down,
+  .move-new,
+  .move-none
+    float: left
+
+  .move-new
+    text-transform: uppercase
+    font-weight: bold
+    color: $positive-color
+
+  .amount
+    color: $mid-grey
+    float: right
+
+
 
 

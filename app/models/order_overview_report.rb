@@ -55,6 +55,7 @@ class OrderOverviewReport < Report
       SELECT
         chart.*,
         skus.volume AS sku_name,
+        skus.product_id,
         (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
         ROW_NUMBER() OVER(ORDER BY chart.revenue DESC) AS position,
       previous.position AS previous_position

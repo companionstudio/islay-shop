@@ -22,46 +22,48 @@
               %td= entry['volume']
               %td= entry['sku_volume']
 
-    %div.report-cell
-      %h3 SKUs by Revenue
+    %div#top-ten.report-cell
+      %h3 SKU Top Ten
 
       %table
+        %caption SKUs by Revenue
+
         %thead
           %tr
             %th.rank Rank
             %th SKU
             %th Revenue
-            %th Movement
+            %th.movement Movement
 
         %tbody
           - @top_ten[:revenue].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td= entry['product_name']
-              %td= entry['revenue']
-              %td
-                = entry['dir']
-                = entry['shift']
-
-      %h3 SKUs by Volume
+              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+              %td= format_money(entry['revenue'])
+              %td.movement
+                %span(class="move-#{entry['dir']}")= entry['dir'].humanize
+                %span.amount= entry['shift']
 
       %table
+        %caption SKUs by Volume
+
         %thead
           %tr
             %th.rank Rank
             %th SKU
             %th Volume
-            %th Movement
+            %th.movement Movement
 
         %tbody
           - @top_ten[:volume].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td= entry['product_name']
+              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
               %td= entry['volume']
-              %td
-                = entry['dir']
-                = entry['shift']
+              %td.movement
+                %span(class="move-#{entry['dir']}")= entry['dir'].humanize
+                %span.amount= entry['shift']
 
   = column(4) do
     %div.report-cell.total
