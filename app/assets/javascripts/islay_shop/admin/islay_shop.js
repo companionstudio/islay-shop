@@ -15,6 +15,49 @@ IslayShop.u = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* SEGMENTED CONTROL
+/* Simplistic, report-specific segmented control.
+/* -------------------------------------------------------------------------- */
+IslayShop.SegmentedControl = Backbone.View.extend({
+  tagName: 'ul',
+  className: 'segmented',
+  events: {'click li': 'click'},
+
+  initialize: function() {
+    _.bindAll(this, 'click');
+    this.lis = [];
+  },
+
+  click: function(e) {
+    var $target = $(e.target),
+        index = parseInt($target.attr('data-index'));
+
+    if (index !== this.current) {
+      var current = this.lis[this.current];
+      current.removeClass('current');
+      $target.addClass('current');
+      this.current = index;
+      this.trigger('selected', index);
+    }
+  },
+
+  render: function() {
+    _.each(this.options.labels, function(label, i) {
+      var li = $H('li[data-index=' + i + ']', label);
+      this.$el.append(li);
+      this.lis.push(li);
+
+      if (i === 0) {
+        this.current = i;
+        li.addClass('current');
+      }
+    }, this);
+
+    return this;
+  }
+});
+
+/* -------------------------------------------------------------------------- */
 /* LINE GRAPH
 /* Wraps gRaphael line graphs. Makes it easier to render.
 /* -------------------------------------------------------------------------- */
@@ -116,50 +159,34 @@ IslayShop.SeriesGraph = Backbone.View.extend({
 /* SKU TOP TEN
 /* -------------------------------------------------------------------------- */
 IslayShop.TopTen = Backbone.View.extend({
-  events: {'click .segmented li': 'click'},
-
   initialize: function() {
+    _.bindAll(this, 'toggle');
+
     this.tables = [];
+    this.current = 0;
+    var labels = [];
 
     _.each(this.$el.find('table'), function(table, i) {
       var $table = $(table);
-      this.tables.push({table: $table, caption: $table.find('caption').text()});
+      this.tables.push($table);
+      labels.push($table.find('caption').text());
     }, this);
+
+    this.controls = new IslayShop.SegmentedControl({labels: labels});
+    this.controls.on('selected', this.toggle);
 
     this.render();
   },
 
-  click: function(e) {
-    var $target = $(e.target),
-        index = parseInt($target.attr('data-index'));
-
-    if (index !== this.current) {
-      var current = this.tables[this.current];
-      current.li.removeClass('current');
-      current.table.hide();
-
-      $target.addClass('current');
-      this.tables[index].table.show();
-      this.current = index;
-    }
+  toggle: function(index) {
+    this.tables[this.current].hide();
+    this.tables[index].show();
+    this.current = index;
   },
 
   render: function() {
-    this.links = $H('ul.segmented');
-
-    _.each(this.tables, function(c, i) {
-      var li = $H('li[data-index=' + i + ']', c.caption);
-      this.links.append(li);
-      c.li = li;
-
-      if (i > 0) {
-        c.table.hide();
-        this.current = i;
-        li.addClass('current');
-      }
-    }, this);
-
-    this.$el.find('h3').after(this.links);
+    this.$el.find('h3').after(this.controls.render().el);
+    this.tables[1].hide();
 
     return this;
   }
