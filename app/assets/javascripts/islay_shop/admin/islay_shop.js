@@ -87,6 +87,16 @@ IslayShop.LineGraph = Backbone.View.extend({
     return this;
   },
 
+  hide: function() {
+    this.$el.hide();
+    return this;
+  },
+
+  show: function() {
+    this.$el.show();
+    return this;
+  },
+
   hoverIn: function(cover) {
     this.tags = []
 
@@ -115,6 +125,10 @@ IslayShop.SeriesGraph = Backbone.View.extend({
   className: 'series-graph',
 
   initialize: function() {
+    _.bindAll(this, 'toggle');
+
+    this.current = 0;
+
     this.values = {
       value:      {x: [], y: [], xLabels: []},
       volume:     {x: [], y: [], xLabels: []},
@@ -135,7 +149,19 @@ IslayShop.SeriesGraph = Backbone.View.extend({
       return new IslayShop.LineGraph({color: 'blue', values: v});
     });
 
+    var ths    = this.options.table.find('thead th:gt(0)'),
+        labels = _.map(ths, function(th) {return $(th).text();});
+
+    this.controls = new IslayShop.SegmentedControl({labels: labels});
+    this.controls.on('selected', this.toggle);
+
     this.render();
+  },
+
+  toggle: function(index) {
+    this.graphs[this.current].hide();
+    this.graphs[index].show();
+    this.current = index;
   },
 
   update: function(key, x, y, label) {
@@ -147,10 +173,16 @@ IslayShop.SeriesGraph = Backbone.View.extend({
 
   render: function() {
     this.options.table.before(this.$el).remove();
-    _.each(this.graphs, function(view) {
+
+    this.$el.append(this.controls.render().el);
+
+    _.each(this.graphs, function(view, i) {
       this.$el.append(view.el);
       view.render();
+
+      if (i > 0) {view.hide();}
     }, this);
+
     return this;
   }
 });
