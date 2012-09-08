@@ -72,27 +72,42 @@ IslayShop.SeriesGraph = Backbone.View.extend({
   className: 'series-graph',
 
   initialize: function() {
-    var value = {x: [], y: [], xLabels: []};
+    this.values = {
+      value:      {x: [], y: [], xLabels: []},
+      volume:     {x: [], y: [], xLabels: []},
+      sku_volume: {x: [], y: [], xLabels: []}
+    };
 
     _.each(this.options.table.find('tbody tr'), function(el, i) {
       var values = _.map($(el).find('td:not(:first-child)'), function(el) {
         return parseInt($(el).text());
       })
 
-      value.x.push(i);
-      value.xLabels.push(i + 1);
-      value.y.push(values[0]);
-    });
+      this.update('value', i, values[0], i + 1);
+      this.update('volume', i, values[1], i + 1);
+      this.update('sku_volume', i, values[2], i + 1);
+    }, this);
 
-    this.valueGraph = new IslayShop.LineGraph({color: 'blue', values: value});
+    this.graphs = _.map(this.values, function(v) {
+      return new IslayShop.LineGraph({color: 'blue', values: v});
+    });
 
     this.render();
   },
 
+  update: function(key, x, y, label) {
+    var v = this.values[key];
+    v.x.push(x);
+    v.y.push(y);
+    if (label) {v.xLabels.push(label);}
+  },
+
   render: function() {
-    this.$el.append(this.valueGraph.el);
     this.options.table.before(this.$el).remove();
-    this.valueGraph.render();
+    _.each(this.graphs, function(view) {
+      this.$el.append(view.el);
+      view.render();
+    }, this);
     return this;
   }
 });
