@@ -73,7 +73,7 @@ IslayShop.LineGraph = Backbone.View.extend({
   render: function() {
     this.paper = Raphael(this.el);
 
-    var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10};
+    var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
     this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
 
     // These callbacks are defined inline, and we use the behaviour of closures
@@ -130,9 +130,9 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     this.current = 0;
 
     this.values = {
-      value:      {x: [], y: [], xLabels: []},
-      volume:     {x: [], y: [], xLabels: []},
-      sku_volume: {x: [], y: [], xLabels: []}
+      value:      {x: [], y: [], xLabels: [], color: 'green'},
+      volume:     {x: [], y: [], xLabels: [], color: 'blue'},
+      sku_volume: {x: [], y: [], xLabels: [], color: 'red'}
     };
 
     _.each(this.options.table.find('tbody tr'), function(el, i) {
