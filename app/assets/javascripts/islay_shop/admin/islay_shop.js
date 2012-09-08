@@ -6,6 +6,15 @@
 var IslayShop = {};
 
 /* -------------------------------------------------------------------------- */
+/* UTILS
+/* -------------------------------------------------------------------------- */
+IslayShop.u = {
+  formatMoney: function(v) {
+    return '$' + v.toFixed(2);
+  }
+};
+
+/* -------------------------------------------------------------------------- */
 /* LINE GRAPH
 /* Wraps gRaphael line graphs. Makes it easier to render.
 /* -------------------------------------------------------------------------- */
@@ -23,24 +32,31 @@ IslayShop.LineGraph = Backbone.View.extend({
 
     var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10};
     this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
-    this.line.hoverColumn(this.hoverIn, this.hoverOut);
+
+    // These callbacks are defined inline, and we use the behaviour of closures
+    // to keep our view in scope and call our own handlers. This is because of
+    // gRaphael's limited callbacks.
+    var view = this;
+    this.line.hoverColumn(function() {view.hoverIn(this);}, function() {view.hoverOut(this);});
+
     if (this.xLabels) {this.renderXLabels(this.xLabels)};
 
     return this;
   },
 
-  hoverIn: function() {
-    this.tags = this.paper.set();
+  hoverIn: function(cover) {
+    this.tags = []
 
-    for (var i = 0, ii = this.y.length; i < ii; i++) {
-      var tag = this.paper.tag(this.x, this.y[i], '$' + this.values[i], 0, 9);
-      tag.insertBefore(this).attr([{ fill: "black", 'stroke-width': 0}, {fill: 'white'}]);
+    for (var i = 0, ii = cover.y.length; i < ii; i++) {
+      var tag = $H('div.tag', IslayShop.u.formatMoney(cover.values[i]));
       this.tags.push(tag);
+      this.$el.append(tag);
+      tag.css({left: cover.x, top: cover.y[i] - (tag.outerHeight() / 2)});
     }
   },
 
   hoverOut: function() {
-    this.tags && this.tags.remove();
+    this.tags && _.each(this.tags, function(tag) {tag.remove();});
   },
 
   renderXLabels: function(labels) {
