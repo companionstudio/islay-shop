@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   scope :module => 'islay_shop' do
     namespace :admin do
+      scope :path => 'reports/shop', :controller => 'reports' do
+        get 'shop', :action => :index, :as => 'shop_reports'
+      end
+
       scope :path => 'catalogue' do
         get '/' => redirect('/admin/catalogue/categories'), :as => 'catalogue'
 
