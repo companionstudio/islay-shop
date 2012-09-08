@@ -23,9 +23,24 @@ IslayShop.LineGraph = Backbone.View.extend({
 
     var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10};
     this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
+    this.line.hoverColumn(this.hoverIn, this.hoverOut);
     if (this.xLabels) {this.renderXLabels(this.xLabels)};
 
     return this;
+  },
+
+  hoverIn: function() {
+    this.tags = this.paper.set();
+
+    for (var i = 0, ii = this.y.length; i < ii; i++) {
+      var tag = this.paper.tag(this.x, this.y[i], '$' + this.values[i], 0, 9);
+      tag.insertBefore(this).attr([{ fill: "black", 'stroke-width': 0}, {fill: 'white'}]);
+      this.tags.push(tag);
+    }
+  },
+
+  hoverOut: function() {
+    this.tags && this.tags.remove();
   },
 
   renderXLabels: function(labels) {
