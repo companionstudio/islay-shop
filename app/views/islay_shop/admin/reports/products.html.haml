@@ -1,0 +1,46 @@
+- render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop Overview', path(:shop_reports))
+- sub_header('Products')
+
+= content(:class => 'inset') do
+  = column(8) do
+    %div.report-cell
+      %h3 Products
+
+  = column(4) do
+    %div.report-cell.total
+      %h3 Total Volume
+      %p.total= @total_volume
+      %p.since Since Derp
+
+  %div.report-cell
+    %h3 All Products
+
+    %table
+      %thead
+        %tr
+          %th Product
+          %th Sku
+          %th Revenue
+          %th Volume
+
+      %tbody
+        - @listing.each do |entry|
+          %tr
+            %th{rowspan: entry[:product].skus.count + 1}
+              = entry[:product].name
+            %td
+              &nbsp;
+            %td
+              = format_money(entry[:product].revenue)
+            %td
+              = entry[:product].volume
+
+          - entry[:skus].each do |sku|
+            %tr
+              %td
+                = sku.short_desc
+              %td
+                = format_money(sku.revenue)
+              %td
+                = sku.volume

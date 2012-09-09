@@ -4,4 +4,13 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @series   = OrderOverviewReport.series
     @totals   = OrderOverviewReport.aggregates
   end
+
+  def orders
+
+  end
+
+  def products
+    @total_volume = ProductReport.total_volume
+    @listing = ProductReport.listing
+  end
 end
