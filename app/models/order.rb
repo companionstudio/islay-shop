@@ -59,8 +59,8 @@ class Order < ActiveRecord::Base
     :billing_country, :billing_postcode, :billing_state, :billing_street,
     :billing_city, :email, :gift_message, :gifted_to, :is_gift, :name, :phone,
     :shipping_city, :shipping_country, :shipping_instructions, :shipping_postcode,
-    :shipping_state, :shipping_street, :use_shipping_address, :items_dump,
-    :stock_alerts_dump, :person_id
+    :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
+    :items_dump, :stock_alerts_dump, :person_id
   )
 
   # The workflow is defined here so it can be queried against this class and
@@ -217,6 +217,19 @@ class Order < ActiveRecord::Base
       Sku.where(:id => items)
     end
   end
+
+  # A reversed version of 'use_shipping_address' - returns true if the 
+  # order is not using a separate shipping address.
+  #
+  # @return Boolean
+  def use_billing_address?
+    !use_shipping_address
+  end
+
+  def use_billing_address=(switch)
+    use_shipping_address = !switch
+  end
+
 
   # Determines the shipping name depending on if it is going to the billing
   # or shipping address and if it is a gift.
