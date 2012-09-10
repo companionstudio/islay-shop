@@ -13,34 +13,53 @@
       %p.total= @total_volume
       %p.since Since Derp
 
-  %div.report-cell
-    %h3 All Products
+  %div#product-listing.report-cell
+    %h3 Products
 
     %table
+      %caption Products
+
       %thead
         %tr
-          %th Product
-          %th Sku
-          %th Revenue
+          %th Products
+          %th.sorted Revenue
           %th Volume
 
       %tbody
-        - @listing.each do |entry|
+        - @products.each do |product|
           %tr
-            %th{rowspan: entry[:product].skus.count + 1}
-              = entry[:product].name
-            %td
-              &nbsp;
-            %td
-              = format_money(entry[:product].revenue)
-            %td
-              = entry[:product].volume
+            %td= link_to(product.name)
+            %td= format_money(product.revenue)
+            %td= product.volume
 
-          - entry[:skus].each do |sku|
-            %tr
-              %td
-                = sku.short_desc
-              %td
-                = format_money(sku.revenue)
-              %td
-                = sku.volume
+    %table
+      %caption SKUs
+
+      %thead
+        %tr
+          %th SKU
+          %th.sorted Revenue
+          %th Volume
+
+      %tbody
+        - @skus.each do |sku|
+          %tr
+            %td= link_to(sku.long_desc)
+            %td= format_money(sku.revenue)
+            %td= sku.volume
+
+    %table
+      %caption Categories
+
+      %thead
+        %tr
+          %th Category
+          %th.sorted Revenue
+          %th Volume
+
+      %tbody
+        - @categories.each do |category|
+          %tr
+            %td= link_to(category.name)
+            %td --
+            %td --
