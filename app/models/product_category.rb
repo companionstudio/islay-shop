@@ -38,9 +38,11 @@ class ProductCategory < ActiveRecord::Base
 
   # Creates a scope for published categories.
   #
+  # @param Boolean bool
+  #
   # @return ActiveRecord::Relation
-  def self.published
-    where(:published => true, :product_category_id => nil).order('product_categories.position ASC')
+  def self.published(bool = true)
+    where(:published => bool)
   end
 
   # Creates a scope for categories without any products.

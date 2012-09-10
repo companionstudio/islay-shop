@@ -9,9 +9,9 @@ module IslayShop
 
       def index
         @product_categories = case params[:filter]
-        when 'published'    then ProductCategory.where(:product_category_id => nil, :published => true)
-        when 'unpublished'  then ProductCategory.where(:product_category_id => nil, :published => false)
-        else ProductCategory.where(:product_category_id => nil)
+        when 'published'    then ProductCategory.top_level.published
+        when 'unpublished'  then ProductCategory.top_level.published(false)
+        else ProductCategory.top_level
         end.order('position')
       end
 
