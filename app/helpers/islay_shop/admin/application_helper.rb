@@ -10,13 +10,20 @@ module IslayShop
       #
       # @return String
       def movement(before, after, dir, opts = {})
-        dir_span = content_tag(:span, content_tag(:span, dir), :class => "dir #{dir}")
+        change = after - before
+        dir_span = content_tag(:span, content_tag(:span, "#{dir} #{change.abs}"), :class => "indicator dir #{dir}")
+        change_span = content_tag(:span, "#{change > 0 ? '+' : '-'} #{change.abs}", :class => "indicator")
+
+        def label_span(text)
+          content_tag(:span, text, :class => 'label')
+        end
 
         buff = []
-        buff << "#{opts[:name]}" if opts[:name]
-        buff << "#{before} #{dir_span} #{after}"
+        
+        buff << " #{opts[:name]}" if opts[:name]
+        buff << "#{dir_span} #{label_span('From')} #{before} #{label_span('to')} #{after}"
 
-        content_tag(:span, buff.join(' ').html_safe, :class => 'indicator movement')
+        content_tag(:span, buff.join(' ').html_safe, :class => 'movement numeric')
       end
     end
   end
