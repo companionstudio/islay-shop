@@ -12,7 +12,10 @@
   = f.input(:last_name)
   = f.input(:number)
   = f.input(:verification_value)
-  = f.input(:month, :as => :select, :collection => @months)
-  = f.input(:year, :as => :select, :collection => @years)
+  
+  .inline-group
+    = f.input(:month, :label => 'Expiry', :as => :select, :collection => @months)
+    = f.input(:year, :label => '/', :as => :select, :collection => @years)
 
-  %button(type="submit") Place order & Pay
+  .button-bar
+    %button(type="submit") Place order & Pay
