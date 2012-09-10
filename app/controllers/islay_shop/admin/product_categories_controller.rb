@@ -2,7 +2,7 @@ module IslayShop
   module Admin
     class ProductCategoriesController < IslayShop::Admin::ApplicationController
       helper CatalogueHelper
-      
+
       resourceful :product_category
       header 'Shop'
       nav 'islay_shop/admin/shop/nav'
@@ -17,18 +17,27 @@ module IslayShop
 
       def show
         super
-        @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
+        if @product_category.products?
+          @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
+        elsif @product_category.children?
+          @product_categories = @product_category.children
+        end
       end
 
       private
 
       def dependencies
         @assets = ImageAsset.order('name')
-        @product_categories = if params[:id]
-          ProductCategory.where("product_category_id IS NULL AND slug != ?", params[:id]).order('position')
-        else
-          ProductCategory.where("product_category_id IS NULL").order('position')
+        @product_categories = category_tree([], ProductCategory.no_products.top_level.order('position'))
+      end
+
+      def category_tree(acc, categories, prefix = '')
+        categories.each do |c|
+          acc << [(prefix + c.name).html_safe, c.id]
+          category_tree(acc, c.children, prefix + '&nbsp;&nbsp;') if c.children?
         end
+
+        acc
       end
     end
   end

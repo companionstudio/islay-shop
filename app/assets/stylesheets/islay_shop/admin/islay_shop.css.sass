@@ -1,11 +1,13 @@
+@import ../../vendor/rickshaw.css
+
 /* -------------------------------------------------------------------------- */
 /* NAV ENTRIES
 /* -------------------------------------------------------------------------- */
 #products-nav
-  +icon-basket
+  +icon-barcode
 
 #orders-nav
-  +icon-basket
+  +icon-shopping-cart
 
 #promotions-nav
   +icon-star
@@ -15,10 +17,10 @@
 /* -------------------------------------------------------------------------- */
 #islay-admin-search .search-results
   .product-category
-    +icon-folder
+    +icon-folder-open
 
   .product
-    +icon-basket
+    +icon-barcode
 
 /* -------------------------------------------------------------------------- */
 /* ORDER OVERVIEW, BILLING ETC.
@@ -224,6 +226,19 @@ table
     display: block
     clear: both
 
+  .product-category,
+  .product
+    &:before
+      font-family: Icons
+      font-size: 1.4em
+      margin-right: 0.4em
+
+  .product-category
+    +icon-folder-close
+
+  .product
+    +icon-barcode
+
   .notes
     width: 50%
 
@@ -283,3 +298,146 @@ span.indicator
 .indicator.status
   font-size: 0.9em
   white-space: nowrap
+
+/* -------------------------------------------------------------------------- */
+/* REPORTS/GRAPHS
+/* -------------------------------------------------------------------------- */
+.series-graph
+  width: 100%
+
+.graph
+  width: 100%
+  height: 265px
+  margin: 1.5em 0 1em 1em
+  float: left
+  position: relative
+
+  .tag
+    +border-radius(0.2em)
+    background: left center no-repeat image-url('islay_shop/admin/report-tag.png')
+    color: white
+    font-size: 1.4em
+    font-family: $light-font-family
+    padding: 0.3em 0.4em 0.3em 15px
+    margin-left: 7px
+    position: absolute
+
+.report-cell
+  .move-up,
+  .move-down,
+  .move-none
+    &:before
+      font-family: Icons
+      margin: 0.4em 0.4em 0 0
+      block-inline
+
+  .move-up
+    color: $positive-color
+    +icon-arrow-up
+
+  .move-down
+    color: $negative-color
+    +icon-arrow-down
+
+  .move-none
+    color: $dark-grey
+
+    &:before
+      content: "-"
+
+  .segmented
+    border-bottom: 0.1em solid $light-grey
+    background-color: $light-grey + 27
+    text-align: center
+
+    li
+      +widget-gradient
+      +input-border
+      border-right-width: 0
+      font-weight: bold
+      padding: 0.45em 1em 0.4em 1em
+      margin: 0.6em 0
+      min-height: 0 !important
+      cursor: pointer
+      clear: none
+      float: none
+      display: inline-block
+      width: auto
+
+      &:first-child
+        +widget-border-radius(left)
+
+      &:last-child
+        border-right-width: $border-width
+        +widget-border-radius(right)
+
+      &.current
+        +background-image(linear_gradient($light-grey - 10, $light-grey + 10))
+
+.report-cell.total
+  p
+    width: 100%
+    float: left
+
+  .total
+    font-size: 4.5em
+    font-family: $light-font-family
+    color: $dark-grey
+    text-align: center
+
+  .move-up,
+  .move-down
+    text-align: center
+    margin: 0.4em 0 1em 0
+
+  .average,
+  .best,
+  .since
+    border-top: 0.1em dashed $light-grey
+    font-size: 1.2em
+    text-indent: 1em
+    color: $dark-grey
+    padding: 0.6em 0
+
+  .since
+    margin-top: 1em
+
+#top-ten
+  table
+    border-width: 0 !important
+
+  caption
+    +hide
+
+  th.rank,
+  th.movement
+    text-indent: -1000em
+
+  td.rank
+    font-weight: bold
+    text-align: right
+    width: 1em
+
+  .movement
+    width: 6em !important
+
+  .move-up,
+  .move-down,
+  .move-new,
+  .move-none
+    float: left
+
+  .move-new
+    text-transform: uppercase
+    font-weight: bold
+    color: $positive-color
+
+  .amount
+    color: $mid-grey
+    float: right
+
+#order-graphs,
+#top-ten
+  h3
+    margin-bottom: 0
+

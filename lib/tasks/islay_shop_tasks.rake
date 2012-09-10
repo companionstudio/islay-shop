@@ -15,12 +15,23 @@ namespace :islay_shop do
     task :seed => :environment do
       require 'islay/spec'
       ProductCategory.make!(15)
-      OrderProcess.make(80).map do |o|
-        begin
-          o.run!(:add)
-        rescue Sku::InsufficientStock
-          # Just ignore this guy
+
+      now = Time.now
+      time = 1.months.ago
+      while time < now
+        # Generate a random number of completed records
+        OrderProcess.make(rand(30) + 1).map do |o|
+          begin
+            o.created_at, o.updated_at = time
+            o.run!(:add)
+            o.update_attribute(:status, 'complete')
+          rescue Sku::InsufficientStock
+            # Just ignore this guy
+          end
         end
+
+        # Increment time to a random step between 1 and 3 days
+        time = time.advance(:days => 1)
       end
     end
   end

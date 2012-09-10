@@ -4,7 +4,7 @@
     %span(class="boolean #{category.published?}")
       %span= friendly_bool(category.published?)
   %td
-    = link_to(category.name, path(category), :class => 'title')
+    = link_to(category.name, path(category), :class => 'title product-category')
   %td
     %span.count.indicator= category.products.count
   %td.meta

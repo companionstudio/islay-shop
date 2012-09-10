@@ -1,0 +1,120 @@
+- render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop Overview')
+
+= content(:class => 'inset') do
+
+  = column(8) do
+    %div#order-graphs.report-cell
+      %h3 Order Volume
+
+      %table.series-graph
+        %thead
+          %tr
+            %th Day
+            %th Order Value
+            %th Order Volume
+            %th SKU Volume
+
+        %tbody
+          - @series.each do |entry|
+            %tr
+              %th= entry['day']
+              %td= entry['value']
+              %td= entry['volume']
+              %td= entry['sku_volume']
+
+    %div#top-ten.report-cell
+      %h3 SKU Top Ten
+
+      %table#skus-by-revenue
+        %caption Revenue
+
+        %thead
+          %tr
+            %th.rank Rank
+            %th SKU
+            %th Revenue
+            %th.movement Movement
+
+        %tbody
+          - @top_ten[:revenue].each do |entry|
+            %tr
+              %td.rank= entry['position']
+              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+              %td= format_money(entry['revenue'])
+              %td.movement
+                %span(class="move-#{entry['dir']}")= entry['dir'].humanize
+                %span.amount= entry['shift']
+
+      %table#skus-by-volume
+        %caption Volume
+
+        %thead
+          %tr
+            %th.rank Rank
+            %th SKU
+            %th Volume
+            %th.movement Movement
+
+        %tbody
+          - @top_ten[:volume].each do |entry|
+            %tr
+              %td.rank= entry['position']
+              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+              %td= entry['volume']
+              %td.movement
+                %span(class="move-#{entry['dir']}")= entry['dir'].humanize
+                %span.amount= entry['shift']
+
+  = column(4) do
+    %div#detailed-nav.report-cell
+      %h3 Detailed Reports:
+      %ul
+        %li= link_to('Orders', path(:order_reports))
+        %li= link_to('Products', path(:product_reports))
+
+    %div.report-cell.total
+      %h3 Order Volume
+      %p.total
+        = @totals['this_volume']
+      %p(class="move-#{@totals['volume_movement']}")
+        #{@totals['volume_movement'].humanize} from #{@totals['previous_volume']}
+      %p.average
+        Average: #{@totals['average_volume']}
+      %p.best
+        Best: #{@totals['best_volume']} for #{format_month(@totals['best_volume_month'])}
+
+    %div.report-cell.total
+      %h3 Revenue
+      %p.total
+        = format_money(@totals['this_revenue'])
+      %p(class="move-#{@totals['revenue_movement']}")
+        #{@totals['revenue_movement'].humanize} from #{format_money(@totals['previous_revenue'])}
+      %p.average
+        Average: #{format_money(@totals['average_revenue'])}
+      %p.best
+        Best: #{format_money(@totals['best_revenue'])} for #{format_month(@totals['best_revenue_month'])}
+
+    %div.report-cell.total
+      %h3 Average Order Value
+      %p.total
+        = format_money(@totals['this_average_value'])
+      %p(class="move-#{@totals['average_value_movement']}")
+        #{@totals['average_value_movement'].humanize} from #{format_money(@totals['previous_average_value'])}
+      %p.average
+        Average: #{format_money(@totals['average_value'])}
+      %p.best
+        Best: #{format_money(@totals['best_average_value'])} for #{format_month(@totals['best_average_value_month'])}
+
+    %div.report-cell.total
+      %h3 Total Orders
+      %p.total= @totals['total_volume']
+      %p.since Since: #{@totals['first_order']}
+
+    %div.report-cell.total
+      %h3 Total Revenue
+      %p.total= format_money(@totals['total_revenue'])
+      %p.since
+        Since:
+        %span.time= @totals['first_order']
+
