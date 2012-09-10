@@ -1,6 +1,6 @@
 class CheckoutCell < Cell::Rails
   # Seriously Ruby, screw you for making me do this. Y U NO NO DATES?
-  MONTH_NAMES = %w(January Febuary March April May June July August September October November December).freeze
+  MONTH_NAMES = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec).freeze
   MONTHS = MONTH_NAMES.each_with_index.map do |m, i|
     index = i + 1
     ["#{index} - #{m}", index]
