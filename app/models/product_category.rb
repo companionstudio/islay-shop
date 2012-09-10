@@ -1,4 +1,5 @@
 class ProductCategory < ActiveRecord::Base
+  include Hierarchy
   include IslayShop::Statuses
   include Islay::Searchable
 
@@ -6,12 +7,10 @@ class ProductCategory < ActiveRecord::Base
 
   extend FriendlyId
   friendly_id :name, :use => :slugged
-  positioning :product_category
+  positioning :path
 
   has_many    :products, :order => 'products.position'
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
-  belongs_to  :parent,    :class_name => 'ProductCategory',  :foreign_key => 'product_category_id'
-  has_many    :children,  :class_name => 'ProductCategory',  :foreign_key => 'product_category_id', :order => 'position'
 
   attr_accessible(
     :name, :description, :asset_id, :product_category_id, :published, :status,
@@ -20,6 +19,22 @@ class ProductCategory < ActiveRecord::Base
 
   track_user_edits
   validations_from_schema
+
+  # Returns the ID of the parent category if there is one.
+  #
+  # @return [ProductCategory, nil]
+  def product_category_id
+    parent.id if parent
+  end
+
+  # Sets the parent category via it's ID. If ID is #blank? it does nothing.
+  #
+  # @param [Integer, String] id
+  #
+  # @return [ProductCategory, nil]
+  def product_category_id=(id)
+    self.parent = ProductCategory.find(id) unless id.blank?
+  end
 
   # Creates a scope for published categories.
   #
@@ -43,9 +58,9 @@ class ProductCategory < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.top_level(slug = nil)
     if slug.nil?
-      where("product_category_id IS NULL")
+      where("path = ''")
     else
-      where("product_category_id IS NULL AND slug != ?", slug)
+      where("path = '' AND slug != ?", slug)
     end
   end
 
