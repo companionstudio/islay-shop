@@ -226,6 +226,10 @@ class Order < ActiveRecord::Base
     !use_shipping_address
   end
 
+  def use_billing_address
+    use_shipping_address
+  end
+
   def use_billing_address=(switch)
     use_shipping_address = !switch
   end
