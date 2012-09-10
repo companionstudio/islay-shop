@@ -323,6 +323,25 @@ span.indicator
     position: absolute
 
 .report-cell
+  table
+    border-width: 0 !important
+
+    caption
+      +hide
+
+    .sorted
+      color: $highlight-color
+
+      &:before
+        font-family: icons
+        margin-right: 0.4em
+        font-size: 1.2em
+
+      +icon-caret-down
+
+    &.sortable thead th
+      cursor: pointer
+
   .move-up,
   .move-down,
   .move-none
@@ -403,12 +422,6 @@ span.indicator
     margin-top: 1em
 
 #top-ten
-  table
-    border-width: 0 !important
-
-  caption
-    +hide
-
   th.rank,
   th.movement
     text-indent: -1000em
@@ -435,9 +448,3 @@ span.indicator
   .amount
     color: $mid-grey
     float: right
-
-#order-graphs,
-#top-ten
-  h3
-    margin-bottom: 0
-

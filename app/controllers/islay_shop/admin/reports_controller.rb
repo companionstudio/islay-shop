@@ -11,6 +11,8 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
 
   def products
     @total_volume = ProductReport.total_volume
-    @listing = ProductReport.listing
+    @products     = ProductReport.product_summary
+    @categories   = ProductReport.category_summary
+    @skus         = ProductReport.sku_summary
   end
 end

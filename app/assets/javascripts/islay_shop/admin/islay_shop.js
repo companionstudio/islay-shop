@@ -188,9 +188,99 @@ IslayShop.SeriesGraph = Backbone.View.extend({
 });
 
 /* -------------------------------------------------------------------------- */
-/* SKU TOP TEN
+/* SORTABLE TABLE
 /* -------------------------------------------------------------------------- */
-IslayShop.TopTen = Backbone.View.extend({
+IslayShop.SortableTable = Backbone.View.extend({
+  events: {'click thead th': 'click'},
+
+  initialize: function() {
+    _.bindAll(this, 'click');
+
+    this.$el.addClass('sortable');
+
+    this.body = this.$el.find('tbody');
+
+    this.types = _.map(this.body.find('tr:first-child td'), function(td) {
+      var raw = $(td).text();
+      if (/^[\$]?\d+\.\d{2}$/.test(raw)) {
+        return 'monentary';
+      }
+      else if (/^\d+$/.test(raw)) {
+        return 'integer';
+      }
+      else {
+        return 'string';
+      }
+    });
+
+    this.columns = [];
+
+    _.each(this.$el.find('tbody tr'), function(row) {
+      var $row = $(row);
+      _.each($row.find('td'), function(td, i) {
+        column = this.columns[i] || (this.columns[i] = [])
+        column.push([this._coerce(i, $(td).text()), $row]);
+      }, this);
+    }, this);
+
+    this.ths = _.map(this.$el.find('thead th'), function(th, i) {
+      var $th = $(th);
+      $th.attr('data-index', i);
+      if ($th.is('.sorted')) {this.current = i;}
+      return $th;
+    }, this);
+
+  },
+
+  _coerce: function(i, val) {
+    switch(this.types[i]) {
+      case 'monentary':
+        return parseFloat(val.split('$')[1]);
+      case 'integer':
+        return parseInt(val);
+      case 'string':
+        return val;
+    }
+  },
+
+  click: function(e) {
+    var $target = $(e.target),
+        index = parseInt($target.attr('data-index'));
+
+    if (!$target.is('.sorted')) {
+      this.ths[this.current].removeClass('sorted');
+      $target.addClass('sorted');
+      this.current = index;
+
+      var column = this.columns[index];
+      if (this.types[index] === 'string') {
+        column.sort(this._alphaSort);
+      }
+      else {
+        column.sort(this._numericSort);
+      }
+      this.body.find('tr').detach();
+      _.each(column, function(row) {this.body.append(row[1])}, this);
+    }
+  },
+
+  _alphaSort: function(x, y) {
+    if (x[0] < y[0]) return -1;
+    if (x[0] > y[0]) return 1;
+    return 0;
+  },
+
+  _numericSort: function(x, y) {
+    if (x[0] < y[0]) return 1;
+    if (x[0] > y[0]) return -1;
+    return 0;
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/* TABBED TABLE CELL
+/* -------------------------------------------------------------------------- */
+IslayShop.TabbedTables = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'toggle');
 
@@ -218,7 +308,14 @@ IslayShop.TopTen = Backbone.View.extend({
 
   render: function() {
     this.$el.find('h3').after(this.controls.render().el);
-    this.tables[1].hide();
+    _.each(this.tables, function(table, i) {
+      if (this.options.sortable === true) {
+        var view = new IslayShop.SortableTable({el: table});
+      }
+      if (i > 0) {
+        table.hide();
+      }
+    }, this);
 
     return this;
   }
@@ -226,5 +323,9 @@ IslayShop.TopTen = Backbone.View.extend({
 
 $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var topTen = new IslayShop.TopTen({el: $("#top-ten")});
+  var topTen = new IslayShop.TabbedTables({el: $("#top-ten")});
+});
+
+$SP.where('#islay-shop-admin-reports.products').run(function() {
+  var tabs = new IslayShop.TabbedTables({el: $("#product-listing"), sortable: true});
 });
