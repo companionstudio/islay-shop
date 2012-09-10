@@ -6,6 +6,8 @@
 
       = f.input(:name)
 
+      = asset_picker(f)
+
     = f.fieldset('Pricing', :class => 'pricing') do
       = f.input(:price, :class => 'small', :col => 'first-inline')
       = f.input(:batch_size, :class => 'small', :col => 'inline')
@@ -19,6 +21,7 @@
       = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
       = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
       = f.input(:size, :class => 'small', :col => 'inline')
+
 
     - f.metadata do |attrs|
       = f.fieldset('Attributes', :class => 'attributes') do
