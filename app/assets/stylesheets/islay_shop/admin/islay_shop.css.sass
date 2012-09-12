@@ -376,7 +376,7 @@ span.indicator
       border-right-width: 0
       font-weight: bold
       padding: 0.45em 1em 0.4em 1em
-      margin: 0.6em 0
+      margin: 0.6em 0 !important
       min-height: 0 !important
       cursor: pointer
       clear: none
@@ -398,10 +398,12 @@ span.indicator
   p
     width: 100%
     float: left
+    margin: 0 !important
 
   .total
     font-size: 4.5em
     font-family: $light-font-family
+    margin: 0 !important
     color: $dark-grey
     text-align: center
 
@@ -449,3 +451,7 @@ span.indicator
   .amount
     color: $mid-grey
     float: right
+
+#product-listing .ancestors
+  color: $dark-grey
+  font-weight: bold
