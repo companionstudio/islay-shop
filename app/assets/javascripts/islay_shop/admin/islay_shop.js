@@ -2,6 +2,7 @@
 //= require ../../vendor/g.raphael-min
 //= require ../../vendor/g.pie-min
 //= require ../../vendor/g.line-min
+//= require ../../vendor/kalendae
 
 var IslayShop = {};
 
@@ -30,9 +31,13 @@ IslayShop.DateSelection = Backbone.View.extend({
     this.mode = this.options.mode || 'month';
     this.$el.attr({action: this.options.action, method: 'get'});
     this.toggles = {};
+
+    this.url = this.options.action.replace(/\/(month|range|compare)-.+\d+$/, '');
+    var opts = {url: this.url, fullUrl: this.options.action};
+
     this.widgets = {
-      month: new IslayShop.DateSelection.Month({url: this.options.action}),
-      range: new IslayShop.DateSelection.Range()
+      month: new IslayShop.DateSelection.Month(opts),
+      range: new IslayShop.DateSelection.Range(opts)
     };
   },
 
@@ -103,7 +108,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
 
     this.date = new Date();
 
-    var match = this.url.match(/\/month-(\d{1,2})-(\d{4})$/);
+    var match = this.options.fullUrl.match(/\/month-(\d{1,2})-(\d{4})$/);
     if (match) {
       this.targetYear = this.currentYear = parseInt(match[2]);
       this.currentMonth = parseInt(match[1]) - 1;
@@ -112,7 +117,6 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
       this.targetYear = this.currentYear = this.date.getFullYear();
       this.currentMonth = this.date.getMonth();
     }
-
   },
 
   show: function() {
@@ -173,15 +177,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   },
 
   goTo: function(month, year) {
-    var url, match = this.url.match(/\/month-\d{1,2}-\d{4}$/);
-
-    if (match) {
-      url = this.url.replace(match[0], '/month-' + (month + 1) + '-' + year);
-    }
-    else {
-      url = this.url + '/month-' + (month + 1) + '-' + year;
-    }
-
+    var url = this.url + '/month-' + (month + 1) + '-' + year;
     window.location = url;
   },
 
@@ -219,9 +215,21 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
 IslayShop.DateSelection.Range = Backbone.View.extend({
   tagName: 'ul',
   className: 'range',
+  events: {'click .start': 'clickStart', 'click .end': 'clickEnd', 'click .go': 'clickGo'},
 
   initialize: function() {
+    _.bindAll(this, 'clickStart', 'clickEnd', 'clickGo', 'startUpdate', 'endUpdate');
 
+    this.url = this.options.url;
+    var match = this.options.fullUrl.match(/\/range-(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/);
+    if (match) {
+      this.startDate = Kalendae.moment(match[1]);
+      this.endDate = Kalendae.moment(match[2]);
+    }
+    else {
+      this.startDate = Kalendae.moment().startOf('month');
+      this.endDate = Kalendae.moment().endOf('month');
+    }
   },
 
   show: function() {
@@ -232,10 +240,59 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     this.$el.hide();
   },
 
+  clickStart: function() {
+    this.openCalendar('start');
+  },
+
+  clickEnd: function() {
+    this.openCalendar('end');
+  },
+
+  clickGo: function() {
+    var url = this.url + '/range-' + this.startDate.format('YYYY-MM-DD') + '-' + this.endDate.format('YYYY-MM-DD');
+    window.location = url;
+  },
+
+  startUpdate: function() {
+    this.update('start');
+  },
+
+  endUpdate: function() {
+    this.update('end');
+  },
+
+  openCalendar: function(pos) {
+    if (this.current !== pos) {
+      var name = pos + 'Calendar';
+
+      if (!this[name]) {
+        this[name] = new Kalendae(this['$' + pos].parent()[0], new Date());
+        this[name].subscribe('change', this[pos + 'Update']);
+      }
+      else {
+        $(this[name].container).show();
+      }
+
+      this.current = pos;
+    }
+  },
+
+  update: function(pos) {
+    var date = pos + 'Date', calendar = pos + 'Calendar';
+    this[date] = this[calendar].getSelectedRaw()[0];
+    this['$' + pos].text(this[date].format(' D MMM YYYY'));
+    $(this[calendar].container).hide();
+    this.current = null;
+  },
+
   render: function() {
+    this.$start = $(this.make('span', {}, this.startDate.format(' D MMM YYYY')));
+    this.$end = $(this.make('span', {}, this.endDate.format(' D MMM YYYY')));
+
     this.$el.append(
-      this.make('li', {'class': 'start'}, 'Start'),
-      this.make('li', {'class': 'end'}, 'End')
+      this.make('li', {'class': 'start'}, [document.createTextNode('Start:'), this.$start[0]]),
+      this.make('li', {'class': 'end'}, [document.createTextNode('End:'), this.$end[0]]),
+      this.make('li', {'class': 'go'}, 'Go')
     );
 
     this.hide();

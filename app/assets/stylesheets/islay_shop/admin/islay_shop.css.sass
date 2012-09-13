@@ -1,4 +1,4 @@
-@import ../../vendor/rickshaw.css
+@import ../../vendor/kalendae.css
 
 /* -------------------------------------------------------------------------- */
 /* NAV ENTRIES
@@ -367,7 +367,8 @@ span.indicator
 
 .segmented-control,
 .date-selection .toggles,
-.date-selection .month
+.date-selection .month,
+.date-selection .range
   > li
     +widget-gradient
     +input-border
@@ -442,6 +443,32 @@ span.indicator
         &:hover
           color: white
           background-color: $highlight-color
+
+  .range
+    .start,
+    .end
+      width: 8em
+      position: relative
+
+      span
+        font-weight: normal
+
+    .kalendae
+      +widget-border-radius(right)
+      border: 0.1em solid $widget-border-color
+      position: absolute
+      top: 0
+      right: 0
+
+    .end
+      +widget-border-radius(right)
+      border-right-width: $border-width
+
+    .go
+      +widget-border-radius(left)
+      margin-left: 0.5em !important
+      padding-left: 0.5em
+      padding-right: 0.5em
 
   .back,
   .forward,
