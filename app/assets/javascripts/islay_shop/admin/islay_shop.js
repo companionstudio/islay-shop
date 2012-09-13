@@ -96,7 +96,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this,
       'clickBack', 'clickForward', 'clickDisplay', 'clickYearForward',
-      'clickYearBack', 'clickMonth'
+      'clickYearBack', 'clickMonth', 'hideMenu'
     );
 
     this.url = this.options.url;
@@ -120,8 +120,13 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   },
 
   hide: function() {
-    this.$menu.hide();
+    this.hideMenu();
     this.$el.hide();
+  },
+
+  hideMenu: function() {
+    this.$menu.hide();
+    $(document).off('click', this.hideMenu);
   },
 
   clickBack: function() {
@@ -142,20 +147,22 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
     }
   },
 
-  clickDisplay: function() {
+  clickDisplay: function(e) {
     this.$menu.show();
+    e.stopPropagation();
+    $(document).on('click', this.hideMenu);
   },
 
   clickYearBack: function(e) {
     this.targetYear = this.targetYear - 1;
     this.$year.text(this.targetYear);
-    e.preventDefault();
+    e.stopPropagation();
   },
 
   clickYearForward: function(e) {
     this.targetYear = this.targetYear + 1;
     this.$year.text(this.targetYear);
-    e.preventDefault();
+    e.stopPropagation();
   },
 
   clickMonth: function(e) {
