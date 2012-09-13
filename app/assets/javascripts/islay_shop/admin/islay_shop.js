@@ -23,7 +23,7 @@ IslayShop.u = {
 IslayShop.DateSelection = Backbone.View.extend({
   tagName: 'form',
   className: 'date-selection',
-  modes: ['month', 'range', 'compare'],
+  modes: ['month', 'range'],
   events: {'click .toggles li': 'toggle'},
 
   initialize: function() {
