@@ -3,6 +3,7 @@
 //= require ../../vendor/g.pie-min
 //= require ../../vendor/g.line-min
 //= require ../../vendor/kalendae
+//= require ../../vendor/moment
 
 var IslayShop = {};
 
@@ -108,10 +109,10 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
 
     this.date = new Date();
 
-    var match = this.options.fullUrl.match(/\/month-(\d{1,2})-(\d{4})$/);
+    var match = this.options.fullUrl.match(/\/month-(\d{4})-(\d{1,2})$/);
     if (match) {
-      this.targetYear = this.currentYear = parseInt(match[2]);
-      this.currentMonth = parseInt(match[1]) - 1;
+      this.targetYear = this.currentYear = parseInt(match[1]);
+      this.currentMonth = parseInt(match[2]) - 1;
     }
     else {
       this.targetYear = this.currentYear = this.date.getFullYear();
@@ -177,7 +178,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   },
 
   goTo: function(month, year) {
-    var url = this.url + '/month-' + (month + 1) + '-' + year;
+    var url = this.url + '/month-' + year + '-' + (month + 1);
     window.location = url;
   },
 
@@ -223,12 +224,13 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     this.url = this.options.url;
     var match = this.options.fullUrl.match(/\/range-(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/);
     if (match) {
-      this.startDate = Kalendae.moment(match[1]);
-      this.endDate = Kalendae.moment(match[2]);
+      this.startDate = moment(match[1]);
+      this.endDate = moment(match[2]);
     }
     else {
-      this.startDate = Kalendae.moment().startOf('month');
-      this.endDate = Kalendae.moment().endOf('month');
+      var now = new Date();
+      this.startDate = moment().startOf('month');
+      this.endDate = moment().endOf('month');
     }
   },
 
