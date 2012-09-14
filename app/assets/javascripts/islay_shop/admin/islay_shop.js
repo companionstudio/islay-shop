@@ -222,7 +222,7 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     _.bindAll(this, 'clickStart', 'clickEnd', 'clickGo', 'startUpdate', 'endUpdate');
 
     this.url = this.options.url;
-    var match = this.options.fullUrl.match(/\/range-(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/);
+    var match = this.options.fullUrl.match(/\/range\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})$/);
     if (match) {
       this.startDate = moment(match[1]);
       this.endDate = moment(match[2]);
@@ -251,7 +251,7 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
   },
 
   clickGo: function() {
-    var url = this.url + '/range-' + this.startDate.format('YYYY-MM-DD') + '-' + this.endDate.format('YYYY-MM-DD');
+    var url = this.url + '/range/' + this.startDate.format('YYYY-MM-DD') + '/' + this.endDate.format('YYYY-MM-DD');
     window.location = url;
   },
 

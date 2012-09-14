@@ -29,7 +29,7 @@ class OrderOverviewReport < Report
   #
   # @return Hash
   def self.aggregates(range)
-    select_all_by_range(AGGREGATES, range, 'month').first
+    select_all_by_range(AGGREGATES, range, 'month').first || {}
   end
 
   # Generates a query by interpolating the appropriate time predicate functions
@@ -42,7 +42,7 @@ class OrderOverviewReport < Report
   #
   # @return Array<Hash>
   def self.select_all_by_range(query, range, col, prev_col = nil)
-    case range[:mode]
+    prepared = case range[:mode]
     when :month, :none
       if range[:mode] == :none
         now = Time.now
@@ -53,17 +53,25 @@ class OrderOverviewReport < Report
         month = range[:month]
       end
 
-      prepared = query.gsub(/(:current|:previous)/) do |match|
+      query.gsub(/(:current|:previous)/) do |match|
         case match
         when ':current'   then "within_month(#{year}, #{month}, #{col})"
         when ':previous'  then "within_previous_month(#{year}, #{month}, #{prev_col || col})"
         end
       end
-
-      select_all(prepared)
     when :range
+      from  = "'#{range[:from]}'"
+      to    = "'#{range[:to]}'"
 
+      query.gsub(/(:current|:previous)/) do |match|
+        case match
+        when ':current'   then "within_dates(#{from}, #{to}, #{col})"
+        when ':previous'  then "within_previous_dates(#{from}, #{to}, #{prev_col || col})"
+        end
+      end
     end
+
+    select_all(prepared)
   end
 
   TOP_TEN = %{
@@ -155,7 +163,7 @@ class OrderOverviewReport < Report
       SELECT month, average_value FROM totals ORDER BY average_value DESC LIMIT 1
     ),
     previous AS (
-      SELECT * FROM totals WHERE within_last('month', month)
+      SELECT * FROM totals WHERE :previous
     )
 
     SELECT
