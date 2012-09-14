@@ -1,8 +1,10 @@
 class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationController
+  before_filter :parse_dates, :only => [:index]
+
   def index
-    @top_ten  = OrderOverviewReport.top_ten
-    @series   = OrderOverviewReport.series
-    @totals   = OrderOverviewReport.aggregates
+    @top_ten  = OrderOverviewReport.top_ten(@report_range)
+    @series   = OrderOverviewReport.series(@report_range)
+    @totals   = OrderOverviewReport.aggregates(@report_range)
   end
 
   def orders

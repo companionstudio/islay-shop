@@ -1,29 +1,69 @@
 class OrderOverviewReport < Report
   # Creates a list of the top ten SKUs by both revenue and by volume.
   #
+  # @param Hash range
+  #
   # @return Hash<Array>
-  def self.top_ten
+  def self.top_ten(range)
     {
-      :revenue  => select_all(TOP_TEN % %w(revenue revenue)),
-      :volume   => select_all(TOP_TEN % %w(volume volume))
+      :revenue  => select_all_by_range(TOP_TEN % %w(revenue revenue), range, 'os.created_at', 'ois.created_at'),
+      :volume   => select_all_by_range(TOP_TEN % %w(volume volume), range, 'os.created_at', 'ois.created_at')
     }
   end
 
   # Calculates the revenue, order and sku volume over the month.
   #
+  # @param Hash range
+  #
   # @return Array<Hash>
-  def self.series
+  def self.series(range)
     days = (1..Time.now.month).to_a
-    values = Hash[select_all(SERIES).map {|v| [v['day'].to_i, v]}]
+    values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'].to_i, v]}]
     days.map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => '0', 'sku_volume' => 0}}
   end
 
   # Returns a hash, where each key is a different aggregate value e.g. average_value
   # revenue etc.
   #
+  # @param Hash range
+  #
   # @return Hash
-  def self.aggregates
-    select_all(AGGREGATES).first
+  def self.aggregates(range)
+    select_all_by_range(AGGREGATES, range, 'month').first
+  end
+
+  # Generates a query by interpolating the appropriate time predicate functions
+  # into the provided string. It then executes the query using #select_all.
+  #
+  # @param String query
+  # @param Hash range
+  # @param String col
+  # @param String prev_col
+  #
+  # @return Array<Hash>
+  def self.select_all_by_range(query, range, col, prev_col = nil)
+    case range[:mode]
+    when :month, :none
+      if range[:mode] == :none
+        now = Time.now
+        year = now.year
+        month = now.month
+      else
+        year = range[:year]
+        month = range[:month]
+      end
+
+      prepared = query.gsub(/(:current|:previous)/) do |match|
+        case match
+        when ':current'   then "within_month(#{year}, #{month}, #{col})"
+        when ':previous'  then "within_previous_month(#{year}, #{month}, #{prev_col || col})"
+        end
+      end
+
+      select_all(prepared)
+    when :range
+
+    end
   end
 
   TOP_TEN = %{
@@ -35,7 +75,7 @@ class OrderOverviewReport < Report
           SELECT ois.sku_id, ois.quantity, ois.total
           FROM orders AS os
           JOIN order_items AS ois ON ois.order_id = os.id
-          WHERE within_last('month', os.created_at)
+          WHERE :previous
         ) AS ois
         GROUP BY sku_id ORDER BY %s DESC
       ) AS ois
@@ -66,7 +106,7 @@ class OrderOverviewReport < Report
           SELECT ois.sku_id, ois.quantity, ois.total
           FROM orders AS os
           JOIN order_items AS ois ON ois.order_id = os.id
-          WHERE within_this('month', os.created_at)
+          WHERE :current
         ) AS ois
         GROUP BY sku_id ORDER BY %s DESC LIMIT 10
       ) AS chart
@@ -87,7 +127,7 @@ class OrderOverviewReport < Report
         (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS sku_volume,
         DATE_PART('day', os.created_at) AS day
       FROM orders AS os
-      WHERE is_revenue(os.status) AND within_this('month', os.created_at)
+      WHERE is_revenue(os.status) AND :current
     ) AS os
     GROUP BY os.day
     }.freeze
@@ -145,7 +185,7 @@ class OrderOverviewReport < Report
         (SELECT revenue FROM previous) AS previous_revenue,
         (SELECT average_value FROM previous) AS previous_average_value
       FROM totals
-      WHERE within_this('month', month)
+      WHERE :current
     ) AS os
   }.freeze
 end

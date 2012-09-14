@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   scope :module => 'islay_shop' do
     namespace :admin do
       scope :path => 'reports/shop', :controller => 'reports' do
-        get '(month-:month-:year)(/range-:from-:to)', :action => :index,    :as => 'shop_reports'
+        get '(month-:year-:month)(/range-:from-:to)', :action => :index,    :as => 'shop_reports'
 
         get 'orders',                         :action => :orders,   :as => 'order_reports'
         get 'products',                       :action => :products, :as => 'product_reports'
