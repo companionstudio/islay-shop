@@ -390,7 +390,7 @@ IslayShop.LineGraph = Backbone.View.extend({
     this.tags = []
 
     for (var i = 0, ii = cover.y.length; i < ii; i++) {
-      var tag = $H('div.tag', IslayShop.u.formatMoney(cover.values[i]));
+      var tag = $H('div.tag', this.format(cover.values[i]));
       this.tags.push(tag);
       this.$el.append(tag);
       tag.css({left: cover.x, top: cover.y[i] - (tag.outerHeight() / 2)});
@@ -399,6 +399,17 @@ IslayShop.LineGraph = Backbone.View.extend({
 
   hoverOut: function() {
     this.tags && _.each(this.tags, function(tag) {tag.remove();});
+  },
+
+  format: function(val) {
+    var val = val || 0;
+
+    if (this.options.values.monentaryValues) {
+      return IslayShop.u.formatMoney(val);
+    }
+    else {
+      return val;
+    }
   },
 
   renderXLabels: function(labels) {
@@ -419,7 +430,7 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     this.current = 0;
 
     this.values = {
-      value:      {x: [], y: [], xLabels: [], color: 'green'},
+      value:      {x: [], y: [], xLabels: [], color: 'green', monentaryValues: true},
       volume:     {x: [], y: [], xLabels: [], color: 'blue'},
       sku_volume: {x: [], y: [], xLabels: [], color: 'red'}
     };
@@ -435,7 +446,7 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     }, this);
 
     this.graphs = _.map(this.values, function(v) {
-      return new IslayShop.LineGraph({color: 'blue', values: v});
+      return new IslayShop.LineGraph({values: v});
     });
 
     var ths    = this.options.table.find('thead th:gt(0)'),
