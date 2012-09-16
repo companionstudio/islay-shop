@@ -75,41 +75,31 @@
 
     %div.report-cell.total
       %h3 Order Volume
-      %p.total
-        = @totals['this_volume']
-      %p(class="move-#{@totals['volume_movement']}")
-        #{@totals['volume_movement'].humanize} from #{@totals['previous_volume']}
-      %p.average
-        Average: #{@totals['average_volume']}
-      %p.best
-        Best: #{@totals['best_volume']} for #{format_month(@totals['best_volume_month'])}
+      = @totals.total('volume', false)
+      = @totals.movement('volume', false)
+      = @totals.average('volume', false)
+      = @totals.best('volume', false)
 
     %div.report-cell.total
       %h3 Revenue
-      %p.total
-        = format_money(@totals['this_revenue'])
-      %p(class="move-#{@totals['revenue_movement']}")
-        #{@totals['revenue_movement'].humanize} from #{format_money(@totals['previous_revenue'])}
-      %p.average
-        Average: #{format_money(@totals['average_revenue'])}
-      %p.best
-        Best: #{format_money(@totals['best_revenue'])} for #{format_month(@totals['best_revenue_month'])}
+      = @totals.total('revenue')
+      = @totals.movement('revenue')
+      = @totals.average('revenue')
+      = @totals.best('revenue')
 
     %div.report-cell.total
       %h3 Average Order Value
-      %p.total
-        = format_money(@totals['this_average_value'])
-      %p(class="move-#{@totals['average_value_movement']}")
-        #{@totals['average_value_movement'].humanize} from #{format_money(@totals['previous_average_value'])}
-      %p.average
-        Average: #{format_money(@totals['average_value'])}
-      %p.best
-        Best: #{format_money(@totals['best_average_value'])} for #{format_month(@totals['best_average_value_month'])}
+      = @totals.total('average_value')
+      = @totals.movement('average_value')
+      = @totals.average('average_value')
+      = @totals.best('average_value')
 
     %div.report-cell.total
       %h3 Total Orders
       %p.total= @totals['total_volume']
-      %p.since Since: #{@totals['first_order']}
+      %p.since
+        Since:
+        %span.time = @totals['first_order']
 
     %div.report-cell.total
       %h3 Total Revenue

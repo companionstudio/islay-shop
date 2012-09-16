@@ -29,7 +29,7 @@ class OrderOverviewReport < Report
   #
   # @return Hash
   def self.aggregates(range)
-    select_all_by_range(AGGREGATES, range, 'month').first || {}
+    OrderAggregateDecorator.new(select_all_by_range(AGGREGATES, range, 'month').first || {})
   end
 
   # Generates a query by interpolating the appropriate time predicate functions
@@ -181,7 +181,7 @@ class OrderOverviewReport < Report
       (SELECT SUM(revenue) FROM totals) AS total_revenue,
       (SELECT SUM(revenue) / SUM(volume) FROM totals) AS average_revenue,
       (SELECT SUM(volume) / COUNT(totals.*) FROM totals)::integer AS average_volume,
-      (SELECT SUM(total) / COUNT(orders) FROM orders WHERE is_revenue(status)) AS average_value,
+      (SELECT SUM(total) / COUNT(orders) FROM orders WHERE is_revenue(status)) AS average_average_value,
       (SELECT created_at FROM orders WHERE is_revenue(status) ORDER BY created_at ASC LIMIT 1) AS first_order
     FROM (
       SELECT
