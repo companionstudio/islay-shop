@@ -18,6 +18,7 @@ class OrderOverviewReport < Report
   # @return Array<Hash>
   def self.series(range)
     values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'], v]}]
+    puts "WHAT " + values.inspect
     range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
   end
 
@@ -132,7 +133,7 @@ class OrderOverviewReport < Report
       SELECT
         total,
         (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS sku_volume,
-        REPLACE(TO_CHAR(os.created_at, 'DD/MM'), '0', '') AS day
+        REGEXP_REPLACE(TO_CHAR(os.created_at, 'DD/MM/YYYY'), '0', '') AS day
       FROM orders AS os
       WHERE is_revenue(os.status) AND :current
     ) AS os

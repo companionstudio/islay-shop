@@ -356,13 +356,12 @@ IslayShop.LineGraph = Backbone.View.extend({
   initialize: function() {
     this.x = this.options.values.x;
     this.y = this.options.values.y;
-    this.xLabels = this.options.values.xLabels;
   },
 
   render: function() {
     this.paper = Raphael(this.el);
 
-    var opts = {symbol: 'circle', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
+    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisxstep: 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
     this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
 
     // These callbacks are defined inline, and we use the behaviour of closures
@@ -370,8 +369,7 @@ IslayShop.LineGraph = Backbone.View.extend({
     // gRaphael's limited callbacks.
     var view = this;
     this.line.hoverColumn(function() {view.hoverIn(this);}, function() {view.hoverOut(this);});
-
-    if (this.xLabels) {this.renderXLabels(this.xLabels)};
+    this.renderXLabels();
 
     return this;
   },
@@ -414,7 +412,8 @@ IslayShop.LineGraph = Backbone.View.extend({
 
   renderXLabels: function(labels) {
     var els = this.line.axis[0].text.items;
-    _.each(labels, function(label, i) {els[i].attr({text: label});});
+    els[0].attr({text: this.options.start});
+    els[1].attr({text: this.options.end});
   }
 });
 
@@ -430,23 +429,28 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     this.current = 0;
 
     this.values = {
-      value:      {x: [], y: [], xLabels: [], color: 'green', monentaryValues: true},
-      volume:     {x: [], y: [], xLabels: [], color: 'blue'},
-      sku_volume: {x: [], y: [], xLabels: [], color: 'red'}
+      value:      {x: [], y: [], color: 'green', monentaryValues: true},
+      volume:     {x: [], y: [], color: 'blue'},
+      sku_volume: {x: [], y: [], color: 'red'}
     };
 
     _.each(this.options.table.find('tbody tr'), function(el, i) {
       var values = _.map($(el).find('td:not(:first-child)'), function(el) {
         return parseInt($(el).text());
-      })
+      });
 
-      this.update('value', i, values[0], i + 1);
-      this.update('volume', i, values[1], i + 1);
-      this.update('sku_volume', i, values[2], i + 1);
+      this.update('value', i, values[0]);
+      this.update('volume', i, values[1]);
+      this.update('sku_volume', i, values[2]);
     }, this);
 
+    // Determine the date range
+    var range = this.options.table.find('tbody tr:first-child th, tbody tr:last-child th'),
+        start = $(range[0]).text(),
+        end   = $(range[1]).text();
+
     this.graphs = _.map(this.values, function(v) {
-      return new IslayShop.LineGraph({values: v});
+      return new IslayShop.LineGraph({start: start, end: end, values: v});
     });
 
     var ths    = this.options.table.find('thead th:gt(0)'),
@@ -464,11 +468,10 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     this.current = index;
   },
 
-  update: function(key, x, y, label) {
+  update: function(key, x, y) {
     var v = this.values[key];
     v.x.push(x);
     v.y.push(y);
-    if (label) {v.xLabels.push(label);}
   },
 
   render: function() {
