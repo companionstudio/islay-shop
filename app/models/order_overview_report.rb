@@ -17,9 +17,8 @@ class OrderOverviewReport < Report
   #
   # @return Array<Hash>
   def self.series(range)
-    days = (1..Time.now.day).to_a
-    values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'].to_i, v]}]
-    days.map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => '0', 'sku_volume' => 0}}
+    values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'], v]}]
+    range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
   end
 
   # Returns a hash, where each key is a different aggregate value e.g. average_value
@@ -133,7 +132,7 @@ class OrderOverviewReport < Report
       SELECT
         total,
         (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS sku_volume,
-        DATE_PART('day', os.created_at) AS day
+        REPLACE(TO_CHAR(os.created_at, 'DD/MM'), '0', '') AS day
       FROM orders AS os
       WHERE is_revenue(os.status) AND :current
     ) AS os
