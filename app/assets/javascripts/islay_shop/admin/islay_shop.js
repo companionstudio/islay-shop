@@ -33,7 +33,7 @@ IslayShop.DateSelection = Backbone.View.extend({
     this.$el.attr({action: this.options.action, method: 'get'});
     this.toggles = {};
 
-    this.url = this.options.action.replace(/\/(month|range|compare)-.+\d+$/, '');
+    this.url = this.options.action.replace(/\/(month|range|compare)[\/-].+\d+$/, '');
     var opts = {url: this.url, fullUrl: this.options.action};
 
     this.widgets = {
@@ -178,7 +178,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   },
 
   goTo: function(month, year) {
-    var url = this.url + '/month-' + year + '-' + (month + 1);
+    var url = this.options.url + '/month-' + year + '-' + (month + 1);
     window.location = url;
   },
 
