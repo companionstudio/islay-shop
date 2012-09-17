@@ -386,9 +386,14 @@ IslayShop.LineGraph = Backbone.View.extend({
 
   hoverIn: function(cover) {
     this.tags = []
+    var date = this.options.dates[cover.axis];
 
     for (var i = 0, ii = cover.y.length; i < ii; i++) {
-      var tag = $H('div.tag', this.format(cover.values[i]));
+      var tag = $H('div.tag', [
+        $H('span.value', this.format(cover.values[i])),
+        $H('span.date', date)
+      ]);
+
       this.tags.push(tag);
       this.$el.append(tag);
       tag.css({left: cover.x, top: cover.y[i] - (tag.outerHeight() / 2)});
@@ -412,8 +417,8 @@ IslayShop.LineGraph = Backbone.View.extend({
 
   renderXLabels: function(labels) {
     var els = this.line.axis[0].text.items;
-    els[0].attr({text: this.options.start});
-    els[1].attr({text: this.options.end});
+    els[0].attr({text: _.first(this.options.dates)});
+    els[1].attr({text: _.last(this.options.dates)});
   }
 });
 
@@ -445,12 +450,11 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     }, this);
 
     // Determine the date range
-    var range = this.options.table.find('tbody tr:first-child th, tbody tr:last-child th'),
-        start = $(range[0]).text(),
-        end   = $(range[1]).text();
+    var dths = this.options.table.find('tbody th'),
+        dates = _.map(dths, function(el) {return $(el).text();});
 
     this.graphs = _.map(this.values, function(v) {
-      return new IslayShop.LineGraph({start: start, end: end, values: v});
+      return new IslayShop.LineGraph({dates: dates, values: v});
     });
 
     var ths    = this.options.table.find('thead th:gt(0)'),
