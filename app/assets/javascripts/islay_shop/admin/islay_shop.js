@@ -358,11 +358,13 @@ IslayShop.LineGraph = Backbone.View.extend({
     this.y = this.options.values.y;
   },
 
-  render: function() {
+  render: function(width) {
     this.paper = Raphael(this.el);
 
-    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
-    this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
+    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, colors: [this.options.values.color]},
+        graphW = width ? width - 60 : 500;
+
+    this.line = this.paper.linechart(30, 0, graphW, 250, this.x, this.y, opts);
 
     // These callbacks are defined inline, and we use the behaviour of closures
     // to keep our view in scope and call our own handlers. This is because of
@@ -484,8 +486,8 @@ IslayShop.SeriesGraph = Backbone.View.extend({
     this.$el.append(this.controls.render().el);
 
     _.each(this.graphs, function(view, i) {
-      this.$el.append(view.el);
-      view.render();
+      this.$el.append(view.$el);
+      view.render(view.$el.innerWidth());
 
       if (i > 0) {view.hide();}
     }, this);
