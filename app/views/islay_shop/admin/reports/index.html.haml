@@ -97,14 +97,10 @@
     %div.report-cell.total
       %h3 Total Orders
       %p.total= @totals['total_volume']
-      %p.since
-        Since:
-        %span.time = @totals['first_order']
+      %p.since Since: #{format_month(@totals['first_order'])}
 
     %div.report-cell.total
       %h3 Total Revenue
       %p.total= format_money(@totals['total_revenue'])
-      %p.since
-        Since:
-        %span.time= @totals['first_order']
+      %p.since Since: #{format_month(@totals['first_order'])}
 
