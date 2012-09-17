@@ -6,8 +6,8 @@ class OrderOverviewReport < Report
   # @return Hash<Array>
   def self.top_ten(range)
     {
-      :revenue  => select_all_by_range(TOP_TEN % %w(revenue revenue), range, 'os.created_at', 'ois.created_at'),
-      :volume   => select_all_by_range(TOP_TEN % %w(volume volume), range, 'os.created_at', 'ois.created_at')
+      :revenue  => select_all_by_range(TOP_TEN % %w(revenue revenue), range, 'os.created_at', 'os.created_at'),
+      :volume   => select_all_by_range(TOP_TEN % %w(volume volume), range, 'os.created_at', 'os.created_at')
     }
   end
 
@@ -18,7 +18,6 @@ class OrderOverviewReport < Report
   # @return Array<Hash>
   def self.series(range)
     values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'], v]}]
-    puts "WHAT " + values.inspect
     range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
   end
 
@@ -83,7 +82,7 @@ class OrderOverviewReport < Report
           SELECT ois.sku_id, ois.quantity, ois.total
           FROM orders AS os
           JOIN order_items AS ois ON ois.order_id = os.id
-          WHERE :previous
+          WHERE is_revenue(os.status) AND :previous
         ) AS ois
         GROUP BY sku_id ORDER BY %s DESC
       ) AS ois
@@ -91,7 +90,7 @@ class OrderOverviewReport < Report
 
     SELECT
       *,
-      position - previous_position AS shift,
+      ABS(position - previous_position) AS shift,
       CASE
         WHEN previous_position < 10 THEN 'new'
         WHEN position = previous_position THEN 'none'
@@ -106,7 +105,7 @@ class OrderOverviewReport < Report
         skus.product_id,
         (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
         ROW_NUMBER() OVER(ORDER BY chart.revenue DESC) AS position,
-      previous.position AS previous_position
+        previous.position AS previous_position
       FROM (
         SELECT
           sku_id, SUM(ois.quantity) AS volume, SUM(ois.total) AS revenue

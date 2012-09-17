@@ -40,7 +40,9 @@
           - @top_ten[:revenue].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+              %td
+                = link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+                = entry['sku_name']
               %td= format_money(entry['revenue'])
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
@@ -60,7 +62,9 @@
           - @top_ten[:volume].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td= link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+              %td
+                = link_to(entry['product_name'], path(:product, :id => entry['product_id']))
+                = entry['sku_name']
               %td= entry['volume']
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
