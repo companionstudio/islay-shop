@@ -361,7 +361,7 @@ IslayShop.LineGraph = Backbone.View.extend({
   render: function() {
     this.paper = Raphael(this.el);
 
-    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: this.x.length - 1, axisxstep: 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
+    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, gutter: 10, colors: [this.options.values.color]};
     this.line = this.paper.linechart(30, 0, 500, 250, this.x, this.y, opts);
 
     // These callbacks are defined inline, and we use the behaviour of closures

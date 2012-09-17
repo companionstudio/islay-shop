@@ -133,7 +133,7 @@ class OrderOverviewReport < Report
       SELECT
         total,
         (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS sku_volume,
-        REGEXP_REPLACE(TO_CHAR(os.created_at, 'DD/MM/YYYY'), '0', '') AS day
+        REGEXP_REPLACE(TO_CHAR(os.created_at, 'DD/MM/YYYY'), '0(.)\\/', E'\\\\1\/', 'g') AS day
       FROM orders AS os
       WHERE is_revenue(os.status) AND :current
     ) AS os
