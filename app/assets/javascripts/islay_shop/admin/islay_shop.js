@@ -589,18 +589,18 @@ IslayShop.SortableTable = Backbone.View.extend({
 /* -------------------------------------------------------------------------- */
 /* TABBED TABLE CELL
 /* -------------------------------------------------------------------------- */
-IslayShop.TabbedTables = Backbone.View.extend({
+IslayShop.Tabs = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'toggle');
 
-    this.tables = [];
+    this.entries = [];
     this.current = 0;
     var labels = [];
 
-    _.each(this.$el.find('table'), function(table, i) {
-      var $table = $(table);
-      this.tables.push($table);
-      labels.push($table.find('caption').text());
+    _.each(this.$el.find(this.options.tabs), function(el, i) {
+      var $el = $(el);
+      this.entries.push($el);
+      labels.push($el.find(this.options.labels).remove().text());
     }, this);
 
     this.controls = new IslayShop.SegmentedControl({labels: labels});
@@ -610,19 +610,19 @@ IslayShop.TabbedTables = Backbone.View.extend({
   },
 
   toggle: function(index) {
-    this.tables[this.current].hide();
-    this.tables[index].show();
+    this.entries[this.current].hide();
+    this.entries[index].show();
     this.current = index;
   },
 
   render: function() {
     this.$el.find('h3').after(this.controls.render().el);
-    _.each(this.tables, function(table, i) {
+    _.each(this.entries, function(el, i) {
       if (this.options.sortable === true) {
-        var view = new IslayShop.SortableTable({el: table});
+        var view = new IslayShop.SortableTable({el: el});
       }
       if (i > 0) {
-        table.hide();
+        el.hide();
       }
     }, this);
 
@@ -632,18 +632,19 @@ IslayShop.TabbedTables = Backbone.View.extend({
 
 $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var topTen = new IslayShop.TabbedTables({el: $("#top-ten")});
+  var topTen = new IslayShop.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
   var dates = new IslayShop.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.products').run(function() {
-  var tabs = new IslayShop.TabbedTables({el: $("#product-listing"), sortable: true});
+  var tabs = new IslayShop.Tabs({el: $("#product-listing"), sortable: true, tabs: 'table', labels: 'caption'});
 });
 
 $SP.where('#islay-shop-admin-reports.product').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
   var skus = new IslayShop.SortableTable({el: $("#skus-summary")});
+  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
 
   var dates = new IslayShop.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
