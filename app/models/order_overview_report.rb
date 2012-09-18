@@ -5,10 +5,11 @@ class OrderOverviewReport < Report
   #
   # @return Hash<Array>
   def self.top_ten(range)
-    {
-      :revenue  => select_all_by_range(TOP_TEN % %w(revenue revenue), range, 'os.created_at', 'os.created_at'),
-      :volume   => select_all_by_range(TOP_TEN % %w(volume volume), range, 'os.created_at', 'os.created_at')
-    }
+      [:revenue, :volume].inject({}) do |acc, col|
+        results = select_all_by_range(TOP_TEN % [col, col], range, :column => 'os.created_at', :previous_column => 'os.created_at')
+        acc[col] = results.map {|r| TopTenDecorator.new(r)}
+        acc
+      end
   end
 
   # Calculates the revenue, order and sku volume over the month.
@@ -17,7 +18,7 @@ class OrderOverviewReport < Report
   #
   # @return Array<Hash>
   def self.series(range)
-    values = Hash[select_all_by_range(SERIES, range, 'os.created_at').map {|v| [v['day'], v]}]
+    values = Hash[select_all_by_range(SERIES, range, :column => 'os.created_at').map {|v| [v['day'], v]}]
     range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
   end
 
@@ -28,54 +29,12 @@ class OrderOverviewReport < Report
   #
   # @return Hash
   def self.aggregates(range)
-    OrderAggregateDecorator.new(select_all_by_range(AGGREGATES, range, 'month').first || {})
-  end
-
-  # Generates a query by interpolating the appropriate time predicate functions
-  # into the provided string. It then executes the query using #select_all.
-  #
-  # @param String query
-  # @param Hash range
-  # @param String col
-  # @param String prev_col
-  #
-  # @return Array<Hash>
-  def self.select_all_by_range(query, range, col, prev_col = nil)
-    prepared = case range[:mode]
-    when :month, :none
-      if range[:mode] == :none
-        now = Time.now
-        year = now.year
-        month = now.month
-      else
-        year = range[:year]
-        month = range[:month]
-      end
-
-      query.gsub(/(:current|:previous)/) do |match|
-        case match
-        when ':current'   then "within_month(#{year}, #{month}, #{col})"
-        when ':previous'  then "within_previous_month(#{year}, #{month}, #{prev_col || col})"
-        end
-      end
-    when :range
-      from  = "'#{range[:from]}'"
-      to    = "'#{range[:to]}'"
-
-      query.gsub(/(:current|:previous)/) do |match|
-        case match
-        when ':current'   then "within_dates(#{from}, #{to}, #{col})"
-        when ':previous'  then "within_previous_dates(#{from}, #{to}, #{prev_col || col})"
-        end
-      end
-    end
-
-    select_all(prepared)
+    OrderAggregateDecorator.new(select_all_by_range(AGGREGATES, range, :column => 'month').first || {})
   end
 
   TOP_TEN = %{
     WITH previous AS (
-      SELECT *, ROW_NUMBER() OVER(ORDER BY revenue DESC) AS position
+      SELECT *, ROW_NUMBER() OVER(ORDER BY %s DESC) AS position
       FROM (
         SELECT sku_id, SUM(ois.total) AS revenue, COUNT(ois) AS volume
         FROM (
@@ -84,7 +43,7 @@ class OrderOverviewReport < Report
           JOIN order_items AS ois ON ois.order_id = os.id
           WHERE is_revenue(os.status) AND :previous
         ) AS ois
-        GROUP BY sku_id ORDER BY %s DESC
+        GROUP BY sku_id
       ) AS ois
     )
 
@@ -101,8 +60,12 @@ class OrderOverviewReport < Report
     FROM (
       SELECT
         chart.*,
-        skus.volume AS sku_name,
         skus.product_id,
+        formatted_weight(skus.weight),
+        formatted_volume(skus.volume),
+        formatted_money(skus.price) AS formatted_price,
+        skus.name,
+        skus.size,
         (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
         ROW_NUMBER() OVER(ORDER BY chart.revenue DESC) AS position,
         previous.position AS previous_position

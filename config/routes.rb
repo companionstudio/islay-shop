@@ -1,13 +1,15 @@
 Rails.application.routes.draw do
   scope :module => 'islay_shop' do
     namespace :admin do
-      scope :path => 'reports/shop', :controller => 'reports' do
-        get '(month-:year-:month)(/range/:from/:to)', :action => :index,    :as => 'shop_reports'
+      range = "(/month-:year-:month)(/range/:from/:to)"
 
-        get 'orders',                         :action => :orders,   :as => 'order_reports'
-        get 'products',                       :action => :products, :as => 'product_reports'
-        get 'products/:id',                   :action => :product,  :as => 'product_report'
-        get 'products/:product_id/skus/:id',  :action => :sku,      :as => 'sku_report'
+      scope :path => 'reports/shop', :controller => 'reports' do
+        get range, :action => :index,    :as => 'shop_reports'
+
+        get 'orders',                                 :action => :orders,   :as => 'order_reports'
+        get 'products',                               :action => :products, :as => 'product_reports'
+        get "products/:id#{range}",                   :action => :product,  :as => 'product_report'
+        get "products/:product_id/skus/:id#{range}",  :action => :sku,      :as => 'sku_report'
       end
 
       scope :path => 'catalogue' do

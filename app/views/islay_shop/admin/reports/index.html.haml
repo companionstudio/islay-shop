@@ -41,8 +41,7 @@
             %tr
               %td.rank= entry['position']
               %td
-                = link_to(entry['product_name'], path(:product, :id => entry['product_id']))
-                = entry['sku_name']
+                = link_to(entry.long_desc, path(:product, :id => entry['product_id']))
               %td= format_money(entry['revenue'])
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
@@ -63,8 +62,7 @@
             %tr
               %td.rank= entry['position']
               %td
-                = link_to(entry['product_name'], path(:product, :id => entry['product_id']))
-                = entry['sku_name']
+                = link_to(entry.long_desc, path(:product, :id => entry['product_id']))
               %td= entry['volume']
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize

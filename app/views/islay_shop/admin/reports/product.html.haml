@@ -1,0 +1,72 @@
+- render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop', path(:shop_reports))
+- sub_header('Products', path(:product_reports))
+- sub_header(@product.name)
+
+= content(:class => 'inset') do
+  %div#order-graphs.report-cell
+    %h3 Product Over Time
+
+    %table.series-graph
+      %thead
+        %tr
+          %th Day
+          %th Value
+          %th Volume
+
+      %tbody
+        - @series.each do |entry|
+          %tr
+            %th= entry['day']
+            %td= entry['value']
+            %td= entry['volume']
+
+  = column(8) do
+    %div.report-cell
+      %h3 SKUs
+
+      %table#skus-summary
+        %thead
+          %tr
+            %th SKU
+            %th.sorted Value
+            %th Volume
+
+        %tbody
+          - @skus.each do |entry|
+            %tr
+              %td= link_to(entry['id'], path(:sku_report, :product_id => params[:id], :id => entry['id']))
+              %td= format_money(entry['value'])
+              %td= entry['quantity']
+
+  = column(4) do
+    %div.report-cell
+      %h3 Totals
+
+      = format_money(@totals['total_value'])
+      = @totals['total_volume']
+
+    %div.report-cell
+      %h3 Best
+
+      %div.day
+        %h4 Day
+
+        %p.revenue
+          %strong= format_money(@totals['best_day_revenue'])
+          %span= @totals['best_day_for_revenue']
+
+        %p.volume
+          %strong= format_money(@totals['best_day_volume'])
+          %span= @totals['best_day_for_volume']
+
+      %div.month
+        %h4 Month
+
+        %p.revenue
+          %strong= format_money(@totals['best_month_revenue'])
+          %span= format_month(@totals['best_month_for_revenue'])
+
+        %p.volume
+          %strong= format_money(@totals['best_month_volume'])
+          %span= format_month(@totals['best_month_for_volume'])

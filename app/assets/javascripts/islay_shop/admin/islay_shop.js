@@ -633,11 +633,18 @@ IslayShop.TabbedTables = Backbone.View.extend({
 $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
   var topTen = new IslayShop.TabbedTables({el: $("#top-ten")});
-
   var dates = new IslayShop.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.products').run(function() {
   var tabs = new IslayShop.TabbedTables({el: $("#product-listing"), sortable: true});
+});
+
+$SP.where('#islay-shop-admin-reports.product').run(function() {
+  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
+  var skus = new IslayShop.SortableTable({el: $("#skus-summary")});
+
+  var dates = new IslayShop.DateSelection({action: window.location.href});
+  $('#sub-header').append(dates.render().el);
 });

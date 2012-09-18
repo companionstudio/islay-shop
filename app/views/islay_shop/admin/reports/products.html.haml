@@ -1,5 +1,5 @@
 - render :partial => 'islay/admin/reports/nav'
-- sub_header('Shop Overview', path(:shop_reports))
+- sub_header('Shop', path(:shop_reports))
 - sub_header('Products')
 
 = content(:class => 'inset') do
@@ -28,7 +28,7 @@
       %tbody
         - @products.each do |product|
           %tr
-            %td= link_to(product.name)
+            %td= link_to(product.name, path(:product_report, :id => product))
             %td= format_money(product.revenue)
             %td= product.volume
 
