@@ -1,5 +1,5 @@
 class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationController
-  before_filter :parse_dates, :only => [:index, :product]
+  before_filter :parse_dates, :only => [:index, :product, :sku]
 
   def index
     @top_ten  = OrderOverviewReport.top_ten(@report_range)
@@ -20,9 +20,16 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
   end
 
   def product
-    @product = Product.find(params[:id])
-    @series = ProductReport.product_series(@product.id, @report_range)
-    @totals = ProductReport.product_aggregates(@product.id, @report_range)
-    @skus = ProductReport.product_skus_summary(@product.id, @report_range)
+    @product  = Product.find(params[:id])
+    @series   = ProductReport.product_series(@product.id, @report_range)
+    @totals   = ProductReport.product_aggregates(@product.id, @report_range)
+    @skus     = ProductReport.product_skus_summary(@product.id, @report_range)
+  end
+
+  def sku
+    @product  = Product.find(params[:product_id])
+    @sku      = Sku.find(params[:id])
+    @series   = SkuReport.series(@sku.id, @report_range)
+    @totals   = SkuReport.aggregates(@sku.id, @report_range)
   end
 end
