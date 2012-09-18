@@ -6,7 +6,7 @@ class ProductReport < Report
   #
   # @return Array<Hash>
   def self.product_series(id, range)
-    result = select_all_by_range(PRODUCT_SERIES, range, :column => 'os.created_at')
+    result = select_all_by_range(PRODUCT_SERIES, range, :column => 'os.created_at', :id => id)
     values = Hash[result.map {|v| [v['day'], v]}]
     range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0}}
   end
@@ -61,7 +61,7 @@ class ProductReport < Report
         REGEXP_REPLACE(TO_CHAR(os.created_at, 'DD/MM/YYYY'), '0(.)\\/', E'\\\\1\/', 'g') AS day
       FROM order_items AS ois
       JOIN orders AS os ON os.id = ois.order_id
-      WHERE ois.sku_id IN (SELECT id FROM skus WHERE product_id = 36)
+      WHERE ois.sku_id IN (SELECT id FROM skus WHERE product_id = :id)
       AND is_revenue(os.status) AND :current
     ) AS ois
     GROUP BY day
