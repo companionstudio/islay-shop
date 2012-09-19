@@ -637,6 +637,14 @@ $SP.where('#islay-shop-admin-reports.index').run(function() {
   $('#sub-header').append(dates.render().el);
 });
 
+$SP.where('#islay-shop-admin-reports.orders').run(function() {
+  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
+  var orders = new IslayShop.SortableTable({el: $("#orders-summary")});
+  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
+  var dates = new IslayShop.DateSelection({action: window.location.href});
+  $('#sub-header').append(dates.render().el);
+});
+
 $SP.where('#islay-shop-admin-reports.products').run(function() {
   var tabs = new IslayShop.Tabs({el: $("#product-listing"), sortable: true, tabs: 'table', labels: 'caption'});
 });

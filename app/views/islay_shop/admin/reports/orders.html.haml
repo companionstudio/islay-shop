@@ -1,0 +1,87 @@
+- render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop', path(:shop_reports))
+- sub_header('Orders')
+
+= content(:class => 'inset') do
+  %div.report-cell
+    %h3 Orders Over Time
+
+    %table.series-graph
+      %thead
+        %tr
+          %th Day
+          %th Order Value
+          %th Order Volume
+          %th SKU Volume
+
+      %tbody
+        - @series.each do |entry|
+          %tr
+            %th= entry['day']
+            %td= entry['value']
+            %td= entry['volume']
+            %td= entry['sku_volume']
+
+  %div.count-8.report-cell
+    %h3 Orders
+
+    %table#orders-summary
+      %thead
+        %tr
+          %th Reference
+          %th SKUs
+          %th Qty.
+          %th Order Total
+          %th.sorted Created At
+
+      %tbody
+        - @orders.each do |entry|
+          %tr
+            %td= link_to("#{entry['reference']} - #{entry['name']}", path(:order, :id => entry['id']))
+            %td= entry['sku_names']
+            %td= entry['quantity']
+            %td= format_money(entry['total'])
+            %td= entry['created_at']
+
+  = column(4) do
+    %div.report-cell.total
+      %h3 Average Order Value
+      %p.total= format_money(@totals['average_order_value'])
+
+    %div.report-cell
+      %h3 Totals
+
+      %h4 Revenue
+      %p.value= format_money(@totals['total_value'])
+
+      %h4 Volume
+      %p.value= @totals['total_volume']
+
+    %div#bests.report-cell
+      %h3 Best
+
+      %div.day
+        %h4 Day
+
+        %h5 Revenue
+        %p.value
+          = format_money(@totals['best_day_revenue'])
+          %em= format_day(@totals['best_day_for_revenue'])
+
+        %h5 Volume
+        %p.value
+          = @totals['best_day_volume']
+          %em= format_day(@totals['best_day_for_volume'])
+
+      %div.month
+        %h4 Month
+
+        %h5 Revenue
+        %p.value
+          = format_money(@totals['best_month_revenue'])
+          %em= format_month(@totals['best_month_for_revenue'])
+
+        %h5 Volume
+        %p.value
+          = @totals['best_month_volume']
+          %em= format_month(@totals['best_month_for_volume'])
