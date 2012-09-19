@@ -64,8 +64,11 @@
     %div.report-cell
       %h3 Totals
 
-      = format_money(@totals['total_value'])
-      = @totals['total_volume']
+      %h4 Revenue
+      %p.value= format_money(@totals['total_value'])
+
+      %h4 Volume
+      %p.value= @totals['total_volume']
 
     %div#bests.report-cell
       %h3 Best
@@ -73,21 +76,25 @@
       %div.day
         %h4 Day
 
-        %p.revenue
-          %strong= format_money(@totals['best_day_revenue'])
-          %span= @totals['best_day_for_revenue']
+        %h5 Revenue
+        %p.value
+          = format_money(@totals['best_day_revenue'])
+          %em= format_day(@totals['best_day_for_revenue'])
 
-        %p.volume
-          %strong= @totals['best_day_volume']
-          %span= @totals['best_day_for_volume']
+        %h5 Volume
+        %p.value
+          = @totals['best_day_volume']
+          %em= format_day(@totals['best_day_for_volume'])
 
       %div.month
         %h4 Month
 
-        %p.revenue
-          %strong= format_money(@totals['best_month_revenue'])
-          %span= format_month(@totals['best_month_for_revenue'])
+        %h5 Revenue
+        %p.value
+          = format_money(@totals['best_month_revenue'])
+          %em= format_month(@totals['best_month_for_revenue'])
 
-        %p.volume
-          %strong= @totals['best_month_volume']
-          %span= format_month(@totals['best_month_for_volume'])
+        %h5 Volume
+        %p.value
+          = @totals['best_month_volume']
+          %em= format_month(@totals['best_month_for_volume'])

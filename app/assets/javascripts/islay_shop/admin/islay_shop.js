@@ -654,5 +654,6 @@ $SP.where('#islay-shop-admin-reports.product').run(function() {
 $SP.where('#islay-shop-admin-reports.sku').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
   var dates = new IslayShop.DateSelection({action: window.location.href});
+  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   $('#sub-header').append(dates.render().el);
 });
