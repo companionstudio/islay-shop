@@ -32,5 +32,6 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @sku      = Sku.find(params[:id])
     @series   = SkuReport.series(@sku.id, @report_range)
     @totals   = SkuReport.aggregates(@sku.id, @report_range)
+    @orders   = SkuReport.orders(@sku.id, @report_range)
   end
 end

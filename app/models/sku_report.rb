@@ -21,6 +21,16 @@ class SkuReport < Report
     select_all_by_range(AGGREGATES, range, :column => 'os.created_at', :id => id).first
   end
 
+  # Generates a list of orders which include the specified SKU.
+  #
+  # @param Integer id
+  # @param Hash range
+  #
+  # @return Array<Hash>
+  def self.orders(id, range)
+    select_all_by_range(ORDERS, range, :column => 'os.created_at', :id => id)
+  end
+
   SERIES = %{
     SELECT SUM(ois.total) AS value, SUM(ois.quantity) AS volume, day
     FROM (
@@ -73,5 +83,13 @@ class SkuReport < Report
       (SELECT day FROM volume_day)        AS best_day_for_volume,
       (SELECT volume FROM volume_month)   AS best_month_volume,
       (SELECT month FROM volume_month)    AS best_month_for_volume
+  }.freeze
+
+  ORDERS = %{
+    SELECT os.id, os.reference, os.name, os.created_at, ois.quantity, ois.total
+    FROM order_items AS ois
+    JOIN orders AS os ON os.id = ois.order_id AND is_revenue(os.status) AND :current
+    WHERE ois.sku_id = :id
+    ORDER BY os.created_at DESC
   }.freeze
 end

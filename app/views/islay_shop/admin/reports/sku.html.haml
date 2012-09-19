@@ -22,30 +22,50 @@
             %td= entry['value']
             %td= entry['volume']
 
-  %div.count-4.report-cell
-    %h3 Totals
+  %div.count-8.report-cell
+    %h3 Orders
 
-    = format_money(@totals['total_value'])
-    = @totals['total_volume']
+    %table#orders-summary
+      %thead
+        %tr
+          %th Reference
+          %th Qty.
+          %th Value
+          %th.sorted Created At
 
-  %div.count-4.report-cell
-    %h3 Best Day
+      %tbody
+        - @orders.each do |entry|
+          %tr
+            %td= link_to("#{entry['reference']} - #{entry['name']}", path(:order, :id => entry['id']))
+            %td= entry['quantity']
+            %td= format_money(entry['total'])
+            %td= entry['created_at']
 
-    %p.revenue
-      %strong= format_money(@totals['best_day_revenue'])
-      %span= @totals['best_day_for_revenue']
+  = column(4) do
+    %div.report-cell
+      %h3 Totals
 
-    %p.volume
-      %strong= @totals['best_day_volume']
-      %span= @totals['best_day_for_volume']
+      = format_money(@totals['total_value'])
+      = @totals['total_volume']
 
-  %div.count-4.last.report-cell
-    %h3 Best Month
+    %div.report-cell
+      %h3 Best Day
 
-    %p.revenue
-      %strong= format_money(@totals['best_month_revenue'])
-      %span= format_month(@totals['best_month_for_revenue'])
+      %p.revenue
+        %strong= format_money(@totals['best_day_revenue'])
+        %span= @totals['best_day_for_revenue']
 
-    %p.volume
-      %strong= @totals['best_month_volume']
-      %span= format_month(@totals['best_month_for_volume'])
+      %p.volume
+        %strong= @totals['best_day_volume']
+        %span= @totals['best_day_for_volume']
+
+    %div.last.report-cell
+      %h3 Best Month
+
+      %p.revenue
+        %strong= format_money(@totals['best_month_revenue'])
+        %span= format_month(@totals['best_month_for_revenue'])
+
+      %p.volume
+        %strong= @totals['best_month_volume']
+        %span= format_month(@totals['best_month_for_volume'])
