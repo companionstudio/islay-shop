@@ -41,7 +41,7 @@
             %td= entry['sku_names']
             %td= entry['quantity']
             %td= format_money(entry['total'])
-            %td= entry['created_at']
+            %td= format_day(entry['created_at'])
 
   = column(4) do
     %div.report-cell.total
