@@ -18,6 +18,16 @@ class ProductReport < Report
     select_all_by_range(PRODUCT_AGGREGATES, range, :column => 'os.created_at', :id => id).first
   end
 
+  # Generates a list of orders which include the specified product.
+  #
+  # @param Integer id
+  # @param Hash range
+  #
+  # @return Array<Hash>
+  def self.orders(id, range)
+    select_all_by_range(PRODUCT_ORDERS, range, :column => 'os.created_at', :id => id)
+  end
+
   def self.product_skus_summary(id, range)
     select_all_by_range(PRODUCT_SKUS_SUMMARY, range, :column => 'created_at', :id => id)
   end
@@ -106,6 +116,21 @@ class ProductReport < Report
       (SELECT day FROM volume_day)        AS best_day_for_volume,
       (SELECT volume FROM volume_month)   AS best_month_volume,
       (SELECT month FROM volume_month)    AS best_month_for_volume
+  }.freeze
+
+  PRODUCT_ORDERS = %{
+    SELECT
+      os.id, os.reference, os.name, os.created_at, SUM(total) AS item_total,
+      SUM(quantity) AS quantity, ARRAY_TO_STRING(ARRAY_AGG(sku_name), ', ') AS sku_names
+    FROM (
+      SELECT os.id, os.reference, os.name, ois.quantity, ois.total, os.created_at, skus.id AS sku_name
+      FROM orders AS os
+      JOIN order_items AS ois ON ois.order_id = os.id
+      JOIN skus ON skus.id = ois.sku_id
+      WHERE skus.product_id = :id AND is_revenue(os.status) AND :current
+    ) AS os
+    GROUP BY os.id, os.reference, os.name, os.created_at
+    ORDER BY created_at DESC
   }.freeze
 
   PRODUCT_SKUS_SUMMARY = %{

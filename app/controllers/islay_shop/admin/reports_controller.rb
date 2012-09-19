@@ -24,6 +24,7 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @series   = ProductReport.product_series(@product.id, @report_range)
     @totals   = ProductReport.product_aggregates(@product.id, @report_range)
     @skus     = ProductReport.product_skus_summary(@product.id, @report_range)
+    @orders   = ProductReport.orders(@product.id, @report_range)
   end
 
   def sku

@@ -39,6 +39,27 @@
               %td= format_money(entry['value'])
               %td= entry['quantity']
 
+    %div.report-cell
+      %h3 Orders
+
+      %table#orders-summary
+        %thead
+          %tr
+            %th Reference
+            %th SKUs
+            %th Qty.
+            %th Value
+            %th.sorted Created At
+
+        %tbody
+          - @orders.each do |entry|
+            %tr
+              %td= link_to("#{entry['reference']} - #{entry['name']}", path(:order, :id => entry['id']))
+              %td= entry['sku_names']
+              %td= entry['quantity']
+              %td= format_money(entry['item_total'])
+              %td= entry['created_at']
+
   = column(4) do
     %div.report-cell
       %h3 Totals

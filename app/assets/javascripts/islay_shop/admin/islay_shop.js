@@ -644,6 +644,7 @@ $SP.where('#islay-shop-admin-reports.products').run(function() {
 $SP.where('#islay-shop-admin-reports.product').run(function() {
   var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
   var skus = new IslayShop.SortableTable({el: $("#skus-summary")});
+  var orders = new IslayShop.SortableTable({el: $("#orders-summary")});
   var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
 
   var dates = new IslayShop.DateSelection({action: window.location.href});
