@@ -317,25 +317,43 @@ span.indicator
   .tag
     +border-radius(0.2em)
     background: left center no-repeat image-url('islay_shop/admin/report-tag.png')
-    color: white
     font-family: $light-font-family
-    padding: 0 0 0 15px
-    margin-left: 5px
+    color: white !important
+    padding: 0 0 0 1.3em
     position: absolute
 
+    &.flip
+      background-position: right center
+      padding: 0 1.3em 0 0
+      margin-left: -3px
+
+    &.regular
+      margin-left: 3px
+
     span
-      float: left
+      float: left !important
 
     span.value
+      background: black
       font-size: 1.4em
-      padding: 0.3em 0
-
+      text-indent: 0
+      padding: 0.3em 0.4em 0.3em 0 !important
+      color: inherit
+      margin: 0 !important
+      width: auto
 
     span.date
       +border-radius(0 0.2em 0.2em 0)
-      background: $dark-grey - 40
-      margin-left: 0.6em
+      background: #404040
       padding: 0.7em 0.6em 0.6em 0.6em
+
+    &.flip
+      span.date
+        +border-radius(0)
+
+      span.value
+        +border-radius(0.2em 0 0 0.2em)
+        padding-left: 0.4em !important
 
 .report-cell
   table

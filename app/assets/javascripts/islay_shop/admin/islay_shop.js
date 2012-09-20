@@ -360,6 +360,7 @@ IslayShop.LineGraph = Backbone.View.extend({
 
   render: function(width) {
     this.paper = Raphael(this.el);
+    this.width = width || this.$el.innerWidth();
 
     var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, colors: [this.options.values.color]},
         graphW = width ? width - 60 : 500;
@@ -398,7 +399,17 @@ IslayShop.LineGraph = Backbone.View.extend({
 
       this.tags.push(tag);
       this.$el.append(tag);
-      tag.css({left: cover.x, top: cover.y[i] - (tag.outerHeight() / 2)});
+
+      var top = cover.y[i] - (tag.outerHeight() / 2);
+
+      if (cover.x + tag.width() > this.width) {
+        tag.addClass('flip');
+        tag.css({left: cover.x - tag.outerWidth(), top: top});
+      }
+      else {
+        tag.addClass('regular');
+        tag.css({left: cover.x, top: top});
+      }
     }
   },
 
