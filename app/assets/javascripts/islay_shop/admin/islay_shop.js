@@ -29,7 +29,17 @@ IslayShop.DateSelection = Backbone.View.extend({
 
   initialize: function() {
     _.bindAll(this, 'toggle');
-    this.mode = this.options.mode || 'month';
+    if (this.options.mode) {
+      this.mode = this.options.mode;
+    }
+    else {
+      if (this.options.action.match(/\/range\/.+\d+$/)) {
+        this.mode = 'range'
+      }
+      else {
+        this.mode = 'month'
+      }
+    }
     this.$el.attr({action: this.options.action, method: 'get'});
     this.toggles = {};
 
