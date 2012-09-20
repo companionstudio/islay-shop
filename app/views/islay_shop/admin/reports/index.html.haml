@@ -1,5 +1,5 @@
 - render :partial => 'islay/admin/reports/nav'
-- sub_header('Shop Overview')
+- sub_header('Shop')
 
 = content(:class => 'inset') do
 
@@ -40,8 +40,7 @@
           - @top_ten[:revenue].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td
-                = link_to(entry.long_desc, path(:product, :id => entry['product_id']))
+              %td= link_to(entry.long_desc, path(:sku_report, :product_id => entry['product_id'], :id => entry['sku_id']))
               %td= format_money(entry['revenue'])
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
@@ -61,8 +60,7 @@
           - @top_ten[:volume].each do |entry|
             %tr
               %td.rank= entry['position']
-              %td
-                = link_to(entry.long_desc, path(:product, :id => entry['product_id']))
+              %td= link_to(entry.long_desc, path(:sku_report, :product_id => entry['product_id'], :id => entry['sku_id']))
               %td= entry['volume']
               %td.movement
                 %span(class="move-#{entry['dir']}")= entry['dir'].humanize
