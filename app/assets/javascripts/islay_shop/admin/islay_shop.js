@@ -229,7 +229,9 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
   events: {'click .start': 'clickStart', 'click .end': 'clickEnd', 'click .go': 'clickGo'},
 
   initialize: function() {
-    _.bindAll(this, 'clickStart', 'clickEnd', 'clickGo', 'startUpdate', 'endUpdate');
+    _.bindAll(this, 'clickStart', 'clickEnd', 'clickGo', 'startUpdate', 'endUpdate', 'documentClick');
+
+    this.current = null;
 
     this.url = this.options.url;
     var match = this.options.fullUrl.match(/\/range\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})$/);
@@ -252,12 +254,12 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     this.$el.hide();
   },
 
-  clickStart: function() {
-    this.openCalendar('start');
+  clickStart: function(e) {
+    this.openCalendar(e, 'start');
   },
 
-  clickEnd: function() {
-    this.openCalendar('end');
+  clickEnd: function(e) {
+    this.openCalendar(e, 'end');
   },
 
   clickGo: function() {
@@ -273,19 +275,30 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     this.update('end');
   },
 
-  openCalendar: function(pos) {
+  openCalendar: function(e, pos) {
     if (this.current !== pos) {
       var name = pos + 'Calendar';
 
+      this.$el.find('.' + pos).addClass('current');
+
       if (!this[name]) {
-        this[name] = new Kalendae(this['$' + pos].parent()[0], new Date());
+        this[name] = new Kalendae(this['$' + pos].parent()[0], {selected: this[pos + 'Date']});
         this[name].subscribe('change', this[pos + 'Update']);
       }
       else {
         $(this[name].container).show();
       }
 
+      if (!_.isNull(this.current)) {
+        this.close(this.current);
+      }
+      else {
+        $(document).on('click', this.documentClick);
+        this.$el.on('click', this.supressEvent);
+      }
+
       this.current = pos;
+      e.stopPropagation();
     }
   },
 
@@ -293,8 +306,29 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
     var date = pos + 'Date', calendar = pos + 'Calendar';
     this[date] = this[calendar].getSelectedRaw()[0];
     this['$' + pos].text(this[date].format(' D MMM YYYY'));
-    $(this[calendar].container).hide();
+    this.close(pos);
+    this.reset();
+  },
+
+  supressEvent: function(e) {
+    e.stopPropagation();
+  },
+
+  documentClick: function() {
+    this.close(this.current);
+    this.reset();
+  },
+
+  reset: function() {
+    $(document).off('click', this.documentClick);
+    this.$el.off('click', this.supressEvent);
     this.current = null;
+  },
+
+  close: function(pos) {
+    var calendar = pos + 'Calendar';
+    $(this[calendar].container).hide();
+    this.$el.find('.' + pos).removeClass('current');
   },
 
   render: function() {
