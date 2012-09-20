@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       scope :path => 'reports/shop', :controller => 'reports' do
         get range, :action => :index,    :as => 'shop_reports'
 
+        get "totals",                                 :action => :totals,   :as => 'order_totals'
         get "orders#{range}",                         :action => :orders,   :as => 'order_reports'
         get 'products',                               :action => :products, :as => 'product_reports'
         get "products/:id#{range}",                   :action => :product,  :as => 'product_report'

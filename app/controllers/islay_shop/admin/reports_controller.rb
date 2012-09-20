@@ -7,6 +7,10 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @totals   = OrderOverviewReport.aggregates(@report_range)
   end
 
+  def totals
+    @totals = OrderOverviewReport.grand_totals
+  end
+
   def orders
     @series   = OrderOverviewReport.series(@report_range)
     @totals   = OrderReport.aggregates(@report_range)

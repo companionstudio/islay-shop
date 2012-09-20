@@ -32,6 +32,13 @@ class OrderOverviewReport < Report
     OrderAggregateDecorator.new(select_all_by_range(AGGREGATES, range, :column => 'month').first || {})
   end
 
+  # Generates totals for orders across all time.
+  #
+  # @return Hash
+  def self.grand_totals
+    select_all(GRAND_TOTALS).first || {}
+  end
+
   TOP_TEN = %{
     WITH previous AS (
       SELECT *, ROW_NUMBER() OVER(ORDER BY %s DESC) AS position
@@ -157,5 +164,46 @@ class OrderOverviewReport < Report
       FROM totals
       WHERE :current
     ) AS os
+  }.freeze
+
+  GRAND_TOTALS = %{
+    WITH os AS (
+      SELECT
+        os.total,
+        (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS quantity,
+        DATE_TRUNC('day', os.created_at) AS day,
+        DATE_TRUNC('month', os.created_at) AS month
+      FROM orders AS os
+      WHERE is_revenue(status)
+    ),
+    revenue_month AS (
+      SELECT SUM(total) AS revenue, month
+      FROM os GROUP BY month ORDER BY revenue DESC LIMIT 1
+    ),
+    revenue_day AS (
+      SELECT SUM(total) AS revenue, day
+      FROM os GROUP BY day ORDER BY revenue DESC LIMIT 1
+    ),
+    volume_month AS (
+      SELECT SUM(quantity) AS volume, month
+      FROM os GROUP BY month ORDER BY volume DESC LIMIT 1
+    ),
+    volume_day AS (
+      SELECT SUM(quantity) AS volume, day
+      FROM os GROUP BY day ORDER BY volume DESC LIMIT 1
+    )
+
+    SELECT
+      (SELECT SUM(total) FROM os) AS total_value,
+      (SELECT SUM(quantity) FROM os) AS total_volume,
+      (SELECT SUM(total) / SUM(quantity) FROM os) AS average_order_value,
+      (SELECT revenue FROM revenue_month) AS best_month_revenue,
+      (SELECT month FROM revenue_month) AS best_month_for_revenue,
+      (SELECT volume FROM volume_month) AS best_month_volume,
+      (SELECT month FROM volume_month) AS best_month_for_volume,
+      (SELECT revenue FROM revenue_day) AS best_day_revenue,
+      (SELECT day FROM revenue_day) AS best_day_for_revenue,
+      (SELECT volume FROM volume_day) AS best_day_volume,
+      (SELECT day FROM volume_day) AS best_day_for_volume
   }.freeze
 end

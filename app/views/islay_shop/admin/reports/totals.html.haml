@@ -1,0 +1,44 @@
+- render :partial => 'islay/admin/reports/nav'
+- sub_header('Shop', path(:shop_reports))
+- sub_header('Grand Totals')
+
+= content(:class => 'inset') do
+  = column(4) do
+    %div.report-cell
+      %h3 Revenue
+      %p.value= format_money(@totals['total_value'])
+
+    %div.report-cell
+      %h3 Volume
+      %p.value= @totals['total_volume']
+
+    %div.report-cell
+      %h3 Average Order Value
+
+      %p.value= format_money(@totals['average_order_value'])
+
+  %div.count-4.report-cell
+    %h3 Best Day
+
+    %h4 Revenue
+    %p.value
+      = format_money(@totals['best_day_revenue'])
+      %em= format_day(@totals['best_day_for_revenue'])
+
+    %h4 Volume
+    %p.value
+      = @totals['best_day_volume']
+      %em= format_day(@totals['best_day_for_volume'])
+
+  %div.count-4.last.report-cell
+    %h3 Best Month
+
+    %h4 Revenue
+    %p.value
+      = format_money(@totals['best_month_revenue'])
+      %em= format_month(@totals['best_month_for_revenue'])
+
+    %h4 Volume
+    %p.value
+      = @totals['best_month_volume']
+      %em= format_month(@totals['best_month_for_volume'])

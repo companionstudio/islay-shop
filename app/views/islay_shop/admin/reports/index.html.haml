@@ -70,8 +70,9 @@
 
   = column(4) do
     %div#detailed-nav.report-cell
-      %h3 Detailed Reports:
+      %h3 Detailed Reports
       %ul
+        %li= link_to('Grand Totals', path(:order_totals))
         %li= link_to('Orders', path(:order_reports))
         %li= link_to('Products', path(:product_reports))
 
