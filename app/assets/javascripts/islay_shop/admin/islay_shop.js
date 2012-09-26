@@ -5,12 +5,12 @@
 //= require ../../vendor/kalendae
 //= require ../../vendor/moment
 
-var IslayShop = {};
+$SP.GUI = {};
 
 /* -------------------------------------------------------------------------- */
 /* UTILS
 /* -------------------------------------------------------------------------- */
-IslayShop.u = {
+$SP.u = {
   formatMoney: function(v) {
     return '$' + v.toFixed(2);
   }
@@ -21,7 +21,7 @@ IslayShop.u = {
 /* A date picker that allows multiple modes; month-by-month, range and
 /* comparison (using two ranges)
 /* -------------------------------------------------------------------------- */
-IslayShop.DateSelection = Backbone.View.extend({
+$SP.GUI.DateSelection = Backbone.View.extend({
   tagName: 'form',
   className: 'date-selection',
   modes: ['month', 'range'],
@@ -47,8 +47,8 @@ IslayShop.DateSelection = Backbone.View.extend({
     var opts = {url: this.url, fullUrl: this.options.action};
 
     this.widgets = {
-      month: new IslayShop.DateSelection.Month(opts),
-      range: new IslayShop.DateSelection.Range(opts)
+      month: new $SP.GUI.DateSelection.Month(opts),
+      range: new $SP.GUI.DateSelection.Range(opts)
     };
   },
 
@@ -96,7 +96,7 @@ IslayShop.DateSelection = Backbone.View.extend({
   }
 });
 
-IslayShop.DateSelection.Month = Backbone.View.extend({
+$SP.GUI.DateSelection.Month = Backbone.View.extend({
   tagName: 'ul',
   className: 'month',
   months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -223,7 +223,7 @@ IslayShop.DateSelection.Month = Backbone.View.extend({
   }
 });
 
-IslayShop.DateSelection.Range = Backbone.View.extend({
+$SP.GUI.DateSelection.Range = Backbone.View.extend({
   tagName: 'ul',
   className: 'range',
   events: {'click .start': 'clickStart', 'click .end': 'clickEnd', 'click .go': 'clickGo'},
@@ -351,7 +351,7 @@ IslayShop.DateSelection.Range = Backbone.View.extend({
 /* SEGMENTED CONTROL
 /* Simplistic, report-specific segmented control.
 /* -------------------------------------------------------------------------- */
-IslayShop.SegmentedControl = Backbone.View.extend({
+$SP.GUI.SegmentedControl = Backbone.View.extend({
   tagName: 'ul',
   className: 'segmented-control',
   events: {'click li': 'click'},
@@ -394,7 +394,7 @@ IslayShop.SegmentedControl = Backbone.View.extend({
 /* LINE GRAPH
 /* Wraps gRaphael line graphs. Makes it easier to render.
 /* -------------------------------------------------------------------------- */
-IslayShop.LineGraph = Backbone.View.extend({
+$SP.GUI.LineGraph = Backbone.View.extend({
   className: 'graph',
 
   initialize: function() {
@@ -465,7 +465,7 @@ IslayShop.LineGraph = Backbone.View.extend({
     var val = val || 0;
 
     if (this.options.values.monentaryValues) {
-      return IslayShop.u.formatMoney(val);
+      return $SP.u.formatMoney(val);
     }
     else {
       return val;
@@ -482,7 +482,7 @@ IslayShop.LineGraph = Backbone.View.extend({
 /* -------------------------------------------------------------------------- */
 /* SERIES GRAPH
 /* -------------------------------------------------------------------------- */
-IslayShop.SeriesGraph = Backbone.View.extend({
+$SP.GUI.SeriesGraph = Backbone.View.extend({
   className: 'series-graph',
 
   initialize: function() {
@@ -511,13 +511,13 @@ IslayShop.SeriesGraph = Backbone.View.extend({
         dates = _.map(dths, function(el) {return $(el).text();});
 
     this.graphs = _.map(this.values, function(v) {
-      return new IslayShop.LineGraph({dates: dates, values: v});
+      return new $SP.GUI.LineGraph({dates: dates, values: v});
     });
 
     var ths    = this.options.table.find('thead th:gt(0)'),
         labels = _.map(ths, function(th) {return $(th).text();});
 
-    this.controls = new IslayShop.SegmentedControl({labels: labels});
+    this.controls = new $SP.GUI.SegmentedControl({labels: labels});
     this.controls.on('selected', this.toggle);
 
     this.render();
@@ -554,7 +554,7 @@ IslayShop.SeriesGraph = Backbone.View.extend({
 /* -------------------------------------------------------------------------- */
 /* SORTABLE TABLE
 /* -------------------------------------------------------------------------- */
-IslayShop.SortableTable = Backbone.View.extend({
+$SP.GUI.SortableTable = Backbone.View.extend({
   events: {'click thead th': 'click'},
 
   initialize: function() {
@@ -644,7 +644,7 @@ IslayShop.SortableTable = Backbone.View.extend({
 /* -------------------------------------------------------------------------- */
 /* TABBED TABLE CELL
 /* -------------------------------------------------------------------------- */
-IslayShop.Tabs = Backbone.View.extend({
+$SP.GUI.Tabs = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'toggle');
 
@@ -658,7 +658,7 @@ IslayShop.Tabs = Backbone.View.extend({
       labels.push($el.find(this.options.labels).remove().text());
     }, this);
 
-    this.controls = new IslayShop.SegmentedControl({labels: labels});
+    this.controls = new $SP.GUI.SegmentedControl({labels: labels});
     this.controls.on('selected', this.toggle);
 
     this.render();
@@ -674,7 +674,7 @@ IslayShop.Tabs = Backbone.View.extend({
     this.$el.find('h3').after(this.controls.render().el);
     _.each(this.entries, function(el, i) {
       if (this.options.sortable === true) {
-        var view = new IslayShop.SortableTable({el: el});
+        var view = new $SP.GUI.SortableTable({el: el});
       }
       if (i > 0) {
         el.hide();
@@ -686,37 +686,37 @@ IslayShop.Tabs = Backbone.View.extend({
 });
 
 $SP.where('#islay-shop-admin-reports.index').run(function() {
-  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var topTen = new IslayShop.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
-  var dates = new IslayShop.DateSelection({action: window.location.href});
+  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  var topTen = new $SP.GUI.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
+  var dates = new $SP.GUI.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.orders').run(function() {
-  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var orders = new IslayShop.SortableTable({el: $("#orders-summary")});
-  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
-  var dates = new IslayShop.DateSelection({action: window.location.href});
+  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  var orders = new $SP.GUI.SortableTable({el: $("#orders-summary")});
+  var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
+  var dates = new $SP.GUI.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.products').run(function() {
-  var tabs = new IslayShop.Tabs({el: $("#product-listing"), sortable: true, tabs: 'table', labels: 'caption'});
+  var tabs = new $SP.GUI.Tabs({el: $("#product-listing"), sortable: true, tabs: 'table', labels: 'caption'});
 });
 
 $SP.where('#islay-shop-admin-reports.product').run(function() {
-  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var skus = new IslayShop.SortableTable({el: $("#skus-summary")});
-  var orders = new IslayShop.SortableTable({el: $("#orders-summary")});
-  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
+  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  var skus = new $SP.GUI.SortableTable({el: $("#skus-summary")});
+  var orders = new $SP.GUI.SortableTable({el: $("#orders-summary")});
+  var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
 
-  var dates = new IslayShop.DateSelection({action: window.location.href});
+  var dates = new $SP.GUI.DateSelection({action: window.location.href});
   $('#sub-header').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.sku').run(function() {
-  var graph = new IslayShop.SeriesGraph({table: $('.series-graph')});
-  var dates = new IslayShop.DateSelection({action: window.location.href});
-  var tabs = new IslayShop.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
+  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  var dates = new $SP.GUI.DateSelection({action: window.location.href});
+  var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   $('#sub-header').append(dates.render().el);
 });
