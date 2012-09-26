@@ -70,7 +70,7 @@
                 = boolean_indicator(sku.published?)
               %td.boolean
                 = sku_sale_status(sku)
-                
+
               %td
                 %span.title= sku.short_desc
                 = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
@@ -131,9 +131,9 @@
               %span.title= log.short_desc
             %td
               - if log.price_moved?
-                = movement(log.formatted_price_before, log.formatted_price_after, log.price_direction, :name => 'Price')
+                = movement(log.price_before, log.price_after, log.price_direction, :name => 'Price')
               - if log.batch_price_moved?
-                = movement(log.formatted_batch_price_before, log.formatted_batch_price_after, log.batch_price_direction, :name => 'Batch Price')
+                = movement(log.batch_price_before, log.batch_price_after, log.batch_price_direction, :name => 'Batch Price')
               - if log.batch_size_moved?
                 = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
             %td.meta

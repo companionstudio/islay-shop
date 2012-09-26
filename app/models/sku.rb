@@ -45,7 +45,8 @@ class Sku < ActiveRecord::Base
   validate :batch_size_and_pricing
   validates_presence_of :purchase_limit, :if => :purchase_limiting?, :message => "required when limiting is on"
 
-  before_update :log_price
+  before_update     :log_price
+  before_validation :calculate_short_desc
 
   attr_accessor :template
 
@@ -334,6 +335,21 @@ class Sku < ActiveRecord::Base
   end
 
   private
+
+  # Calculates the description for a SKU. Should be over-ridden for a specific
+  # app, or for a specific sub-class.
+  #
+  # @return String
+  def calculate_short_desc
+    if name_changed? or size_changed? or weight_changed? or volume_changed?
+      self[:short_desc] = [].tap do |o|
+        o << name if name?
+        o << size if size?
+        o << formatted_weight if weight?
+        o << formatted_volume if volume?
+      end.join(' - ')
+    end
+  end
 
   # Both batch volume and pricing may be empty, but if one is present, then
   # both must be filled in.

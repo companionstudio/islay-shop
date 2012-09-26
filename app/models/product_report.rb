@@ -135,13 +135,13 @@ class ProductReport < Report
 
   PRODUCT_SKUS_SUMMARY = %{
     SELECT
-      skus.id, skus.name, skus.weight, skus.volume, skus.size,
+      skus.id, skus.short_desc,
       COALESCE(SUM(ois.total), 0) AS value,
       COALESCE(SUM(ois.quantity), 0) AS quantity
     FROM (SELECT * FROM skus WHERE skus.product_id = :id) AS skus
     LEFT JOIN order_items AS ois ON ois.sku_id = skus.id
     AND EXISTS (SELECT 1 FROM orders WHERE id = ois.order_id AND is_revenue(status) AND :current)
-    GROUP BY skus.id, skus.name, skus.weight, skus.volume, skus.size ORDER BY value DESC
+    GROUP BY skus.id, skus.short_desc ORDER BY value DESC
   }.freeze
 
   TOTAL_VOLUME = %{
@@ -223,7 +223,7 @@ class ProductReport < Report
     )
 
     SELECT
-      skus.product_id, skus.id, ois.volume, ois.revenue,
+      skus.product_id, skus.id, skus.short_desc, ois.volume, ois.revenue,
       (SELECT name FROM products WHERE id = product_id) AS product_name
     FROM (
       SELECT * FROM sales

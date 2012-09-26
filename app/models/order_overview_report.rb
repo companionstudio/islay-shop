@@ -71,8 +71,7 @@ class OrderOverviewReport < Report
         formatted_weight(skus.weight),
         formatted_volume(skus.volume),
         formatted_money(skus.price) AS formatted_price,
-        skus.name,
-        skus.size,
+        skus.short_desc,
         (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
         ROW_NUMBER() OVER(ORDER BY chart.revenue DESC) AS position,
         previous.position AS previous_position

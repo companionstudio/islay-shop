@@ -6,6 +6,6 @@ class TopTenDecorator < Draper::Base
   end
 
   def short_desc
-    %w(name formatted_volume formatted_weight size formatted_price).map {|n| report[n]}.compact.join(' - ')
+    report['short_desc']
   end
 end

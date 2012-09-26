@@ -44,7 +44,7 @@
       %tbody
         - @skus.each do |sku|
           %tr
-            %td= link_to(sku.long_desc)
+            %td= link_to(sku.long_desc, path(:sku_report, :product_id => sku.product_id, :id => sku))
             %td= format_money(sku.revenue)
             %td= sku.volume
 

@@ -18,12 +18,12 @@ class SkuPriceLog < ActiveRecord::Base
     select(%{
       price_before, price_after, batch_size_before, batch_size_after,
       batch_price_before, batch_price_after, sku_price_logs.created_at,
-      skus.name, skus.volume, skus.weight, skus.size,
+      (SELECT short_desc FROM skus WHERE skus.id = sku_id) AS short_desc,
       CASE
         WHEN sku_price_logs.creator_id IS NULL then 'Customer'
         ELSE (SELECT name FROM users WHERE id = sku_price_logs.creator_id)
       END AS creator_name
-    }).joins(:sku)
+    })
   end
 
 

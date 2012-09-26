@@ -14,12 +14,12 @@ class SkuStockLog < ActiveRecord::Base
   def self.summary
     select(%{
       before, after, action, sku_stock_logs.created_at,
-      skus.name, skus.volume, skus.weight, skus.size,
+      (SELECT short_desc FROM skus WHERE skus.id = sku_id) AS short_desc,
       CASE
         WHEN sku_stock_logs.creator_id IS NULL then 'Customer'
         ELSE (SELECT name FROM users WHERE id = sku_stock_logs.creator_id)
       END AS creator_name
-    }).joins(:sku)
+    })
   end
 
   # How much stuck was added or removed.

@@ -35,7 +35,7 @@
         %tbody
           - @skus.each do |entry|
             %tr
-              %td= link_to(entry['id'], path(:sku_report, :product_id => params[:id], :id => entry['id']))
+              %td= link_to(entry['short_desc'], path(:sku_report, :product_id => params[:id], :id => entry['id']))
               %td= format_money(entry['value'])
               %td= entry['quantity']
 

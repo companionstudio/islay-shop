@@ -4,6 +4,7 @@ class CreateSkus < ActiveRecord::Migration
       t.integer     :product_id,          :null => false, :on_delete => :cascade
       t.integer     :product_variant_id,  :null => true,  :on_delete => :set_null
       t.integer     :position,            :null => false, :limit => 3, :default => 1
+      t.string      :short_desc,          :null => false, :limit => 400
       t.string      :name,                :null => true,  :limit => 200
       t.integer     :weight,              :null => true,  :limit => 10
       t.integer     :volume,              :null => true,  :limit => 10

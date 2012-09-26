@@ -51,7 +51,7 @@ class Product < ActiveRecord::Base
     select(%{
       id, slug, published, status, name, updated_at,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
-      (SELECT ARRAY_TO_STRING(ARRAY_AGG(id::text), ', ')
+      (SELECT ARRAY_TO_STRING(ARRAY_AGG(short_desc), ', ')
        FROM skus
        GROUP BY product_id HAVING product_id = products.id) AS skus_summary
     })

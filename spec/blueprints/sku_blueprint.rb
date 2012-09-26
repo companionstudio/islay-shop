@@ -1,4 +1,5 @@
 Sku.blueprint do
+  volume        { rand(750) + 100 }
   published     { true }
   price         { rand(90) + 4 }
   batch_size    { 12 }
