@@ -7,7 +7,8 @@ class ProductCategory < ActiveRecord::Base
 
   extend FriendlyId
   friendly_id :name, :use => :slugged
-  positioning :path
+
+  positioned :path
 
   has_many    :products, :order => 'products.position'
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'

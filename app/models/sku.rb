@@ -10,7 +10,7 @@ class Sku < ActiveRecord::Base
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
   has_many :order_items
 
-  positioning :product_id
+  positioned :product_id
 
   if Islay::Engine.config.integrate_shop_and_blog
     attr_accessible :blog_entry_ids
