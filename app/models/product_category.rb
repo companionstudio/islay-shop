@@ -125,13 +125,17 @@ class ProductCategory < ActiveRecord::Base
       WHEN (
         EXISTS (
           SELECT 1 FROM products AS ps
-          JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id AND stock_level = 0
+          JOIN skus ON product_category_id = product_categories.id
+          AND ps.published = true AND ps.status = 'for_sale'
+          AND product_id = ps.id AND stock_level = 0
         )
       ) THEN 'warning'
       WHEN (
         EXISTS (
           SELECT 1 FROM products AS ps
-          JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id AND stock_level <= %s
+          JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id
+          AND ps.published = true AND ps.status = 'for_sale'
+          AND stock_level <= %s
         )
       ) THEN 'low'
       ELSE 'ok'
