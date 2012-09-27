@@ -37,6 +37,13 @@ class ProductCategory < ActiveRecord::Base
     self.parent = ProductCategory.find(id) unless id.blank?
   end
 
+  # Generates a select statement which summarises the state of the category.
+  #
+  # @return ActiveRecord::Relation
+  def self.summary
+    select(SUMMARY % Settings.for(:shop, :alert_level))
+  end
+
   # Creates a scope for published categories.
   #
   # @param Boolean bool
@@ -105,4 +112,29 @@ class ProductCategory < ActiveRecord::Base
     end
     categories
   end
+
+  # The SQL fragment used to construct a summary select statement.
+  SUMMARY = %{
+     id, slug, path, name, status, published, updated_at,
+    (SELECT name FROM users WHERE id = updater_id) AS updater_name,
+    (EXISTS (
+      SELECT 1 FROM product_categories AS cs
+      WHERE cs.path = (product_categories.path || product_categories.id::text::ltree))
+    ) AS is_parent,
+    CASE
+      WHEN (
+        EXISTS (
+          SELECT 1 FROM products AS ps
+          JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id AND stock_level = 0
+        )
+      ) THEN 'warning'
+      WHEN (
+        EXISTS (
+          SELECT 1 FROM products AS ps
+          JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id AND stock_level <= %s
+        )
+      ) THEN 'low'
+      ELSE 'ok'
+    END AS stock_level
+  }.freeze
 end
