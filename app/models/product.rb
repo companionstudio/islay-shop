@@ -53,7 +53,17 @@ class Product < ActiveRecord::Base
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(short_desc), ', ')
        FROM skus
-       GROUP BY product_id HAVING product_id = products.id) AS skus_summary
+       GROUP BY product_id HAVING product_id = products.id) AS skus_summary,
+      CASE
+        WHEN published = false OR status != 'for_sale' THEN 'na'
+        WHEN (
+          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND stock_level = 0)
+        ) THEN 'warning'
+        WHEN (
+          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND stock_level <= 5)
+        ) THEN 'low'
+        ELSE 'ok'
+      END AS stock_level_notice
     })
   end
 

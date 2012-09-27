@@ -21,8 +21,8 @@
         %td
           %span.indicator= product.status.humanize
         %td.indicator
-          %span(class="indicator #{product.stock_level_status}")
-            = product.friendly_stock_level_status
+          %span(class="indicator #{product.stock_level_notice}")
+            = product.stock_level_notice
         %td.meta
           %span.time= product.updated_at
           by #{product.updater_name}
