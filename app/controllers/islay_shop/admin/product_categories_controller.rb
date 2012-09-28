@@ -20,7 +20,7 @@ module IslayShop
         if @product_category.products?
           @products = @product_category.products.summary.filtered(params[:filter]).sorted(params[:sort])
         elsif @product_category.children?
-          @product_categories = @product_category.children
+          @product_categories = @product_category.children.summary
         end
       end
 
