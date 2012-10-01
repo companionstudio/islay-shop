@@ -45,7 +45,7 @@ ActivityLog.register(:sku, SkuLogDecorator, %{
     'sku' AS type,
     updated_at AS created_at,
     (SELECT name FROM users WHERE id = creator_id) AS user_name,
-    'Updated' AS event,
+    update_status(created_at, updated_at) AS event,
     (SELECT name FROM products WHERE id = skus.product_id) || ' - ' || skus.short_desc AS name,
     skus.id,
     skus.product_id AS parent_id
@@ -58,7 +58,7 @@ ActivityLog.register(:product, ProductLogDecorator, %{
     'product' AS type,
     updated_at,
     (SELECT name FROM users WHERE id = creator_id) AS user_name,
-    'Updated' AS event,
+    update_status(created_at, updated_at) AS event,
     name,
     id,
     NULL AS parent_id
@@ -71,7 +71,7 @@ ActivityLog.register(:product_category, ProductCategoryLogDecorator, %{
     'product_category' AS type,
     updated_at,
     (SELECT name FROM users WHERE id = creator_id) AS user_name,
-    'Updated' AS event,
+    update_status(created_at, updated_at) AS event,
     name,
     id,
     NULL AS parent_id
