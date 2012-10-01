@@ -685,6 +685,10 @@ $SP.GUI.Tabs = Backbone.View.extend({
   }
 });
 
+$SP.where('#islay-admin-dashboard.index').run(function() {
+  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+});
+
 $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var topTen = new $SP.GUI.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});

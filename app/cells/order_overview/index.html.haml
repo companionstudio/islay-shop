@@ -1,6 +1,22 @@
 %h3 Order Overview
 
-%ul
+%table.series-graph
+  %thead
+    %tr
+      %th Day
+      %th Order Value
+      %th Order Volume
+      %th SKU Volume
+
+  %tbody
+    - @series.each do |entry|
+      %tr
+        %th= entry['day']
+        %td= entry['value']
+        %td= entry['volume']
+        %td= entry['sku_volume']
+
+%ul#dashboard-order-counts
   %li
     %span.value.indicator.neutral= @counts[:billing]
     %span.key to Bill
