@@ -55,7 +55,7 @@ class Sku < ActiveRecord::Base
   #
   # @return Array<Sku>
   def self.alerts
-    Sku.summarize_product.filter('for_sale').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
+    Sku.summarize_product.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
   end
 
   # Produces a scope with calculated fields for stock alerts, updater_name etc.
@@ -102,6 +102,11 @@ class Sku < ActiveRecord::Base
       where(["products.status = ? or skus.status = ?", f, f]).joins(:product)
     when 'all'
       scoped
+    when 'saleable'
+      where(%{
+        skus.status = 'for_sale' AND skus.published = true
+        AND products.status = 'for_sale' AND products.published = true
+      }).joins(:product)
     else
       where("skus.status = 'for_sale' AND products.status = 'for_sale'").joins(:product)
     end

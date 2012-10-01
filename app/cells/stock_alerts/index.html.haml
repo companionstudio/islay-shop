@@ -1,13 +1,13 @@
 %h3 Stock Alerts
 
 - if @alerts.empty?
-  %p No stock alerts
+  %p#dashboard-no-stock-alerts No stock alerts
 - else
-  %ul
+  %ul#dashboard-stock-alerts
     - @alerts.each do |sku|
       %li
-        %strong= link_to(sku.long_desc, admin_product_path(:id => sku.product_id))
         - if sku.out_of_stock?
-          %span.indicator.warning= sku.stock_level
+          %span.value.indicator.warning= sku.stock_level
         - else
-          %span.indicator.neutral= sku.stock_level
+          %span.value.indicator.neutral= sku.stock_level
+        %span.key= link_to(sku.long_desc, admin_product_path(:id => sku.product_id))
