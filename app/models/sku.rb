@@ -4,11 +4,17 @@ class Sku < ActiveRecord::Base
   include SkuDescription
 
   belongs_to :product
-  has_many :sku_assets,                               :order => 'position ASC'
-  has_many :assets, :through => :sku_assets,          :order => 'sku_assets.position ASC'
+
   has_many :stock_logs, :class_name => 'SkuStockLog', :order => 'created_at DESC'
   has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
   has_many :order_items
+
+  has_many   :sku_assets,                          :order => 'position ASC'
+  has_many   :assets,     :through => :sku_assets, :order => 'position ASC'
+  has_many   :images,     :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'ImageAsset'
+  has_many   :audio,      :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'AudioAsset'
+  has_many   :videos,     :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'VideoAsset'
+  has_many   :documents,  :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
 
   positioned :product_id
 
