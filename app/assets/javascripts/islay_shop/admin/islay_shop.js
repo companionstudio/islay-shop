@@ -436,7 +436,7 @@ $SP.GUI.LineGraph = Backbone.View.extend({
     var date = this.options.dates[cover.axis];
 
     for (var i = 0, ii = cover.y.length; i < ii; i++) {
-      var tag = $H('div.tag', [
+      var tag = $H('div.graph-label', [
         $H('span.value', this.format(cover.values[i])),
         $H('span.date', date)
       ]);
