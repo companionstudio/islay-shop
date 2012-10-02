@@ -6,7 +6,7 @@ ActivityLog.register(:order, OrderLogDecorator, %{
     ols.action AS event,
     os.reference || ' - ' || os.name AS name,
     os.id,
-    NULL AS parent_id
+    NULL::integer AS parent_id
   FROM order_logs AS ols
   JOIN orders AS os ON os.id = ols.order_id
   ORDER BY ols.created_at DESC
@@ -61,7 +61,7 @@ ActivityLog.register(:product, ProductLogDecorator, %{
     update_status(created_at, updated_at) AS event,
     name,
     id,
-    NULL AS parent_id
+    NULL::integer AS parent_id
   FROM products
   ORDER BY updated_at DESC
 })
@@ -74,7 +74,7 @@ ActivityLog.register(:product_category, ProductCategoryLogDecorator, %{
     update_status(created_at, updated_at) AS event,
     name,
     id,
-    NULL AS parent_id
+    NULL::integer AS parent_id
   FROM product_categories
   ORDER BY updated_at DESC
 })
