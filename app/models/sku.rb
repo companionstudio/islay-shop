@@ -224,7 +224,7 @@ class Sku < ActiveRecord::Base
 
       sku.stock_logs.build(:before => sku.stock_level || 0, :after => result, :action => action)
       sku.stock_level = result
-      sku.save!
+      sku.save(:validate => false)
     end
 
     skus
