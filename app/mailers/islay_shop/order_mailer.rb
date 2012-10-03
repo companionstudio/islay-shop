@@ -1,9 +1,11 @@
 class IslayShop::OrderMailer < ActionMailer::Base
+  default :from => Settings.for(:shop, :email)
+
   def thank_you(order)
     @order = order
     mail(
       :to => order.email,
-      :subject => 'Thank you for your order'
+      :subject => "#{Settings.for(:islay, :name)} - Thank you for your order"
     )
   end
 
@@ -11,7 +13,7 @@ class IslayShop::OrderMailer < ActionMailer::Base
     @order = order
     mail(
       :to => order.email,
-      :subject => 'Your order is on its way'
+      :subject => "#{Settings.for(:islay, :name)} - Your order is on its way"
     )
   end
 
@@ -19,7 +21,7 @@ class IslayShop::OrderMailer < ActionMailer::Base
     @order = order
     mail(
       :to => order.email,
-      :subject => 'Your order has been cancelled'
+      :subject => "#{Settings.for(:islay, :name)} - Your order has been cancelled"
     )
   end
 end
