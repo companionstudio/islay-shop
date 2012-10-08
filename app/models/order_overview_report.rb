@@ -6,7 +6,7 @@ class OrderOverviewReport < Report
   # @return Hash<Array>
   def self.top_ten(range)
       [:revenue, :volume].inject({}) do |acc, col|
-        results = select_all_by_range(TOP_TEN % [col, col], range, :column => 'os.created_at', :previous_column => 'os.created_at')
+        results = select_all_by_range(TOP_TEN % [col, col, col], range, :column => 'os.created_at', :previous_column => 'os.created_at')
         acc[col] = results.map {|r| TopTenDecorator.new(r)}
         acc
       end
@@ -48,47 +48,50 @@ class OrderOverviewReport < Report
           SELECT ois.sku_id, ois.quantity, ois.total
           FROM orders AS os
           JOIN order_items AS ois ON ois.order_id = os.id
-          WHERE is_revenue(os.status) AND :previous
+          WHERE :previous AND is_revenue(os.status)
         ) AS ois
         GROUP BY sku_id
       ) AS ois
-    )
-
-    SELECT
-      *,
-      ABS(position - previous_position) AS shift,
-      CASE
-        WHEN previous_position < 10 THEN 'new'
-        WHEN position = previous_position THEN 'none'
-        WHEN position < previous_position THEN 'up'
-        WHEN position > previous_position THEN 'down'
-        ELSE 'new'
-      END AS dir
-    FROM (
-      SELECT
-        chart.*,
-        skus.product_id,
-        formatted_weight(skus.weight),
-        formatted_volume(skus.volume),
-        formatted_money(skus.price) AS formatted_price,
-        skus.short_desc,
-        (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
-        ROW_NUMBER() OVER(ORDER BY chart.revenue DESC) AS position,
-        previous.position AS previous_position
+    ),
+    current AS (
+      SELECT *, ROW_NUMBER() OVER(ORDER BY %s DESC) AS position
       FROM (
-        SELECT
-          sku_id, SUM(ois.quantity) AS volume, SUM(ois.total) AS revenue
+        SELECT sku_id, SUM(ois.total) AS revenue, COUNT(ois) AS volume
         FROM (
           SELECT ois.sku_id, ois.quantity, ois.total
           FROM orders AS os
           JOIN order_items AS ois ON ois.order_id = os.id
-          WHERE :current
+          WHERE :current AND is_revenue(os.status)
         ) AS ois
         GROUP BY sku_id ORDER BY %s DESC LIMIT 10
-      ) AS chart
-      JOIN skus ON skus.id = chart.sku_id
-      LEFT JOIN previous ON previous.sku_id = chart.sku_id
+      ) AS ois
+    )
+
+    SELECT
+      chart.*,
+      skus.product_id,
+      formatted_money(skus.price) AS formatted_price,
+      skus.short_desc,
+      (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
+      ABS(chart.position - previous_position) AS shift,
+      CASE
+        WHEN previous_position > 10 THEN 'new'
+        WHEN chart.position = previous_position THEN 'none'
+        WHEN chart.position < previous_position THEN 'up'
+        WHEN chart.position > previous_position THEN 'down'
+        ELSE 'new'
+      END AS dir
+    FROM (
+      SELECT
+        current.*,
+        previous.position AS previous_position,
+        previous.revenue AS previous_revenue,
+        previous.volume AS previous_volume
+      FROM current
+      LEFT JOIN previous ON previous.sku_id = current.sku_id
     ) AS chart
+    JOIN skus ON skus.id = sku_id
+    ORDER BY position ASC
   }.freeze
 
   SERIES = %{
