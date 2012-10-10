@@ -74,23 +74,26 @@ $SP.GUI.DateSelection = Backbone.View.extend({
   },
 
   render: function() {
-    // Render toggles
-    var list = $(this.make('ul', {'class': 'toggles'}));
-
-    _.each(this.modes, function(mode) {
-      var toggle = $(this.make('li', {'data-mode': mode}, mode));
-      this.toggles[mode] = toggle;
-      list.append(toggle);
-    }, this);
-
-    this.$el.append(list);
-
     // Render widgets
     _.each(this.widgets, function(widget) {
       this.$el.append(widget.render().el);
     }, this);
 
-    this.modeOn(this.mode);
+    if (!this.options.soloMode) {
+      var list = $(this.make('ul', {'class': 'toggles'}));
+
+      _.each(this.modes, function(mode) {
+        var toggle = $(this.make('li', {'data-mode': mode}, mode));
+        this.toggles[mode] = toggle;
+        list.append(toggle);
+      }, this);
+
+      this.$el.prepend(list);
+      this.modeOn(this.mode);
+    }
+    else {
+      this.widgets[this.mode].show();
+    }
 
     return this;
   }
@@ -692,7 +695,7 @@ $SP.where('#islay-admin-dashboard.index').run(function() {
 $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var topTen = new $SP.GUI.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
-  var dates = new $SP.GUI.DateSelection({action: window.location.href});
+  var dates = new $SP.GUI.DateSelection({action: window.location.href, soloMode: true});
   $('#sub-header').append(dates.render().el);
 });
 
