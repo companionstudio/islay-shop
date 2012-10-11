@@ -59,7 +59,8 @@
             %th SKU
             %th.currency Price
             %th.currency Batch Price
-            %th.meta.indicator Stock
+            %th.number Stock
+            %th.meta.indicator Delete
 
         %tbody
           - @product.skus.summary.each do |sku|
@@ -70,12 +71,8 @@
                 = boolean_indicator(sku.published?)
               %td.boolean
                 = sku_sale_status(sku)
-
               %td
-                %span.title= sku.short_desc
-                = link_to('Edit', path(:edit, @product, sku), :class => 'edit')
-                - if sku.destroyable?
-                  = link_to('Delete', path(:delete, @product, sku), :class => 'delete')
+                %span.title= link_to(sku.short_desc, path(:edit, @product, sku), :class => 'edit')
               %td.currency
                 %span= sku.formatted_price
               %td.currency
@@ -83,8 +80,14 @@
                   %span #{sku.formatted_batch_price}/#{sku.batch_size}
                 - else
                   &nbsp;
+              %td.number.stock
+                = link_to(sku.stock_level, path(:stock_levels, :anchor => "sku-#{sku.id}"), :title => 'Adjust stock level')
               %td.meta.adjust
-                = link_to('Adjust stock', path(:stock_levels, :anchor => "sku-#{sku.id}"))
+                - if sku.destroyable?
+                  = link_to('Delete', path(:delete, @product, sku), :class => 'delete')
+                - else
+                  %span.locked{:title => 'This SKU has been ordered in the past, so it can\'t be deleted'} Locked
+                
 
       .table-footer
         .selection-controls(colspan=7)
