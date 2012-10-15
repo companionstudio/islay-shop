@@ -91,6 +91,9 @@ class Order < ActiveRecord::Base
   validates :gifted_to,     :presence => true, :if => :is_gift?
   validates :gift_message,  :presence => true, :if => :is_gift?
 
+  # Validate email format
+  validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
+
   # Make sure the CC is also valid.
   validates_associated :credit_card_payment
 
@@ -218,7 +221,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  # A reversed version of 'use_shipping_address' - returns true if the 
+  # A reversed version of 'use_shipping_address' - returns true if the
   # order is not using a separate shipping address.
   #
   # @return Boolean
