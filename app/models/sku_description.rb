@@ -4,7 +4,7 @@ module SkuDescription
   #
   # @return String
   def long_desc
-    "#{product_name} - #{short_desc}"
+    "#{self[:product_name] || product.name} - #{short_desc}"
   end
 
   # Formats the weight into either string displaying either kilograms or grams.

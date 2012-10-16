@@ -6,18 +6,18 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def add
-    @order.increment_item(params[:sku_id], params[:quantity])
-    store_and_redirect
+    item = @order.increment_item(params[:sku_id], params[:quantity])
+    store_and_redirect(:order_item_added, item.description)
   end
 
   def remove
-    @order.remove_item(params[:sku_id])
-    store_and_redirect
+    item = @order.remove_item(params[:sku_id])
+    store_and_redirect(:order_item_removed, item.sku.long_desc)
   end
 
   def update
     @order.update_items(params[:order_basket][:items_attributes].values)
-    store_and_redirect
+    store_and_redirect(:order_updated, "Your order has been updated")
   end
 
   def destroy_alerts
@@ -45,7 +45,12 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   # Dumps a JSON representation of an order into the user's session, then
   # redirects them to either the originating URL or another URL specifed
   # via the params.
-  def store_and_redirect
+  #
+  # @param Symbol key
+  # @param String note
+  #
+  def store_and_redirect(key = nil, note = nil)
+    flash[key] = note if key and note
     session['order'] = @order.dump
     bounce_back
   end

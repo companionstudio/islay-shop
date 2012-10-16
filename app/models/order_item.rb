@@ -67,6 +67,14 @@ class OrderItem < ActiveRecord::Base
     self
   end
 
+  # Returns a summary of this order item. This includes the SKUs long
+  # description and the quantity.
+  #
+  # @return String
+  def description
+    self[:description] || "#{sku.long_desc} (#{quantity})"
+  end
+
   # Checks to see if the line item has had a discount applied to it.
   #
   # @return Boolean

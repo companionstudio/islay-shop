@@ -1,5 +1,13 @@
 %div.basket
   %h3 Items
+  - if parent_controller.flash[:order_item_added]
+    %p.flash-item-added
+      #{parent_controller.flash[:order_item_added]} added to your order
+
+  - if parent_controller.flash[:order_item_removed]
+    %p.flash-item-removed
+      #{parent_controller.flash[:order_item_removed]} removed from your order
+
   - if @order.items[0]
     = form_for(@order, :url => public_order_basket_update_path) do |f|
       %ul

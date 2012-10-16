@@ -1,4 +1,6 @@
 class BasketCell < Cell::Rails
+  helper_method :parent_controller
+
   def detailed
     load_order
     render
