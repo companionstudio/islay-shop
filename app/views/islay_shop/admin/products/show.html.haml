@@ -2,14 +2,15 @@
 - ancestor_category_links(@product)
 - sub_header(@product.name)
 
-= content do
+- sub_header_status do
+
   %ul#summary
     %li
       %span.key Published
       - if @product.published?
-        %span.value.indicator.ok Yes
+        %span.value.indicator.ok Published
       - else
-        %span.value.indicator No
+        %span.value.indicator unpublished
 
     %li
       %span.key Status
@@ -23,7 +24,10 @@
     %li
       %span.key Stock Level
       %span(class="value indicator #{@product.stock_warning? ? 'warning' : 'ok'}")
-        = @product.stock_level_status.capitalize
+        = "Stock #{@product.stock_level_status.capitalize}"
+
+= content do
+  
   .tab
     %div.overview
       = column(4, :class => 'asset-preview') do
