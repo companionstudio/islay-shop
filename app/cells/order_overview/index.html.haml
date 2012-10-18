@@ -18,11 +18,14 @@
 
 %ul#dashboard-order-counts
   %li
-    %span.value.indicator.neutral= @counts[:billing]
-    %span.key to Bill
+    %a{:href => billing_admin_order_processes_url}
+      %span.value.indicator.neutral= @counts[:billing]
+      %span.key to Bill
   %li
-    %span.value.indicator.neutral= @counts[:packing]
-    %span.key to Pack
+    %a{:href => packing_admin_order_processes_url}
+      %span.value.indicator.neutral= @counts[:packing]
+      %span.key to Pack
   %li
-    %span.value.indicator.neutral= @counts[:shipping]
-    %span.key to Ship
+    %a{:href => shipping_admin_order_processes_url}
+      %span.value.indicator.neutral= @counts[:shipping]
+      %span.key to Ship
