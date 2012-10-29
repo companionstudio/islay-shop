@@ -421,14 +421,14 @@ class Order < ActiveRecord::Base
     @_promotions_applied = true
   end
 
-  private
-
   # Calculates the shipping for the order.
   #
   # @return [Float, nil]
   def calculate_shipping
     self.class.shipping_calculator_class.new.calculate(self)
   end
+
+  private
 
   # Returns the configured shipping calculator class.
   #
