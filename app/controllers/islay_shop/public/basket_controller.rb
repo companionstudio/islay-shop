@@ -7,17 +7,17 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def add
     item = @order.increment_item(params[:sku_id], params[:quantity])
-    store_and_redirect(:order_item_added, item.description)
+    store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})
   end
 
   def remove
     item = @order.remove_item(params[:sku_id])
-    store_and_redirect(:order_item_removed, item.sku.long_desc)
+    store_and_redirect(:order_item_removed, {:message => item.sku.long_desc})
   end
 
   def update
     @order.update_items(params[:order_basket][:items_attributes].values)
-    store_and_redirect(:order_updated, "Your order has been updated")
+    store_and_redirect(:order_updated, {:message => "Your order has been updated"})
   end
 
   def destroy_alerts
