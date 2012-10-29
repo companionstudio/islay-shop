@@ -22,7 +22,7 @@ class SkuStockLog < ActiveRecord::Base
     })
   end
 
-  # How much stuck was added or removed.
+  # How much stock was added or removed.
   #
   # @return Integer
   def movement
@@ -37,7 +37,11 @@ class SkuStockLog < ActiveRecord::Base
   #
   # @return String
   def direction
-    if before > after
+    if before.blank?
+      'set'
+    elsif after.blank?
+      'clear'
+    elsif before > after
       'down'
     else
       'up'

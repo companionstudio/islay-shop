@@ -95,7 +95,11 @@ class SkuPriceLog < ActiveRecord::Base
   #
   # @return String
   def direction(attr)
-    if self[:"#{attr}_before"] > self[:"#{attr}_after"]
+    if self[:"#{attr}_before"].blank?
+      'set'
+    elsif self[:"#{attr}_after"].blank?
+      'clear'
+    elsif self[:"#{attr}_before"] > self[:"#{attr}_after"]
       'down'
     else
       'up'

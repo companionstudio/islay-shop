@@ -140,9 +140,19 @@
               - if log.price_moved?
                 = movement(log.price_before, log.price_after, log.price_direction, :name => 'Price')
               - if log.batch_price_moved?
-                = movement(log.batch_price_before, log.batch_price_after, log.batch_price_direction, :name => 'Batch Price')
+                - if log.batch_price_before.blank?
+                  Set batch price to #{format_money(log.batch_price_after)}. 
+                - elsif log.batch_price_after.blank?
+                  Cleared batch price (was #{batch_price_before}). 
+                - else
+                  = movement(log.batch_price_before, log.batch_price_after, log.batch_price_direction, :name => 'Batch Price')
               - if log.batch_size_moved?
-                = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
+                - if log.batch_size_before.blank?
+                  Set batch size to #{log.batch_size_after}. 
+                - elsif log.batch_size_after.blank?
+                  Cleared batch size (was #{batch_price_after}). 
+                - else
+                  = movement(log.batch_size_before, log.batch_size_after, log.batch_size_direction, :name => 'Batch Size')
             %td.meta
               %span.time= log.created_at
               by #{log.creator_name}
