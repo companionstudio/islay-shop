@@ -7,7 +7,7 @@ class DefaultShippingCalculator
   # @return Float
   def calculate(order)
     if !order.shipping_postcode.blank?
-      15.0
+      0
     end
   end
 end
