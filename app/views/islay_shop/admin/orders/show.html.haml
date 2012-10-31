@@ -13,47 +13,65 @@
   %li
     %span.key Total
     %span.value.indicator.neutral= @order.formatted_total
-  - if @order.credit_card_payment.authorization_expiry_warning?
-    %li
-      %span.key Authorization
-      - if @order.credit_card_payment.authorization_expired?
-        %span.value.indicator.warning Expired!
-      - else
-        %span.value.indicator.warning Expires Soon!
+  - unless @order.credit_card_payment.blank?
+    - if @order.credit_card_payment.authorization_expiry_warning?
+      %li
+        %span.key Authorization
+        - if @order.credit_card_payment.authorization_expired?
+          %span.value.indicator.warning Expired!
+        - else
+          %span.value.indicator.warning Expires Soon!
 
 = content do
-  %div.billing
-    %h3 Billing Details
+  %div.panel
+    %div.billing
+      %h3 Billing Details
 
-    %p
-      %span.type.mastercard --
-      %span.number= @order.credit_card_payment.number
-      %span.name= @order.credit_card_payment.full_name
-      %span.expiry Expiry: #{@order.credit_card_payment.expiry}
+      %p.card-details
+        %span.type{:class => "card-type-#{@order.credit_card_payment.card_type}"}= @order.credit_card_payment.card_type
+        %span.number= @order.credit_card_payment.number
+        %span.name= @order.credit_card_payment.full_name
+        %span.expiry Expiry: #{@order.credit_card_payment.expiry}
 
-  %div.address
-    %h3 Billing Address
+    %div.address
+      %h3 Billing Address
 
-    %p
-      %strong= @order.name
-      %br/
-      = @order.billing_street
-      %br/
-      = @order.billing_city
-      %br/
-      #{@order.billing_state} #{@order.billing_postcode}
+      %p
+        %strong= @order.name
+        %br/
+        = @order.billing_street
+        %br/
+        = @order.billing_city
+        %br/
+        #{@order.billing_state} #{@order.billing_postcode}
 
-  %div.address
-    %h3 Shipping Address
+    %div.address
+      %h3 Shipping Address
 
-    %p
-      %strong= @order.ship_to
-      %br/
-      = @order.shipping_street
-      %br/
-      = @order.shipping_city
-      %br/
-      #{@order.shipping_state} #{@order.shipping_postcode}
+      %p
+        %strong= @order.ship_to
+        %br/
+        = @order.shipping_street
+        %br/
+        = @order.shipping_city
+        %br/
+        #{@order.shipping_state} #{@order.shipping_postcode}
+
+  
+  %h3.inset Tracking
+  %div.tracking.inset
+    - if @order.trackable?
+      - if @order.tracking_reference.blank?
+        = simple_form_for(@order, :url => :update_admin_order_process) do |f|
+          = f.input(:tracking_reference)
+          %button{:type => 'submit'} Save
+      - else
+        %p
+          Tracking number:
+          %strong #{@order.tracking_reference}
+          = link_to('Track order&hellip;'.html_safe, @order.track_shipment)
+    - else
+      %p.note This order will be trackable once it has been packed.
 
   %h3.items.inset Order Items
   %table.items.inset

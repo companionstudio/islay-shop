@@ -2,7 +2,20 @@ class Order < ActiveRecord::Base
   include IslayShop::OrderWorkflow
   include Islay::Searchable
 
-  search_terms :against => {:name => 'A'}
+  search_terms :against => {
+    :name => 'A',
+    :gifted_to => 'A',
+    :reference => 'A',
+    :tracking_reference => 'B',
+    :email => 'B',
+    :phone => 'B',
+    :billing_street => 'C',
+    :billing_city => 'C',
+    :billing_postcode => 'C',
+    :shipping_street => 'C',
+    :shipping_city => 'C',
+    :shipping_postcode => 'C'
+  }
 
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled
@@ -15,6 +28,14 @@ class Order < ActiveRecord::Base
   # an instance of an order and returns an Integer.
   class_attribute :shipping_calculator
   self.shipping_calculator = :default_shipping_calculator
+
+  # A class attribute used to store a reference to the shipment tracking 
+  # class. This can be over-ridden per install using extensions.
+  #
+  # The class should at least have an instance method #track, which accepts
+  # an instance of an order and returns an Integer.
+  class_attribute :shipment_tracker
+  self.shipment_tracker = :default_shipment_tracker
 
   belongs_to  :person
   has_one     :credit_card_payment
@@ -60,7 +81,7 @@ class Order < ActiveRecord::Base
     :billing_city, :email, :gift_message, :gifted_to, :is_gift, :name, :phone,
     :shipping_city, :shipping_country, :shipping_instructions, :shipping_postcode,
     :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
-    :items_dump, :stock_alerts_dump, :person_id
+    :items_dump, :stock_alerts_dump, :person_id, :reference, :tracking_reference
   )
 
   # The workflow is defined here so it can be queried against this class and
@@ -428,6 +449,20 @@ class Order < ActiveRecord::Base
     self.class.shipping_calculator_class.new.calculate(self)
   end
 
+  # Tracks the order with the tracker class's track method
+  #
+  # @return [String, nil]
+  def track_shipment
+    self.class.shipment_tracker_class.new.track(self)
+  end
+  
+  # Is the order in a state that can be tracked? (Usually after the order is ready for shipping)
+  #
+  # @return [Boolean]
+  def trackable?
+    ['packed', 'shipped', 'complete'].include? status
+  end
+
   private
 
   # Returns the configured shipping calculator class.
@@ -435,6 +470,13 @@ class Order < ActiveRecord::Base
   # @return Object
   def self.shipping_calculator_class
     @@shipping_calculator ||= self.shipping_calculator.to_s.classify.constantize
+  end
+
+  # Returns the configured shippment tracker class.
+  #
+  # @return Object
+  def self.shipment_tracker_class
+    @@shipment_tracker ||= self.shipment_tracker.to_s.classify.constantize
   end
 
   # Calculate the shipping, product and order totals. This includes both the

@@ -4,7 +4,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   helper 'islay_shop/admin/orders'
 
   before_filter :status_counts
-  before_filter :find_order, :only => [:review_billing, :bill, :review_cancellation, :cancel, :pack, :ship, :review_cancellation, :cancel]
+  before_filter :find_order, :only => [:review_billing, :bill, :review_cancellation, :cancel, :pack, :ship, :review_cancellation, :cancel, :update]
 
   def index
     redirect_to path(:billing, :order_processes)
@@ -78,6 +78,11 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   def recent
     @title = 'Completed (last 7 days)'
     @orders = OrderSummary.summary.recently_completed.page(params[:page]).sorted(params[:sort])
+  end
+
+  def update
+    @order.update_attributes(params[:order])
+    redirect_to path(:order, :id => @order)
   end
 
   private

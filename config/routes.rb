@@ -82,10 +82,12 @@ Rails.application.routes.draw do
             put 'billing',  :action => 'bill'
 
             put 'packing',  :action => 'pack', :as => 'pack'
-            put 'shipping', :action => 'ship',     :as => 'ship'
+            put 'shipping', :action => 'ship', :as => 'ship'
 
             get 'cancel',   :action => 'review_cancellation', :as => 'cancel'
             put 'cancel',   :action => 'cancel'
+
+            put 'update',   :action => 'update', :as => 'update'
           end
         end
 
