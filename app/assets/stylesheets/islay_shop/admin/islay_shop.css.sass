@@ -34,7 +34,6 @@
       +border-radius(0.6em)
       +background-image(linear-gradient(white, $light-grey + 20))
       border: 0.1em solid $light-grey - 20
-      font-family: 'Dosis Medium'
       text-transform: uppercase
       padding: 1.5em
       width: 19em
@@ -44,12 +43,16 @@
       float: left
 
     .type
+      font-size: 1.3em
       margin-bottom: 3em
 
     .number
-      font-size: 1.2em
+      font-size: 1.3em
+      font-weight: bold
       letter-spacing: 0.2em
+      white-space: nowrap
       width: 100%
+
 
     .name,
     .expiry
@@ -259,6 +262,11 @@ table
       font-size: 0.7em !important
       margin: 0.2em 0 0 0 !important
       float: none
+
+  .expiry-warning
+    background-color: $negative-color
+    color: #FFF
+    font-weight: bold
 
 /* -------------------------------------------------------------------------- */
 /* NUMERIC VALUES

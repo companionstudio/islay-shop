@@ -12,7 +12,7 @@ class CreditCardPayment < ActiveRecord::Base
 
   attr_accessible(
     :first_name, :last_name, :number, :verification_value,
-    :month, :year, :gateway_id, :amount, :gateway_expiry
+    :month, :year, :gateway_id, :amount, :gateway_expiry, :card_type
   )
 
   # Does what it says on the tin. Concatenates the first and last name.
@@ -60,7 +60,7 @@ class CreditCardPayment < ActiveRecord::Base
   #
   # @return Boolean
   def authorized?
-    latest_transaction.authorizing?
+    latest_transaction and latest_transaction.authorizing?
   end
 
   # Indicates if the payment is in an captured state. If the payment is
@@ -194,6 +194,7 @@ class CreditCardPayment < ActiveRecord::Base
       :last_name          => payment_method.last_name,
       :month              => payment_method.month,
       :year               => payment_method.year,
+      :card_type          => payment_method.card_type,
       :verification_value => payment_method.verification_value
     }
   end
