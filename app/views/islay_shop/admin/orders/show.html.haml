@@ -1,4 +1,4 @@
-- prefixed_sub_header('Order', @order.name)
+- prefixed_sub_header('Order', "#{@order.name} #{@order.reference}")
 
 %ul#summary
   %li
@@ -59,17 +59,21 @@
 
   
   %h3.inset Tracking
-  %div.tracking.inset
+  %div.tracking.inset.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
     - if @order.trackable?
-      - if @order.tracking_reference.blank?
+      - unless @order.tracking_reference.blank?
+        %p#displayTrackingReference.summary
+          Tracking reference:
+          %strong #{@order.tracking_reference}
+          %a.collapsible-expander{:href => '#editTrackingReference'} Change
+        
+          = link_to('Track order&hellip;'.html_safe, @order.track_shipment, :class => 'track-order')
+
+      #editTrackingReference.details
         = simple_form_for(@order, :url => :update_admin_order_process) do |f|
           = f.input(:tracking_reference)
           %button{:type => 'submit'} Save
-      - else
-        %p
-          Tracking number:
-          %strong #{@order.tracking_reference}
-          = link_to('Track order&hellip;'.html_safe, @order.track_shipment)
+
     - else
       %p.note This order will be trackable once it has been packed.
 

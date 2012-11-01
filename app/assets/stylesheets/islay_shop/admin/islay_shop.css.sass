@@ -62,6 +62,25 @@
     .expiry
       float: right
 
+  #displayTrackingReference
+    font-size: 1.2em
+    strong
+      font-weight: bold
+    a
+      font-size: 0.83em
+    .track-order
+      margin-left: 1em
+
+  #editTrackingReference label
+    display: inline-block
+    float: left
+    margin-top: 0.75em
+    margin-right: 1em
+
+  #order_tracking_reference
+    width: 12em
+    font-size: 0.95em
+
 /* -------------------------------------------------------------------------- */
 /* ORDER OVERVIEW
 /* -------------------------------------------------------------------------- */
@@ -221,8 +240,8 @@
 table
   .reference
     +border-radius(0.2em)
-    border: 0.1em solid $light-grey - 15
-    background: $light-grey
+    border: 0.1em solid rgba(0,0,0,0.1)
+    background: rgba(0,0,0,0.1)
     padding: 0.1em 0.3em
     float: right
 
@@ -265,9 +284,13 @@ table
       float: none
 
   .expiry-warning
+    +border-radius(0.3em)
     background-color: $negative-color
     color: #FFF
     font-weight: bold
+    margin-left: 1em
+    padding: 0.15em 0.45em
+    vertical-align: -0.1em
 
 /* -------------------------------------------------------------------------- */
 /* NUMERIC VALUES
