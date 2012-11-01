@@ -34,8 +34,9 @@ module IslayShop
       end
 
       def dependencies
-        @categories = ProductCategory.all
+        @categories = ProductCategory.tree
         @ranges = ProductRange.all
+        @assets = Asset.order('name')
       end
     end
   end

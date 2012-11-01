@@ -6,7 +6,7 @@
 
       = f.input(:name)
 
-      = asset_picker(f)
+      = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
 
     = f.fieldset('Pricing', :class => 'pricing') do
       = f.input(:price, :class => 'small', :col => 'first-inline')

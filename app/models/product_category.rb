@@ -21,6 +21,33 @@ class ProductCategory < ActiveRecord::Base
   track_user_edits
   validations_from_schema
 
+  # Returns a relation with information sufficient to arrange the categories
+  # into a tree.
+  #
+  # @return ActiveRecord::Relation
+  def self.tree
+    select(%{
+      id,
+      name,
+      NLEVEL(path) AS depth,
+      CASE
+        WHEN NLEVEL(path) = 0 THEN id
+        ELSE LTREE2TEXT(SUBPATH(path, -1, 1))::integer
+      END AS parent_id
+    }).order("parent_id, depth, position")
+  end
+
+  # Returns a relation which restricts the the categories to those which
+  # which could serve as a parent to another category.
+  #
+  # @param [String, Integer] id
+  #
+  # @return ActiveRecord::Relation
+  def self.potential_parents(id = nil)
+    w = where("NOT EXISTS (SELECT 1 FROM products WHERE product_category_id = product_categories.id)")
+    id ? w.where("id != ?", id.to_i) : w
+  end
+
   # Returns the ID of the parent category if there is one.
   #
   # @return [ProductCategory, nil]
@@ -34,7 +61,11 @@ class ProductCategory < ActiveRecord::Base
   #
   # @return [ProductCategory, nil]
   def product_category_id=(id)
-    self.parent = ProductCategory.find(id) unless id.blank?
+    self.parent = if id.blank?
+      nil
+    else
+      ProductCategory.find(id)
+    end
   end
 
   # Generates a select statement which summarises the state of the category.

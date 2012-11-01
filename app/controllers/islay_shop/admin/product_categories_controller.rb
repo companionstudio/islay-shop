@@ -28,7 +28,7 @@ module IslayShop
 
       def dependencies
         @assets = ImageAsset.order('name')
-        @product_categories = category_tree([], ProductCategory.no_products.top_level.order('position'))
+        @product_categories = ProductCategory.tree.potential_parents(@product_category.id)
       end
 
       def category_tree(acc, categories, prefix = '')
