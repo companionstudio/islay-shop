@@ -48,6 +48,19 @@ class ProductCategory < ActiveRecord::Base
     id ? w.where("id != ?", id.to_i) : w
   end
 
+  # Returns a relation which marks any categories that can be used as parents
+  # for products.
+  #
+  # @return ActiveRecord::Relation
+  def self.mark_disabled
+    select(%{
+      (EXISTS (
+        SELECT 1 FROM product_categories AS pcs
+        WHERE pcs.path <@ (product_categories.path || text2ltree(product_categories.id::text))
+      )) AS disabled
+    })
+  end
+
   # Returns the ID of the parent category if there is one.
   #
   # @return [ProductCategory, nil]
