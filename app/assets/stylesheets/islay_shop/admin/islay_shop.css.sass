@@ -37,7 +37,7 @@
       border: 0.1em solid $light-grey - 20
       text-transform: uppercase
       padding: 1.5em
-      width: 19em
+      width: 17em
       float: left
 
     span
@@ -63,7 +63,9 @@
       float: right
 
   #displayTrackingReference
+    clear: both
     font-size: 1.2em
+    margin-bottom: 0
     strong
       font-weight: bold
     a
@@ -86,16 +88,27 @@
 /* -------------------------------------------------------------------------- */
 #islay-shop-admin-orders.show
   .billing,
-  .address
+  .address,
+  .order-overview
     margin: 1.5em 3em 0 0
     float: left
 
     h3
       font-size: 1em
 
-  .billing
-    width: 22em
+  .billing,
+    width: 20em
+
+  .order-overview
     margin-left: 2%
+    li
+      line-height: 1.2
+      margin-bottom: 0.5em
+      .key
+        color: $dark-grey
+        display: block
+      .value
+        font-size: 1.4em
 
   .address
     p
@@ -118,6 +131,47 @@
       font-weight: bold
       padding-right: 1em
 
+  .order-progression
+    +background-image($dimension-raised-subtle)
+    +clear-fix
+    background-color: $very-light-grey
+    clear: both
+    padding: 0.5em 3.5em
+    position: relative
+
+    li
+      background: right center no-repeat image-url('islay_shop/admin/progression_entry_standard.png')
+      border: 1px solid #D5DAE1
+      border-width: 1px 0
+      display: inline-block
+      margin: 0 0 0 -3em
+      padding: 0.65em 3em 0.45em 3em
+      position: relative
+
+      @for $i from 1 through 10
+        &:nth-child(#{10 - $i})
+          z-index: $i
+
+      &:first-child
+        +border-radius(0.3em 0 0 0.3em)
+        border-left-width: 1px
+        padding-left: 1em
+
+      &:last-child
+        +border-radius(0 0.3em 0.3em 0)
+        background-position: left center
+        border-right-width: 1px
+        padding-right: 1.5em
+
+      &.done
+        +icon-ok
+          padding-right: 0.3em
+
+      &.current
+        +islay-text-shadow
+        background-image: image-url('islay_shop/admin/progression_entry_current.png')
+        color: #FFF
+        
 /* -------------------------------------------------------------------------- */
 /* ORDER - REVIEW BILLING
 /* -------------------------------------------------------------------------- */

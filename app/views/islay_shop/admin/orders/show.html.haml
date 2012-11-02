@@ -1,29 +1,36 @@
-- prefixed_sub_header('Order', "#{@order.name} #{@order.reference}")
+- prefixed_sub_header('Order', "#{@order.name}")
 
-%ul#summary
-  %li
-    %span.key Reference #
-    %span.value.indicator.reference= @order.reference
-  %li
-    %span.key Status
-    %span.value.indicator.neutral= @order.status
-  %li
-    %span.key Total items
-    %span.value.indicator.neutral= @order.sku_total_quantity
-  %li
-    %span.key Total
-    %span.value.indicator.neutral= @order.formatted_total
-  - unless @order.credit_card_payment.blank?
-    - if @order.credit_card_payment.authorization_expiry_warning?
-      %li
-        %span.key Authorization
-        - if @order.credit_card_payment.authorization_expired?
-          %span.value.indicator.warning Expired!
-        - else
-          %span.value.indicator.warning Expires Soon!
+#summary
+  = process_progression(@order)
 
 = content do
+  
+
   %div.panel
+    %div.order-overview
+      %ul
+        %li
+          %span.key Reference #
+          %span.value.reference= @order.reference
+        %li
+          %span.key Placed
+          %span.value= @order.logs.first.created_at.to_s(:pretty)
+        %li
+          %span.key Status
+          %span.value= @order.status.humanize
+        %li
+          %span.key Total
+          %span.value= "#{@order.sku_total_quantity} Item#{@order.sku_total_quantity > 1 ? 's' : ''},"
+          %strong.value= @order.formatted_total
+        - unless @order.credit_card_payment.blank?
+          - if @order.credit_card_payment.authorization_expiry_warning?
+            %li
+              %span.key Authorization
+              - if @order.credit_card_payment.authorization_expired?
+                %span.value.indicator.warning Expired!
+              - else
+                %span.value.indicator.warning Expires Soon!
+
     %div.billing
       %h3 Billing Details
 
@@ -55,27 +62,7 @@
         %br/
         = @order.shipping_city
         %br/
-        #{@order.shipping_state} #{@order.shipping_postcode}
-
-  
-  %h3.inset Tracking
-  %div.tracking.inset.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
-    - if @order.trackable?
-      - unless @order.tracking_reference.blank?
-        %p#displayTrackingReference.summary
-          Tracking reference:
-          %strong #{@order.tracking_reference}
-          %a.collapsible-expander{:href => '#editTrackingReference'} Change
-        
-          = link_to('Track order&hellip;'.html_safe, @order.track_shipment, :class => 'track-order')
-
-      #editTrackingReference.details
-        = simple_form_for(@order, :url => :update_admin_order_process) do |f|
-          = f.input(:tracking_reference)
-          %button{:type => 'submit'} Save
-
-    - else
-      %p.note This order will be trackable once it has been packed.
+        #{@order.shipping_state} #{@order.shipping_postcode}  
 
   %h3.items.inset Order Items
   %table.items.inset
@@ -135,7 +122,26 @@
         %td
           &nbsp;
 
-  %h3.logs.inset Logs
+  %h3.inset Tracking
+  %div.tracking.inset.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
+    - if @order.trackable?
+      - unless @order.tracking_reference.blank?
+        %p#displayTrackingReference.summary
+          Tracking reference:
+          %strong #{@order.tracking_reference}
+          %a.collapsible-expander{:href => '#editTrackingReference'} Change
+        
+          = link_to('Track order&hellip;'.html_safe, @order.track_shipment, :class => 'track-order')
+
+      #editTrackingReference.details
+        = simple_form_for(@order, :url => :update_admin_order_process) do |f|
+          = f.input(:tracking_reference)
+          %button{:type => 'submit'} Save
+
+    - else
+      %p#displayTrackingReference.note This order will be trackable once it has been packed.
+
+  %h3#order-activity-log.logs.inset Logs
   %table.logs.inset
     %thead
       %tr
@@ -151,7 +157,7 @@
             %span(class="boolean #{log.succeeded?}")
               %span= friendly_bool(log.succeeded?)
           %td
-            %span.title= log.action.humanize
+            %span.title= past_tense(log.action)
           %td
             - if log.notes?
               = simple_format(log.notes)

@@ -1,0 +1,8 @@
+%ol.order-progression.inset
+  - process.each do |step|
+    %li{:class => "#{step[:action]} #{step[:done] ? 'done' : ''} #{step[:current] ? 'current' : ''}"}
+      %span= step[:label]
+
+    
+
+    
