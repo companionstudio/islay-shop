@@ -171,6 +171,7 @@ class ProductCategory < ActiveRecord::Base
           SELECT 1 FROM products AS ps
           JOIN skus ON product_category_id = product_categories.id
           AND ps.published = true AND ps.status = 'for_sale'
+          AND skus.published = true AND skus.status = 'for_sale'
           AND product_id = ps.id AND stock_level = 0
         )
       ) THEN 'warning'
@@ -179,6 +180,7 @@ class ProductCategory < ActiveRecord::Base
           SELECT 1 FROM products AS ps
           JOIN skus ON product_category_id = product_categories.id AND product_id = ps.id
           AND ps.published = true AND ps.status = 'for_sale'
+          AND skus.published = true AND skus.status = 'for_sale'
           AND stock_level <= %s
         )
       ) THEN 'low'

@@ -57,10 +57,10 @@ class Product < ActiveRecord::Base
       CASE
         WHEN published = false OR status != 'for_sale' THEN 'na'
         WHEN (
-          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND stock_level = 0)
+          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND published = true AND status = 'for_sale' AND stock_level = 0)
         ) THEN 'warning'
         WHEN (
-          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND stock_level <= 5)
+          EXISTS (SELECT 1 FROM skus WHERE product_id = products.id AND published = true AND status = 'for_sale' AND stock_level <= 5)
         ) THEN 'low'
         ELSE 'ok'
       END AS stock_level_notice
