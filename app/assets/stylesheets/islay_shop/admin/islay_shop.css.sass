@@ -171,7 +171,7 @@
         +islay-text-shadow
         background-image: image-url('islay_shop/admin/progression_entry_current.png')
         color: #FFF
-        
+
 /* -------------------------------------------------------------------------- */
 /* ORDER - REVIEW BILLING
 /* -------------------------------------------------------------------------- */
@@ -281,7 +281,7 @@
     padding: 0.2em 0.55em 0.15em 0.55em
 
   .value-supplement
-    
+
 
   .expiring .key
     font-weight: bold
@@ -345,6 +345,37 @@ table
     margin-left: 1em
     padding: 0.15em 0.45em
     vertical-align: -0.1em
+
+  /* CHILD RECORDS */
+  .children
+    margin-left: 1.8em
+    width: 100%
+    float: left
+
+    li
+      margin-bottom: 0 !important
+      float: left
+
+    a
+      +border-radius(0.3em)
+      border: 0.1em solid $light-grey - 20
+      padding: 0 0.4em
+      margin: 0.6em 0.6em 0 0
+      float: left
+
+  .children-disclosure
+    text-align: center
+    width: 1.2em
+    cursor: pointer
+    float: right
+
+    &:before
+      font-family: Icon
+
+    +icon-chevron-right
+
+    &.open
+      +icon-chevron-down
 
 /* -------------------------------------------------------------------------- */
 /* NUMERIC VALUES

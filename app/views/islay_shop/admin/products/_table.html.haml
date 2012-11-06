@@ -17,7 +17,9 @@
             %span= friendly_bool(product.published?)
         %td
           = link_to(product.name, path(product), :class => 'title product')
-          %span.summary= product.skus_summary
+          %ul.children
+            - product.skus.short_desc_only.each do |sku|
+              %li= link_to(sku.short_desc, path(:edit, product, sku))
         %td
           %span.indicator= product.status.humanize
         %td.indicator

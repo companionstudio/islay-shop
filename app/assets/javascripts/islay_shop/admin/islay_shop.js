@@ -4,6 +4,7 @@
 //= require ../../vendor/g.line-min
 //= require ../../vendor/kalendae
 //= require ../../vendor/moment
+//= require_tree .
 
 $SP.GUI = {};
 
@@ -686,6 +687,12 @@ $SP.GUI.Tabs = Backbone.View.extend({
 
     return this;
   }
+});
+
+$SP.where('#islay-shop-admin-product-categories.show, #islay-shop-admin-products.index').select('table ul.children').run(function(collection) {
+  var children = _.map(collection, function(list) {
+    return new Islay.TableDisclosure({el: $(list)});
+  });
 });
 
 $SP.where('#islay-admin-dashboard.index').run(function() {

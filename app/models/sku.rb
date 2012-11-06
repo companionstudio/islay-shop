@@ -84,6 +84,13 @@ class Sku < ActiveRecord::Base
     })
   end
 
+  # Creates a relation which only has the short_desc and ID.
+  #
+  # @return ActiveRecord::Relation
+  def self.short_desc_only
+    select('skus.id, skus.short_desc')
+  end
+
   # Produces a scope with calculated fields like the ::summary method, but with
   # the addition of the product name.
   #
