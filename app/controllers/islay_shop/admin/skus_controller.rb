@@ -9,7 +9,7 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
   def dependencies
     @assets = Asset.order('name')
     if integrate_blog?
-      @blog_entries = BlogEntry.order('published DESC')
+      @blog_entries = BlogEntry.order('published_at DESC')
     end
   end
 
