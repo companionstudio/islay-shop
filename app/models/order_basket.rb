@@ -1,6 +1,15 @@
 class OrderBasket < Order
   before_create :store_reference
 
+  # Finds the quantity of the specified SKU in the order. This can be between
+  # 0 and n.
+  #
+  # @return Integer
+  def sku_quantity(sku)
+    item = items.find {|i| i.sku_id == sku.id}
+    item ? item.quantity : 0
+  end
+
   # Attempts to authorize a payment method on spreedly core.
   #
   # @return Boolean
