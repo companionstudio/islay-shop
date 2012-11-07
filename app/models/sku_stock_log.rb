@@ -13,7 +13,7 @@ class SkuStockLog < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      before, after, action, sku_stock_logs.created_at,
+      sku_id, before, after, action, sku_stock_logs.created_at,
       (SELECT short_desc FROM skus WHERE skus.id = sku_id) AS short_desc,
       CASE
         WHEN sku_stock_logs.creator_id IS NULL then 'Customer'

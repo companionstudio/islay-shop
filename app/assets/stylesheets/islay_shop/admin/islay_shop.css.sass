@@ -231,6 +231,12 @@
 /* PRODUCT OVERVIEW
 /* -------------------------------------------------------------------------- */
 #islay-shop-admin-products.show
+  .overview
+    padding-top: 3em
+
+  .asset-preview
+    min-height: 17em
+
   .adjust
     width: 11em
 
@@ -239,15 +245,30 @@
 
   .product-description
     .key-value
-      border-top: 0
-      width: 100%
-      max-width: 45em
-
-    .key,
-    .value
-      margin-bottom: 0.6em
       width: 100%
 
+    li
+      border-bottom: 0.1em solid $light-grey
+      margin-bottom: 0.3em !important
+
+    .desc
+      .key,
+      .value
+        width: 100%
+
+      p
+        max-width: 40em
+
+  #product-skus
+    ul
+      margin: -2em 2% 0 0
+      float: right
+
+    li, a
+      float: left
+
+    a
+      margin-left: 1em
 
 /* -------------------------------------------------------------------------- */
 /* SUMMARY
@@ -279,9 +300,6 @@
     +border-radius(0 0.2em 0.2em 0)
     min-width: 1.1em
     padding: 0.2em 0.55em 0.15em 0.55em
-
-  .value-supplement
-
 
   .expiring .key
     font-weight: bold

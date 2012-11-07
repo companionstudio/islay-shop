@@ -24,15 +24,13 @@ Rails.application.routes.draw do
 
           get :delete, :on => :member
 
-          resources :product_assets, :path => 'assets'
+          resources :product_assets,  :path => 'assets'
+          resources :stock_logs,      :only => 'index'
+          resources :sku_price_logs,  :only => 'index', :path => 'price_logs'
 
           resources :skus do
-            collection do
-              put 'position', :action => :update_position, :as => 'position'
-            end
-
+            put 'position', :action => :update_position, :as => 'position', :on => :collection
             get :delete, :on => :member
-
             resources :sku_assets, :path => 'assets'
           end
         end

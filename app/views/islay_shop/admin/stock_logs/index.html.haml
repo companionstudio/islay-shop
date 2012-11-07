@@ -1,0 +1,25 @@
+- sub_header(link_to('Catalogue', path(:product_categories)))
+- sub_header(link_to(@product.name, path(@product)))
+- sub_header('Stock Logs')
+
+= content do
+  %table
+    %thead
+      %tr
+        %th SKU
+        %th Action
+        %th Change
+        %th On
+
+    %tbody
+      - @stock_logs.each do |log|
+        %tr
+          %td
+            %span.title= link_to(log.short_desc, path(@product, :sku, :id => log.sku_id))
+          %td
+            = log.action.humanize
+          %td
+            = movement(log.before, log.after, log.direction)
+          %td.meta
+            %span.time= log.created_at
+            by #{log.creator_name}

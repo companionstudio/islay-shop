@@ -16,7 +16,7 @@ class SkuPriceLog < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      price_before, price_after, batch_size_before, batch_size_after,
+      sku_id, price_before, price_after, batch_size_before, batch_size_after,
       batch_price_before, batch_price_after, sku_price_logs.created_at,
       (SELECT short_desc FROM skus WHERE skus.id = sku_id) AS short_desc,
       CASE
