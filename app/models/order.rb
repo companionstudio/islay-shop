@@ -4,7 +4,7 @@ class Order < ActiveRecord::Base
 
   search_terms :against => {
     :name => 'A',
-    :gifted_to => 'A',
+    :shipping_name => 'A',
     :reference => 'A',
     :tracking_reference => 'B',
     :email => 'B',
@@ -77,10 +77,10 @@ class Order < ActiveRecord::Base
 
   # These are the only attributes that we want to expose publically.
   attr_accessible(
-    :billing_country, :billing_postcode, :billing_state, :billing_street,
-    :billing_city, :email, :gift_message, :gifted_to, :is_gift, :name, :phone,
-    :shipping_city, :shipping_country, :shipping_instructions, :shipping_postcode,
-    :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
+    :billing_company, :billing_country, :billing_postcode, :billing_state, :billing_street,
+    :billing_city, :email, :gift_message, :is_gift, :name, :phone,
+    :shipping_name, :shipping_company, :shipping_city, :shipping_country, :shipping_instructions,
+    :shipping_postcode, :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
     :items_dump, :stock_alerts_dump, :person_id, :reference, :tracking_reference
   )
 
@@ -107,10 +107,6 @@ class Order < ActiveRecord::Base
   validates :shipping_city,      :presence => true, :if => :use_shipping_address?
   validates :shipping_state,     :presence => true, :if => :use_shipping_address?
   validates :shipping_postcode,  :presence => true, :if => :use_shipping_address?
-
-  # Require recipient and message for gifts
-  validates :gifted_to,     :presence => true, :if => :is_gift?
-  validates :gift_message,  :presence => true, :if => :is_gift?
 
   # Validate email format
   validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
@@ -189,9 +185,9 @@ class Order < ActiveRecord::Base
     root: false,
     :methods => [:items_dump, :stock_alerts_dump],
     :only => [
-      :person_id, :name, :phone, :email, :is_gift, :gifted_to, :gift_message,
-      :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
-      :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
+      :person_id, :name, :phone, :email, :is_gift, :shipping_name, :gift_message,
+      :billing_company, :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
+      :shipping_company, :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
       :shipping_instructions, :use_shipping_address, :items_dump, :stock_alerts_dump
     ]
   }
@@ -260,15 +256,22 @@ class Order < ActiveRecord::Base
 
 
   # Determines the shipping name depending on if it is going to the billing
-  # or shipping address and if it is a gift.
+  # or shipping address and if a shipping name is provided
   #
   # @return String
   def ship_to
-    if use_shipping_address? and is_gift?
-      gifted_to
+    if use_shipping_address? and !shipping_name.blank?
+      shipping_name
     else
       name
     end
+  end
+
+  # An accessor which falls back to billing details
+  #
+  # @return String
+  def shipping_company
+    use_shipping_address? ? self[:shipping_company] : self[:billing_company]
   end
 
   # An accessor which falls back to billing details

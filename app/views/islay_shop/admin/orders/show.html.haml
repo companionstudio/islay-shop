@@ -4,7 +4,6 @@
   = process_progression(@order)
 
 = content do
-  
 
   %div.panel
     %div.order-overview
@@ -44,25 +43,33 @@
       %h3 Billing Address
 
       %p
-        %strong= @order.name
+        %span.name
+          %strong= @order.name
+          - if @order.billing_company
+            , 
+            %span.company #{@order.billing_company}  
         %br/
-        = @order.billing_street
+        %span.street= @order.billing_street
         %br/
-        = @order.billing_city
+        %span.city= @order.billing_city
         %br/
-        #{@order.billing_state} #{@order.billing_postcode}
+        %span.state #{@order.billing_state} #{@order.billing_postcode}
 
     %div.address
       %h3 Shipping Address
 
       %p
-        %strong= @order.ship_to
+        %span.name
+          %strong= @order.ship_to
+          - if @order.shipping_company
+            ,
+            %span.company #{@order.shipping_company}  
         %br/
-        = @order.shipping_street
+        %span.street= @order.shipping_street
         %br/
-        = @order.shipping_city
+        %span.city= @order.shipping_city
         %br/
-        #{@order.shipping_state} #{@order.shipping_postcode}  
+        %span.state #{@order.shipping_state} #{@order.shipping_postcode}  
 
   %h3.items.inset Order Items
   %table.items.inset

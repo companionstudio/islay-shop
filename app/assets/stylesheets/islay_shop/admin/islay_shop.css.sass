@@ -118,6 +118,10 @@
     strong
       font-weight: bold
 
+    .name
+      display: inline-block
+      margin-bottom: 0.6em
+
   tfoot
     tr:first-child
       th, td
@@ -371,15 +375,22 @@ table
     float: left
 
     li
-      margin-bottom: 0 !important
+      border-right: 0.1em solid #DDD
       float: left
+      padding-right: 0.4em
+      margin: 0.5em 0.4em 0 0!important
+      &:last-child
+        border-right: 0
 
     a
       +border-radius(0.3em)
-      border: 0.1em solid $light-grey - 20
+      display: inline-block
       padding: 0 0.4em
-      margin: 0.6em 0.6em 0 0
-      float: left
+
+      &:hover
+        background: $widget-hover-background-color
+        color: $widget-hover-foreground-color
+        text-decoration: none
 
   .children-disclosure
     text-align: center

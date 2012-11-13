@@ -20,6 +20,7 @@
   %fieldset
     %legend Shipping Address
     = f.input(:use_shipping_address)
+    = f.input(:shipping_name, :label => 'Recipient')
     = f.input(:shipping_street, :label => 'Street')
     = f.input(:shipping_city, :label => 'City')
     = f.input(:shipping_state, :label => 'State')
@@ -31,7 +32,6 @@
   %fieldset
     %legend Gifts
     = f.input(:is_gift, :label => 'Order is a gift')
-    = f.input(:gifted_to, :label => 'Recipient')
     = f.input(:gift_message, :label => 'Message', :as => 'text')
 
   %button(type="submit") Next: Payment
