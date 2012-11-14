@@ -188,7 +188,7 @@ class Order < ActiveRecord::Base
       :person_id, :name, :phone, :email, :is_gift, :shipping_name, :gift_message,
       :billing_company, :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
       :shipping_company, :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
-      :shipping_instructions, :use_shipping_address, :items_dump, :stock_alerts_dump
+      :shipping_instructions, :use_shipping_address, :use_billing_address, :items_dump, :stock_alerts_dump
     ]
   }
 
@@ -250,8 +250,14 @@ class Order < ActiveRecord::Base
     !use_shipping_address
   end
 
+  # Set the use_shipping_address flag to be the reverse of the incoming switch.
+  # Parse the switch value from an incoming form param (a string)
+  #
+  # @param [String] from params, either '0' or '1'
+  #
+  # @return Boolean
   def use_billing_address=(switch)
-    use_shipping_address = !switch
+    self.use_shipping_address = !(switch.to_i == 1)
   end
 
 
