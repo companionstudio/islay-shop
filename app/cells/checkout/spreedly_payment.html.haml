@@ -8,16 +8,16 @@
   - if params[:token]
     = hidden_field_tag(:payment_method_token, params[:token])
 
-  = f.input(:number)
+  = f.input(:number, :label => 'Card number')
 
   = f.input(:first_name)
   = f.input(:last_name)
 
-  = f.input(:verification_value)
+  = f.input(:verification_value, :label => 'Security code')
   
   .inline-group
-    = f.input(:month, :label => 'Expiry', :as => :select, :collection => @months)
-    = f.input(:year, :label => '/', :as => :select, :collection => @years)
+    = f.input(:month, :label => 'Expiry', :as => :select, :collection => @months, :include_blank => :placeholder, :prompt => 'Month')
+    = f.input(:year, :label => '/', :as => :select, :collection => @years, :prompt => 'Year')
 
   .button-bar
     %button(type="submit") Place order & Pay
