@@ -7,7 +7,18 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def add
     item = @order.increment_item(params[:sku_id], params[:quantity])
-    store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})
+    if request.xhr?
+      store!
+      render :json => {
+        :sku => params[:sku_id],
+        :added => params[:quantity],
+        :quantity => @order.total_sku_quantity,
+        :shipping => @order.formatted_shipping_total,
+        :total => @order.formatted_total
+      }
+    else
+      store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})
+    end
   end
 
   def remove
@@ -42,6 +53,11 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
     end
   end
 
+  # Dumps a JSON representation of an order into the user's session
+  def store!
+    session['order'] = @order.dump
+  end
+
   # Dumps a JSON representation of an order into the user's session, then
   # redirects them to either the originating URL or another URL specifed
   # via the params.
@@ -51,7 +67,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   #
   def store_and_redirect(key = nil, note = nil)
     flash[key] = note if key and note
-    session['order'] = @order.dump
+    store!
     bounce_back
   end
 end

@@ -10,6 +10,20 @@ class OrderBasket < Order
     item ? item.quantity : 0
   end
 
+  # The total number of items in the order
+  #
+  # @return Integer
+  def total_sku_quantity
+    items.reduce(0) {|a, i| a + i.quantity}
+  end
+
+  # Finds a line item, based on a sku
+  #
+  # @return Item
+  def find_item_by_sku(sku)
+    items.find {|i| i.sku_id == sku.id}
+  end
+
   # Attempts to authorize a payment method on spreedly core.
   #
   # @return Boolean
