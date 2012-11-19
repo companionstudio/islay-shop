@@ -68,6 +68,10 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   def store_and_redirect(key = nil, note = nil)
     flash[key] = note if key and note
     store!
-    bounce_back
+    if @order.empty?
+      redirect_to public_url(:order_basket)
+    else
+      bounce_back
+    end
   end
 end
