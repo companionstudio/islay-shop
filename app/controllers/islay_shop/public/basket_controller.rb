@@ -10,11 +10,13 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
     if request.xhr?
       store!
       render :json => {
+        :result => (@order.errors.blank? ? 'success' : 'failure'),
         :sku => params[:sku_id],
         :added => params[:quantity],
         :quantity => @order.total_sku_quantity,
         :shipping => @order.formatted_shipping_total,
-        :total => @order.formatted_total
+        :total => @order.formatted_total,
+        :errors => @order.errors
       }
     else
       store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})

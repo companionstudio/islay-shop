@@ -62,8 +62,8 @@ class OrderItem < ActiveRecord::Base
   # @returns self
   def increment_quantity(amount)
     self.quantity = quantity ? quantity + amount : amount
-    calculate_prices_and_discounts
     valid?
+    calculate_prices_and_discounts
     self
   end
 
@@ -151,6 +151,7 @@ class OrderItem < ActiveRecord::Base
   def validate_purchase_limit
     if sku.purchase_limiting? and quantity > sku.purchase_limit
       errors.add(:purchase_limit, "exceeds the purchase limit of #{sku.purchase_limit}")
+      self[:quantity] = sku.purchase_limit
     end
   end
 
