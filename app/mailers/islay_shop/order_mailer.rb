@@ -1,7 +1,4 @@
 class IslayShop::OrderMailer < ActionMailer::Base
-    
-  require 'premailer'
-
   helper '/islay/public/application'
 
   default :from => Settings.for(:shop, :email),

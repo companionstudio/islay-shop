@@ -1,5 +1,5 @@
 class Product < ActiveRecord::Base
-  include IslayShop::MetaData
+  include Islay::MetaData
   include IslayShop::Statuses
   include Islay::Publishable
   include Islay::Searchable

@@ -1,5 +1,5 @@
 class PromotionEffect < ActiveRecord::Base
-  include IslayShop::MetaData
+  include Islay::MetaData
   include IslayShop::PromotionConfig
 
   has_many    :applications,            :class_name => 'AppliedPromotion'
