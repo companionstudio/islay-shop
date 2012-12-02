@@ -1,4 +1,6 @@
 class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationController
+  use_https
+
   before_filter :check_for_order, :except => [:thank_you]
 
   def details
