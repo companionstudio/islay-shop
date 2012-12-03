@@ -109,23 +109,23 @@ Rails.application.routes.draw do
   end # admin
 
   islay_public 'islay_shop' do
-    namespace :basket, :path => 'order/basket' do
-      get     '/',                :action => 'contents',        :as => 'order_basket'
-      post    '/add',             :action => 'add',             :as => 'order_basket_add'
-      post    '/remove/:sku_id',  :action => 'remove',          :as => 'order_basket_remove'
-      post    '/',                :action => 'update',          :as => 'order_basket_update'
-      delete  '/',                :action => 'destroy',         :as => 'order_basket_destroy'
-      delete  '/alerts',          :action => 'destroy_alerts',  :as => 'order_basket_destroy_alerts'
+    namespace :basket, :path => 'order/basket', :as => 'order_basket' do
+      get     '/',                :action => 'contents',        :as => ''
+      post    '/add',             :action => 'add',             :as => 'add'
+      post    '/remove/:sku_id',  :action => 'remove',          :as => 'remove'
+      post    '/',                :action => 'update',          :as => 'update'
+      delete  '/',                :action => 'destroy',         :as => 'destroy'
+      delete  '/alerts',          :action => 'destroy_alerts',  :as => 'destroy_alerts'
     end
   end
 
   islay_secure_public 'islay_shop' do
-    namespace :checkout, :path => '/order/checkout' do
-      get   '/',                :action => 'details',         :as => 'order_checkout'
+    namespace :checkout, :path => '/order/checkout', :as => 'order_checkout' do
+      get   '/',                :action => 'details',         :as => ''
       post  '/',                :action => 'update'
-      get   '/payment',         :action => 'payment',         :as => 'order_checkout_payment'
-      get   '/payment/process', :action => 'payment_process', :as => 'order_checkout_payment_process'
-      get   '/thank-you',       :action => 'thank_you',       :as => 'order_checkout_thank_you'
+      get   '/payment',         :action => 'payment',         :as => 'payment'
+      get   '/payment/process', :action => 'payment_process', :as => 'payment_process'
+      get   '/thank-you',       :action => 'thank_you',       :as => 'thank_you'
     end
   end # scope
 end # draw
