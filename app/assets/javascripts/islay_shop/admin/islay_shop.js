@@ -450,7 +450,10 @@ $SP.GUI.LineGraph = Backbone.View.extend({
 
       var top = cover.y[i] - (tag.outerHeight() / 2);
 
-      if (cover.x + tag.width() > this.width) {
+      // The extra 20px here is a to deal with the odd rendering
+      // inconsistencies and to be conservative about making sure the tag
+      // always displays.
+      if (cover.x + tag.width() + 20 > this.width) {
         tag.addClass('flip');
         tag.css({left: cover.x - tag.outerWidth(), top: top});
       }
@@ -462,7 +465,7 @@ $SP.GUI.LineGraph = Backbone.View.extend({
   },
 
   hoverOut: function() {
-    this.tags && _.each(this.tags, function(tag) {tag.remove();});
+    this.tags && _.invoke(this.tags, 'remove');
   },
 
   format: function(val) {
