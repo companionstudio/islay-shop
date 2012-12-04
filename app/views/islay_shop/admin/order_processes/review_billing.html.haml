@@ -3,9 +3,9 @@
 = resource_form(@order, :url => path(:bill, @order)) do |f|
   = content do
     = column(4, :class => 'billing') do
-      %h3 Payment Details
-      %p
-        %span.type.mastercard --
+      %h3 Billing Details
+      %p.card-details
+        %span.type{:class => "card-type-#{@order.credit_card_payment.card_type}"}= @order.credit_card_payment.card_type
         %span.number= @order.credit_card_payment.number
         %span.name= @order.credit_card_payment.full_name
         %span.expiry Expiry: #{@order.credit_card_payment.expiry}
