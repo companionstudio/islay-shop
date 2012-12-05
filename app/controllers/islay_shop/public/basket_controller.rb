@@ -71,7 +71,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
     flash[key] = note if key and note
     store!
     if @order.empty?
-      redirect_to public_url(:order_basket)
+      redirect_to path(:order_basket)
     else
       bounce_back
     end
