@@ -108,7 +108,7 @@ Rails.application.routes.draw do
     resources :promotions
   end # admin
 
-  islay_public 'islay_shop' do
+  islay_secure_public 'islay_shop' do
     namespace :basket, :path => 'order/basket', :as => 'order_basket' do
       get     '/',                :action => 'contents',        :as => ''
       post    '/add',             :action => 'add',             :as => 'add'
@@ -117,9 +117,6 @@ Rails.application.routes.draw do
       delete  '/',                :action => 'destroy',         :as => 'destroy'
       delete  '/alerts',          :action => 'destroy_alerts',  :as => 'destroy_alerts'
     end
-  end
-
-  islay_secure_public 'islay_shop' do
     namespace :checkout, :path => '/order/checkout', :as => 'order_checkout' do
       get   '/',                :action => 'details',         :as => ''
       post  '/',                :action => 'update'
