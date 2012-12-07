@@ -108,10 +108,15 @@ Rails.application.routes.draw do
     resources :promotions
   end # admin
 
+  islay_public 'islay_shop' do
+    namespace :basket, :path => 'order/basket', :as => 'order_basket' do
+      post    '/add',             :action => 'add',             :as => 'add'
+    end
+  end
+
   islay_secure_public 'islay_shop' do
     namespace :basket, :path => 'order/basket', :as => 'order_basket' do
       get     '/',                :action => 'contents',        :as => ''
-      post    '/add',             :action => 'add',             :as => 'add'
       post    '/remove/:sku_id',  :action => 'remove',          :as => 'remove'
       post    '/',                :action => 'update',          :as => 'update'
       delete  '/',                :action => 'destroy',         :as => 'destroy'
