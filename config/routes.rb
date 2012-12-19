@@ -124,11 +124,11 @@ Rails.application.routes.draw do
         delete  '/alerts',          :action => 'destroy_alerts',  :as => 'destroy_alerts'
       end
       namespace :checkout, :path => '/order/checkout', :as => 'order_checkout' do
-        get   '/',                :action => 'details',         :as => ''
-        post  '/',                :action => 'update'
-        get   '/payment',         :action => 'payment',         :as => 'payment'
-        get   '/payment/process', :action => 'payment_process', :as => 'payment_process'
-        get   '/thank-you',       :action => 'thank_you',       :as => 'thank_you'
+        get   '/',                        :action => 'details',         :as => ''
+        post  '/',                        :action => 'update'
+        get   '/payment',                 :action => 'payment',         :as => 'payment'
+        get   '/payment/process',         :action => 'payment_process', :as => 'payment_process'
+        get   '/thank-you/(:reference)',  :action => 'thank_you',      :as => 'thank_you'
       end
     end # scope
   end # unless Settings

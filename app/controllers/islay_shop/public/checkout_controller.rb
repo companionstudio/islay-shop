@@ -28,15 +28,14 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
       @order.save!
       flash[:order] = session['order'] #keep the order around for the next request only
       session.delete('order')
-      redirect_to path(:order_checkout_thank_you)
+      redirect_to path(:order_checkout_thank_you, :reference => @order.reference)
     else
-      render :payment
     end
   end
 
   def thank_you
     unless flash[:order].blank?
-      @order = OrderBasket.load(flash[:order]) 
+      @order = OrderBasket.load(flash[:order])
       # Yuck! 
       # Keep a record of the order in flash until the user leaves the page - basically, allow refreshes of the thankyou page.
       flash[:order] = flash[:order] 
