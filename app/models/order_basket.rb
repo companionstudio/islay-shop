@@ -1,5 +1,6 @@
 class OrderBasket < Order
   before_create :store_reference
+  after_create :send_thank_you_mail
 
   # Finds the quantity of the specified SKU in the order. This can be between
   # 0 and n.
@@ -31,7 +32,6 @@ class OrderBasket < Order
     if credit_card_payment.valid? and credit_card_payment.authorize!
       skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
       Sku.purchase_stock!(skus)
-      IslayShop::OrderMailer.thank_you(self).deliver
       next!("Authorizing #{formatted_total}")
     else
       fail!
@@ -57,6 +57,11 @@ class OrderBasket < Order
   # @return String
   def generate_reference
     "#{Time.now.strftime('%y%m')}-#{SecureRandom.hex(3).upcase}"
+  end
+
+  # Sends the thank you email when the order is successfully created
+  def send_thank_you_mail
+    IslayShop::OrderMailer.thank_you(self).deliver
   end
 
   # Updates the details of the order — contact, addresses etc. Also recalculates
