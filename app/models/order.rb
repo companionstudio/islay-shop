@@ -185,7 +185,7 @@ class Order < ActiveRecord::Base
     root: false,
     :methods => [:items_dump, :stock_alerts_dump],
     :only => [
-      :person_id, :name, :phone, :email, :is_gift, :shipping_name, :gift_message,
+      :person_id, :name, :phone, :email, :reference, :is_gift, :shipping_name, :gift_message,
       :billing_company, :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
       :shipping_company, :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
       :shipping_instructions, :use_shipping_address, :use_billing_address, :items_dump, :stock_alerts_dump
