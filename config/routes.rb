@@ -108,27 +108,29 @@ Rails.application.routes.draw do
     resources :promotions
   end # admin
 
-  islay_public 'islay_shop' do
-    namespace :basket, :path => 'order/basket', :as => 'order_basket' do
-      post    '/add',             :action => 'add',             :as => 'add'
+  unless Settings.defined?(:shop, :disabled) and Settings.for(:shop, :disabled)
+    islay_public 'islay_shop' do
+      namespace :basket, :path => 'order/basket', :as => 'order_basket' do
+        post    '/add',             :action => 'add',             :as => 'add'
+      end
     end
-  end
 
-  islay_secure_public 'islay_shop' do
-    namespace :basket, :path => 'order/basket', :as => 'order_basket' do
-      get     '/',                :action => 'contents',        :as => ''
-      post    '/remove/:sku_id',  :action => 'remove',          :as => 'remove'
-      post    '/',                :action => 'update',          :as => 'update'
-      delete  '/',                :action => 'destroy',         :as => 'destroy'
-      delete  '/alerts',          :action => 'destroy_alerts',  :as => 'destroy_alerts'
-    end
-    namespace :checkout, :path => '/order/checkout', :as => 'order_checkout' do
-      get   '/',                :action => 'details',         :as => ''
-      post  '/',                :action => 'update'
-      get   '/payment',         :action => 'payment',         :as => 'payment'
-      get   '/payment/process', :action => 'payment_process', :as => 'payment_process'
-      get   '/thank-you',       :action => 'thank_you',       :as => 'thank_you'
-    end
-  end # scope
+    islay_secure_public 'islay_shop' do
+      namespace :basket, :path => 'order/basket', :as => 'order_basket' do
+        get     '/',                :action => 'contents',        :as => ''
+        post    '/remove/:sku_id',  :action => 'remove',          :as => 'remove'
+        post    '/',                :action => 'update',          :as => 'update'
+        delete  '/',                :action => 'destroy',         :as => 'destroy'
+        delete  '/alerts',          :action => 'destroy_alerts',  :as => 'destroy_alerts'
+      end
+      namespace :checkout, :path => '/order/checkout', :as => 'order_checkout' do
+        get   '/',                :action => 'details',         :as => ''
+        post  '/',                :action => 'update'
+        get   '/payment',         :action => 'payment',         :as => 'payment'
+        get   '/payment/process', :action => 'payment_process', :as => 'payment_process'
+        get   '/thank-you',       :action => 'thank_you',       :as => 'thank_you'
+      end
+    end # scope
+  end # unless Settings
 end # draw
 
