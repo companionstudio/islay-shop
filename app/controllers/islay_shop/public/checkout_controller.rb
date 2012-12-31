@@ -30,6 +30,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
       session.delete('order')
       redirect_to path(:order_checkout_thank_you, :reference => @order.reference)
     else
+      render :payment
     end
   end
 

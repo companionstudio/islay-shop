@@ -1,6 +1,10 @@
 = simple_form_for(@payment, :as => :credit_card, :url => 'https://spreedlycore.com/v1/payment_methods') do |f|
   - unless @payment.errors.empty?
-    %p There was a problem processing your payment details.
+    .validation-error
+      %p There was a problem processing your payment details. See below for more detail.
+      - unless @payment.errors.messages[:base].blank?
+        - @payment.errors.messages[:base].each do |message|
+          %p.message-detail= message
 
   = hidden_field_tag(:redirect_url, public_order_checkout_payment_process_url(:host => request.host))
   = hidden_field_tag(:api_login, Settings.for(:shop, :spreedly_login))
