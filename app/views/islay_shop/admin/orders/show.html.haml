@@ -186,12 +186,6 @@
     = form_for(@order, :url => path(:ship, :order_process, :id => @order)) do
       %button Ship
 
-  - if @order.editable?
-    = edit_button(@order)
-
-  - if @order.run?(:bill)
-    = link_to('Edit Payment', path(:payment, @order), :class => 'button edit')
-
   - if @order.run?(:cancel)
     = link_to('Cancel', path(:cancel, :order_process, :id => @order), :title => 'Cancel Order', :class => 'button delete')
 
