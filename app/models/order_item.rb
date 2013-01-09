@@ -39,7 +39,8 @@ class OrderItem < ActiveRecord::Base
     select(%{
       order_items.quantity, order_items.adjusted_price,
       order_items.total, order_items.discount, skus.product_id,
-      (SELECT name FROM products WHERE id = skus.product_id) AS sku_name
+      (SELECT name FROM products WHERE id = skus.product_id) || ' - ' || 
+      (SELECT short_desc FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)
   end
 
