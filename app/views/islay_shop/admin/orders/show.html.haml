@@ -2,6 +2,7 @@
 
 #summary
   = process_progression(@order)
+  %button.print Print
 
 = content do
 
@@ -11,6 +12,12 @@
         %li
           %span.key Reference #
           %span.value.reference= @order.reference
+        %li
+          %span.key Phone
+          %span.value= @order.phone
+        %li
+          %span.key Email
+          %span.value= link_to(@order.email, "mailto:#{@order.email}?subject=Your order #{@order.reference}")
         %li
           %span.key Placed
           %span.value= @order.logs.first.created_at.to_s(:pretty)
@@ -47,7 +54,7 @@
           %strong= @order.name
           - if @order.billing_company
             , 
-            %span.company #{@order.billing_company}  
+            %span.company #{@order.billing_company}
         %br/
         %span.street= @order.billing_street
         %br/
@@ -176,7 +183,7 @@
 
 = footer do
   - if @order.run?(:bill)
-    = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button')
+    = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button primary')
 
   - if @order.run?(:pack)
     = form_for(@order, :url => path(:pack, :order_process, :id => @order)) do
