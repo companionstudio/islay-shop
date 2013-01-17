@@ -6,6 +6,14 @@ class PromotionSpendCondition < PromotionCondition
   end
 
   def qualifies?(order)
-    order.product_total >= (amount / 100) # Amount is specified in dollars
+    order.product_total >= amount
+  end
+
+  def position
+    5
+  end
+
+  def qualifications(order)
+    {0 => 1}
   end
 end

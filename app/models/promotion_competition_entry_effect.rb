@@ -1,12 +1,11 @@
-class PromotionShippingEffect < PromotionEffect
-  desc "Shipping Adjustment"
+class PromotionCompetitionEntryEffect < PromotionEffect
+  desc "General purpose / competition entry"
 
   metadata(:config) do
-    float :amount, :required => true
+    string :name, :required => true
   end
 
   def apply!(order, qualifications)
-    order.shipping_total = amount
     order.applied_promotions << applications.build(:promotion => promotion)
   end
 end

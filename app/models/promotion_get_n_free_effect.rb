@@ -6,14 +6,19 @@ class PromotionGetNFreeEffect < PromotionEffect
   end
 
   def apply!(order, qualifications)
-    qualifications.each do |id, count|
-      bonus = order.add_bonus_item(id, count)
 
-      applications.build(
-        :promotion         => promotion,
-        :order             => order,
-        :bonus_item  => bonus
-      )
+    skus = Sku.where(:id => qualifications.keys)
+
+    # Provide the cheapest SKU if more than one qualifier is supplied.
+    cheapest = skus.reduce do |c, s|
+      s.price < c.price || c.blank? ? s : c
     end
+
+    bonus = order.add_bonus_item(cheapest.id, quantity * qualifications.values.reduce(:+))
+
+    order.applied_promotions << applications.build(
+      :promotion   => promotion,
+      :bonus_item  => bonus
+    )
   end
 end
