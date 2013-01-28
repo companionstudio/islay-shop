@@ -40,7 +40,7 @@ class ProductCategory < ActiveRecord::Base
   # Returns a relation which restricts the the categories to those which
   # which could serve as a parent to another category.
   #
-  # @param [String, Integer] id
+  # @param [String, Integer, nil] id
   #
   # @return ActiveRecord::Relation
   def self.potential_parents(id = nil)

@@ -9,19 +9,19 @@
     = f.fieldset do
       = f.input(:description, :as => 'text')
 
-    = f.fieldset('Conditions', :class => 'conditions') do
-      = f.fields_for(:conditions) do |c|
+    = f.fieldset('Conditions', :class => 'promotion-conditions association simple') do
+      - f.fields_for(:conditions) do |c|
         = c.fieldset(c.object.desc) do
           = c.hidden_field(:type)
           = c.input(:active, :as => :boolean)
-          = render(:partial => c.object.type.underscore, :locals => {:c => c})
+          = render_component(c.object, :c => c)
 
-    = f.fieldset('Effect', :class => 'effects') do
-      = f.fields_for(:effects) do |e|
+    = f.fieldset('Effects', :class => 'promotion-effects association simple') do
+      - f.fields_for(:effects) do |e|
         = e.fieldset(e.object.desc) do
           = e.hidden_field(:type)
           = e.input(:active, :as => :boolean)
-          = render(:partial => e.object.type.underscore, :locals => {:e => e})
+          = render_component(e.object, :e => e)
 
   = footer do
     = save_button

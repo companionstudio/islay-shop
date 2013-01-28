@@ -1,27 +1,8 @@
 class PromotionCategoryQuantityCondition < PromotionCondition
   desc  "Quantity of Product from Category" 
 
-  PRODUCT_CATEGORY_VALUES = lambda {
-    top_level = ProductCategory.top_level.order('name ASC').includes(:children)
-
-    values = []
-
-    top_level.each do |category|
-      if category.children.empty?
-        values << [category.name, category.id]
-      else
-        values << [category.name, category.id]
-        children = category.children.each do |child|
-          values << ["&nbsp;&nbsp; #{child.name}".html_safe, child.id]
-        end
-      end
-    end
-
-    values
-  }
-
   metadata(:config) do
-    foreign_key   :product_category_id,  :required => true, :values => PRODUCT_CATEGORY_VALUES
+    foreign_key   :product_category_id,  :required => true, :values => lambda { ProductCategory.tree.mark_disabled }
     integer       :quantity,             :required => true, :greater_than => 0, :default => 1
   end
 

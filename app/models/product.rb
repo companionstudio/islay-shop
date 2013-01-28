@@ -37,6 +37,54 @@ class Product < ActiveRecord::Base
 
   before_save :store_published_at
 
+  # Returns an arrary with information sufficient to arrange the products and
+  # their parent categories into a tree.
+  #
+  # @return Array<ActiveRecord::Base>
+  def self.tree
+    find_by_sql(%{
+      WITH categories AS (
+        SELECT
+          id,
+          name,
+          true AS disabled,
+          position,
+          NLEVEL(path) AS depth,
+          CASE
+            WHEN NLEVEL(path) = 0 THEN id
+            ELSE LTREE2TEXT(SUBPATH(path, -1, 1))::integer
+          END AS parent_id
+        FROM product_categories
+        WHERE (
+          EXISTS (SELECT 1 FROM products WHERE product_category_id = product_categories.id)
+          OR
+          EXISTS (
+            SELECT 1 FROM product_categories AS children
+            WHERE children.path <@ text2ltree(product_categories.id::text)
+            AND EXISTS (SELECT 1 FROM products WHERE product_category_id = children.id)
+          )
+        )
+      ) 
+
+      SELECT * FROM (
+        SELECT 
+          products.id, 
+          products.name, 
+          false AS disabled,
+          products.position,
+          categories.depth + 1 AS depth,
+          product_category_id AS parent_id 
+        FROM products
+        JOIN categories ON categories.id = products.product_category_id
+
+        UNION ALL
+
+        SELECT NULL AS id, name, disabled, position, depth, parent_id
+        FROM categories
+      ) AS results ORDER BY parent_id, depth, position
+    })
+  end
+
   def self.newest
     where(:published => true).order('published_at DESC').limit(4)
   end
