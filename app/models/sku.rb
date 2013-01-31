@@ -57,6 +57,55 @@ class Sku < ActiveRecord::Base
 
   attr_accessor :template
 
+  # Returns an arrary with information sufficient to arrange the skus and
+  # their parents into a tree.
+  #
+  # @return Array<ActiveRecord::Base>
+  def self.tree
+    find_by_sql(%{
+      WITH sks AS (
+        SELECT 
+          skus.*,
+          (SELECT product_category_id FROM products WHERE id = skus.product_id) AS product_category_id
+        FROM skus
+      ),
+      pcs AS (
+        SELECT
+          id, name, true AS disabled, 'category'::text AS type, position,
+          CASE
+            WHEN NLEVEL(path) = 0 THEN id
+            ELSE LTREE2TEXT(SUBPATH(path, -1, 1))::integer
+          END AS parent_id,
+          NLEVEL(path) AS depth
+        FROM product_categories AS pcs
+        WHERE pcs.id IN (SELECT product_category_id FROM sks)
+        OR EXISTS (
+          SELECT 1 FROM product_categories AS children 
+          WHERE children.path <@ text2ltree(pcs.id::text)
+          AND children.id IN (SELECT product_category_id FROM sks)
+        )
+      )
+
+      SELECT * FROM (
+        SELECT
+          id, short_desc AS name, false AS disabled, 'sku' AS type, position, product_id AS parent_id,
+          ((SELECT depth FROM pcs WHERE pcs.id = product_category_id) + 2 ) AS depth
+        FROM sks
+
+        UNION ALL
+
+        SELECT NULL AS id, name,  disabled, type, position, parent_id, depth FROM pcs
+
+        UNION ALL
+
+        SELECT 
+          NULL AS id, name, true AS disabled, 'product' AS type, position, product_category_id AS parent_id,
+          (SELECT depth FROM pcs WHERE id = product_category_id) + 1 AS depth
+        FROM products WHERE id IN (SELECT product_id FROM sks)
+      ) AS tree ORDER BY parent_id, depth, position ASC
+    })
+  end
+
   # Checks to see if there are any SKUs which are low, or below the stock
   # alert level — which is looked up via the shop settings.
   #

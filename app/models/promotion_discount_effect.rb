@@ -18,11 +18,7 @@ class PromotionDiscountEffect < PromotionEffect
       elsif extract[3] == '%'
         self.kind = 'percentage'
         self.amount = extract[2]
-      else
-        raise ArgumentError, 'Your discount must be either a dollar amount, or a percentage.'
       end
-    else
-      raise ArgumentError, 'Your discount must be either a dollar amount, or a percentage.'
     end
   end
 
