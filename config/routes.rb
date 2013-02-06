@@ -107,6 +107,7 @@ Rails.application.routes.draw do
 
     resources :promotions do
       get '(/filter-:filter)(/sort-:sort)(/page-:page)',  :action => 'index', :as => 'filter_and_sort', :on => :collection
+      get :delete, :on => :member
     end
   end # admin
 

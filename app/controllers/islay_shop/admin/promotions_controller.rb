@@ -1,11 +1,9 @@
 class IslayShop::Admin::PromotionsController < IslayShop::Admin::ApplicationController
   resourceful :promotion
-  header 'Promotions'
+  nav 'nav'
 
   def show
     @promotion = Promotion.find(params[:id])
-    @promotion.prefill
-    render :edit
   end
 
   private
@@ -15,7 +13,7 @@ class IslayShop::Admin::PromotionsController < IslayShop::Admin::ApplicationCont
   end
 
   def find_record
-    if params[:action] == 'show'
+    if params[:action] == 'edit' || params[:action] == 'new'
       Promotion.find(params[:id]).tap(&:prefill)
     else
       Promotion.find(params[:id])
@@ -23,11 +21,7 @@ class IslayShop::Admin::PromotionsController < IslayShop::Admin::ApplicationCont
   end
 
   def new_record
-    if params[:action] == 'new'
-      Promotion.new.tap(&:prefill)
-    else
-      Promotion.new
-    end
+    Promotion.new.tap(&:prefill)
   end
 end
 

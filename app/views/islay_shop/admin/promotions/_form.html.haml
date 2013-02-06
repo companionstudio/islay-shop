@@ -1,10 +1,10 @@
 = resource_form(@promotion) do |f|
   = content do
     = f.fieldset(:class => 'primary') do
-      = f.input(:name, :col => 'first-inline')
-      = f.input(:active, :col => 'inline')
-      = f.input(:start_at, :col => 'first-inline')
-      = f.input(:end_at, :col => 'inline')
+      = f.input(:name)
+      = f.input(:active, :first_inline => true)
+      = f.input(:start_at, :inline => true, :as => :date_picker)
+      = f.input(:end_at, :inline => true, :as => :date_picker)
 
     = f.fieldset do
       = f.input(:description, :as => 'text')

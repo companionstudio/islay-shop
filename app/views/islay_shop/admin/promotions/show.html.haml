@@ -1,0 +1,7 @@
+- sub_header(link_to('Promotions', path(:promotions)))
+- sub_header(@promotion.name)
+
+= footer do
+  = delete_button(@promotion)
+  = edit_button(@promotion)
+
