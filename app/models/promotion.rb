@@ -369,11 +369,6 @@ class Promotion < ActiveRecord::Base
     has_condition? PromotionMembershipCondition
   end
 
-  def pending?
-    start_at > Time.now
-  end
-
-  attr_accessor :open_ended
   def open_ended?
     end_at.blank?
   end
@@ -388,19 +383,30 @@ class Promotion < ActiveRecord::Base
 
   # Returns a boolean indicating if the promotion is actually running. This means
   # it has to be both published and have a current start/end date.
+  #
+  # @return Boolean
   def running?
-    start_at <= Time.now and !finished?
+    status == 'running'
   end
 
-  # Indicates if the promotion's end_at date is in the past.
+  # Indicates if the promotion is active, but it's end date is in the past.
+  #
+  # @return Boolean
   def finished?
-    !open_ended && end_at < Time.now
+    status == 'finished'
+  end
+
+  # Indicates if the promotion is active, but it's start date is in the future.
+  #
+  # @return Boolean
+  def pending?
+    status == 'pending'
   end
 
   # Calculates the status of the promotion based on the combination of the
   # start date, end date and active option.
-
-  attr_reader :status
+  #
+  # @return String
   def status
     now = Time.now
 
@@ -410,10 +416,8 @@ class Promotion < ActiveRecord::Base
       elsif end_at > now    then 'running'
       elsif end_at < now    then 'finished'
       end
-    else
-      if date_range_is_current? then 'paused'
-      else 'inactive'
-      end
+    elsif date_range_is_current? then 'paused'
+    else 'inactive'
     end
   end
 
@@ -541,6 +545,11 @@ class Promotion < ActiveRecord::Base
     PromotionEffect.effects.each do |klass|
       effects.build(:type => klass.to_s) unless effect_types.include?(klass)
     end
+  end
+
+  def running?
+    now = Time.now
+    active? and (start_at <= now and end_at >= now)
   end
 
   # Checks to see if portions of the promotion should be guarded from updates.

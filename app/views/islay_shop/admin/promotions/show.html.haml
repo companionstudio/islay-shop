@@ -1,6 +1,22 @@
 - sub_header(link_to('Promotions', path(:promotions)))
 - sub_header(@promotion.name)
 
+- sub_header_status do
+  %ul#summary
+    %li
+      %span.key Running
+      - if @promotion.running?
+        %span.value.indicator.ok Running
+      - else
+        %span.value.indicator= @promotion.status.capitalize
+
+    %li
+      %span.key Available
+      %span.value.indicator
+        = @promotion.start_at.to_s(:date_only)
+        to
+        = @promotion.end_at.to_s(:date_only)
+
 = footer do
   = delete_button(@promotion)
   = edit_button(@promotion)
