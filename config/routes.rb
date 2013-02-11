@@ -111,6 +111,9 @@ Rails.application.routes.draw do
     end
   end # admin
 
+  # This injects a set of optional routes for the catalogue.
+  public_shop_catalogue
+  
   unless Settings.defined?(:shop, :disabled) and Settings.for(:shop, :disabled)
     islay_public 'islay_shop' do
       namespace :basket, :path => 'order/basket', :as => 'order_basket' do
