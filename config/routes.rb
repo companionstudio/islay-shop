@@ -50,6 +50,10 @@ Rails.application.routes.draw do
         get :delete, :on => :member
       end
 
+      resources :manufacturers do
+        get :delete, :on => :member
+      end
+
       resources :stock_levels, :path => 'stock', :only => 'index' do
         collection do
           get '(/filter-:filter)(/sort-:sort)', :action => 'index', :as => 'filter_and_sort'
@@ -106,10 +110,6 @@ Rails.application.routes.draw do
     resources :order_summaries, :controller => 'orders', :path => 'orders', :only => 'show'
 
     resources :promotions
-
-    resources :manufacturers do
-      get :delete, :on => :member
-    end
   end # admin
 
   unless Settings.defined?(:shop, :disabled) and Settings.for(:shop, :disabled)
