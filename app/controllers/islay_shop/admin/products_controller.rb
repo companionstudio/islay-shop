@@ -34,9 +34,10 @@ module IslayShop
       end
 
       def dependencies
-        @categories = ProductCategory.tree.mark_disabled
-        @ranges = ProductRange.all
-        @assets = Asset.order('name')
+        @categories     = ProductCategory.tree.mark_disabled
+        @ranges         = ProductRange.all
+        @manufacturers  = Manufacturer.order('name')
+        @assets         = Asset.order('name')
       end
     end
   end

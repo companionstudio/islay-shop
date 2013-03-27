@@ -1,0 +1,10 @@
+- sub_header('Manufacturers')
+- sub_header(@manufacturer.name)
+
+= content do
+  %p Derp!
+
+= footer do
+  = edit_button(@manufacturer)
+  = delete_button(@manufacturer)
+

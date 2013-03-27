@@ -8,6 +8,8 @@
     = f.fieldset('Product') do
       = f.input(:description, :as => 'text')
       = f.input(:product_category_id, :collection => @categories, :label => 'Category', :as => 'tree_select', :include_blank => false)
+      - unless @manufacturers.blank?
+        = f.input(:manufacturer_id, :collection => @manufacturers, :include_blank => true, :label => 'Manufacturers')
       - unless @ranges.blank?
         = f.input(:product_range_id, :collection => @ranges, :include_blank => true, :label => 'Range')
 

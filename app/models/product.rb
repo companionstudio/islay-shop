@@ -13,6 +13,7 @@ class Product < ActiveRecord::Base
 
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
+  belongs_to :manufacturer
   has_many   :skus, :order => 'position ASC'
   has_many   :sku_assets, :through => :skus, :through => :assets
   has_many   :variants, :class_name => 'ProductVariant', :order => 'position ASC'
@@ -28,8 +29,8 @@ class Product < ActiveRecord::Base
 
 
   attr_accessible(
-    :name, :description, :product_category_id, :product_range_id, :published,
-    :status, :skus_attributes, :asset_ids, :position
+    :name, :description, :product_category_id, :product_range_id, :manufacturer_id, 
+    :published, :status, :skus_attributes, :asset_ids, :position
   )
 
   track_user_edits

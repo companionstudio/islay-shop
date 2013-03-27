@@ -1,0 +1,18 @@
+= resource_form(@manufacturer) do |f|
+  = content do
+    = f.fieldset(:class => 'primary') do
+      = f.input(:name)
+      = f.input(:published, :col => 'first-inline')
+
+    = f.fieldset('Details') do
+      = f.input(:description, :as => 'text')
+      = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Assets')
+
+      - f.metadata do |attrs|
+        - attrs.each do |name, opts|
+          = f.metadata_input(name, opts)
+
+  = footer do
+    = save_button
+    = cancel_button(@manufacturer)
+

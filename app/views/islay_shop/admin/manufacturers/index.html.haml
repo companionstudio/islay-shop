@@ -1,0 +1,34 @@
+- sub_header('Manufacturers')
+
+- if @manufacturers.empty?
+  = content do
+    %p#placeholder
+      There are no manufacturers yet; add a
+      = link_to('new one', path(:new, :manufacturer))
+
+- else
+  = content do
+    %table(cellpadding=0 cellspacing=0)
+      %thead
+        %tr
+          %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+          %th.boolean Published
+          %th Manufacturer
+          %th.meta Updated At
+      %tbody
+        - @manufacturers.each do |manufacturer|
+          %tr
+            %td.select
+              = check_box_tag('ids[]', manufacturer.id, selected?(manufacturer.id), :class => 'toggle')
+            %td.boolean
+              %span(class="boolean #{manufacturer.published?}")
+                %span= friendly_bool(manufacturer.published?)
+            %td
+              = link_to(manufacturer.name, path(manufacturer), :class => 'title manufacturer')
+            %td.meta
+              %span.time= manufacturer.updated_at
+              by #{manufacturer.updater_name}
+
+  = footer do
+    = new_button('Manufacturer', :manufacturer)
+

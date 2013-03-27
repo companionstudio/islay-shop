@@ -48,6 +48,14 @@
             %span.value= @product.range.name
 
         %li
+          %span.key Manufacturer
+          %div.value
+            - if @product.manufacturer
+              = @product.manufacturer.name
+            - else
+              \--
+
+        %li
           %span.key Created at
           %div.value= creation_time(@product)
 
