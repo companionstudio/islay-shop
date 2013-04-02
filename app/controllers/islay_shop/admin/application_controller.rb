@@ -8,7 +8,7 @@ module IslayShop
       #
       # @return Boolean
       def integrate_blog?
-        !!Islay::Engine.config.integrate_shop_and_blog
+        defined?(::IslayBlog)
       end
     end
   end

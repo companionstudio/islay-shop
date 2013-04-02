@@ -19,7 +19,7 @@ class Sku < ActiveRecord::Base
 
   positioned :product_id
 
-  if Islay::Engine.config.integrate_shop_and_blog
+  if defined?(::IslayShop)
     attr_accessible :blog_entry_ids
     has_many :sku_blog_entries
     has_many :blog_entries, :through => :sku_blog_entries, :order => 'published_at DESC' do
