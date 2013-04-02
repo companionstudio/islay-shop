@@ -1,9 +1,6 @@
 class ProductCategory < ActiveRecord::Base
   include Hierarchy
   include IslayShop::Statuses
-  include Islay::Searchable
-
-  search_terms :against => {:name => 'A'}
 
   extend FriendlyId
   friendly_id :name, :use => :slugged

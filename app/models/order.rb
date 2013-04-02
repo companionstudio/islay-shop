@@ -1,21 +1,5 @@
 class Order < ActiveRecord::Base
   include IslayShop::OrderWorkflow
-  include Islay::Searchable
-
-  search_terms :against => {
-    :name => 'A',
-    :shipping_name => 'A',
-    :reference => 'A',
-    :tracking_reference => 'B',
-    :email => 'B',
-    :phone => 'B',
-    :billing_street => 'C',
-    :billing_city => 'C',
-    :billing_postcode => 'C',
-    :shipping_street => 'C',
-    :shipping_city => 'C',
-    :shipping_postcode => 'C'
-  }
 
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled

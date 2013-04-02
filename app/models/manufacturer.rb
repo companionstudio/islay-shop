@@ -1,12 +1,10 @@
 class Manufacturer < ActiveRecord::Base
   include Islay::MetaData
   include Islay::Publishable
-  include Islay::Searchable
 
   extend FriendlyId
   friendly_id :name, :use => :slugged
 
-  search_terms :against => {:name => 'A'}
   attr_accessible :name, :description, :published, :asset_ids
   track_user_edits
   validations_from_schema

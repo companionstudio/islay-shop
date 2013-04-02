@@ -2,9 +2,6 @@ class Product < ActiveRecord::Base
   include Islay::MetaData
   include IslayShop::Statuses
   include Islay::Publishable
-  include Islay::Searchable
-
-  search_terms :against => {:name => 'A'}
 
   extend FriendlyId
   friendly_id :name, :use => :slugged
