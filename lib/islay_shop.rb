@@ -1,4 +1,6 @@
 require 'islay'
+require 'spook_and_puff/money_attributes'
+require 'friendly_id'
 
 require "islay_shop/engine"
 require "islay_shop/statuses"

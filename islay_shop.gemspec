@@ -13,11 +13,14 @@ Gem::Specification.new do |s|
   s.description = "An extension to the Islay framework"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
-  s.test_files = Dir["test/**/*"]
 
-
-  s.add_dependency 'islay',         '~> 0.5.0'
-  s.add_dependency 'friendly_id',   '~> 4.0.8'
+  s.add_dependency 'islay',                 '~> 0.5.0'
+  s.add_dependency 'spook_and_puff_money',  '~> 0.5.6'
+  s.add_dependency 'friendly_id',           '~> 4.0.8'
 
   s.add_development_dependency "pg"
+  s.add_development_dependency 'factory_girl_rails',  '~> 4.2.1'
+  s.add_development_dependency 'rspec-rails',         '~> 2.13.0'
+  s.add_development_dependency "yard",                "0.8.6.1"
+  s.add_development_dependency "redcarpet",           "2.2.2"
 end

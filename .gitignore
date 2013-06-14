@@ -3,5 +3,9 @@
 .bundle/
 log/*.log
 pkg/
-spec/dummy
 doc
+
+spec/dummy/db/migrate/
+spec/config/database.yml
+tmp/
+log/
