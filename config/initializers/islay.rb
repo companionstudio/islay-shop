@@ -6,6 +6,7 @@ Islay::Engine.extensions.register do |e|
 
   # Navigation
   e.nav_entry('Products', :catalogue)
+  e.nav_entry('Promotions', :promotions)
   e.nav_entry('Orders', :orders)
 
   e.reports('Shop', :shop_reports, :class => 'basket')

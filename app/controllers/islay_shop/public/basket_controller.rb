@@ -29,7 +29,34 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def update
+    
     @order.update_items(params[:order_basket][:items_attributes].values)
+
+    #Apply a code based promotion if it's supplied:
+    @code_promotions = !Promotion.active_code_based.empty?
+
+    if params[:order_basket][:promo_code] and @code_promotions
+      @order.promo_code = params[:order_basket][:promo_code]
+      results = Promotion.check_qualification(@order)
+
+      if results.none? 
+        message = if results.partial_success?
+          messages = results.partially_successful.messages
+          if messages.include?(:invalid_code)
+            :invalid_code
+          end
+        else
+          messages = results.failures.messages
+          :invalid_code if messages.include?(:invalid_code) 
+        end
+
+        flash[:promotion_code_result] = message
+      elsif results.any?
+        applied_promos = results.successful.map(){|r| r.promotion.description}.join(', ')
+        flash[:promotion_code_result] = "Thank you, your code was applied."
+      end
+    end
+
     store_and_redirect(:order_updated, {:message => "Your order has been updated"})
   end
 

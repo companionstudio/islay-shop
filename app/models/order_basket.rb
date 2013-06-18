@@ -1,4 +1,5 @@
 class OrderBasket < Order
+
   before_create :store_reference
   after_create :send_thank_you_mail
 

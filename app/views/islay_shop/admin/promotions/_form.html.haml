@@ -3,8 +3,8 @@
     = f.fieldset(:class => 'primary') do
       = f.input(:name, :col => 'first-inline')
       = f.input(:active, :col => 'inline')
-      = f.input(:start_at, :col => 'first-inline')
-      = f.input(:end_at, :col => 'inline')
+      = f.input(:start_at, :col => 'first-inline', :as => :date_picker)
+      = f.input(:end_at, :col => 'inline', :as => :date_picker)
 
     = f.fieldset do
       = f.input(:description, :as => 'text')
@@ -13,7 +13,7 @@
       = f.fields_for(:conditions) do |c|
         = c.fieldset(c.object.desc) do
           = c.hidden_field(:type)
-          = c.input(:active, :as => 'boolean')
+          = c.input(:active, :as => :boolean)
           - c.metadata do |attrs|
             - attrs.each do |name, opts|
               = c.metadata_input(name, opts)
@@ -22,7 +22,7 @@
       = f.fields_for(:effects) do |e|
         = e.fieldset(e.object.desc) do
           = e.hidden_field(:type)
-          = e.input(:active, :as => 'boolean')
+          = e.input(:active, :as => :boolean)
           - e.metadata do |attrs|
             - attrs.each do |name, opts|
               = e.metadata_input(name, opts)

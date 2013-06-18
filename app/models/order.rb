@@ -1,5 +1,7 @@
 class Order < ActiveRecord::Base
   include IslayShop::OrderWorkflow
+  include IslayShop::OrderSession
+  include IslayShop::OrderPromotions
   include Islay::Searchable
 
   search_terms :against => {
@@ -97,7 +99,7 @@ class Order < ActiveRecord::Base
   end
 
   accepts_nested_attributes_for :items
-  before_save :calculate_totals
+  # before_save :calculate_totals
   track_user_edits
 
   validations_from_schema :except => [:reference, :shipping_total, :original_shipping_total]
@@ -175,7 +177,7 @@ class Order < ActiveRecord::Base
     order.check_stock_levels
 
     # Conditionally apply the promotions (which will mutate the order)
-    order.apply_promotions if apply
+    #order.apply_promotions if apply
     order
   end
 
@@ -327,7 +329,7 @@ class Order < ActiveRecord::Base
   # @return Boolean
   # @todo: Actually implement this
   def discounted?
-    false
+    discounted_total?
   end
 
   # Indicates if any of the products have had a discount applied to them.
@@ -444,13 +446,6 @@ class Order < ActiveRecord::Base
     @_promotions_applied = false
   end
 
-  def apply_promotions
-    raise PromotionApplyError if @_promotions_applied
-
-    Promotion.active.each {|p| p.apply!(self) if p.qualifies?(self)}
-    @_promotions_applied = true
-  end
-
   # Calculates the shipping for the order.
   #
   # @return [Float, nil]
@@ -493,22 +488,17 @@ class Order < ActiveRecord::Base
   #
   # @return nil
   def calculate_totals
-    self.shipping_total = self.original_shipping_total = calculate_shipping
+    
+    self.original_shipping_total = calculate_shipping
+    self.shipping_total ||= self.original_shipping_total
 
     self.original_product_total = items.map(&:original_total).sum
-    self.product_total = items.map(&:total).sum
+    self.product_total ||= items.map(&:total).sum
 
-    self.original_total = if original_shipping_total
-      original_product_total + original_shipping_total
-    else
-      original_product_total
-    end
-
-    self.total = if shipping_total
-      product_total + shipping_total
-    else
-      product_total
-    end
+    self.original_total = original_product_total + (original_shipping_total || 0)
+    self.total = product_total + (shipping_total || 0)
+        
+    self.discount = (self.original_total - self.total).round(2)
 
     nil
   end
