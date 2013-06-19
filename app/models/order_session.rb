@@ -63,30 +63,16 @@ module OrderSession
     #
     # @return Hash
     def items_dump
-      (sku_items + service_items).map do |item|
-        {
-          :type     => item.class.to_s, 
-          :id       => item.sku_id || item.service_id, 
-          :quantity => item.paid_quantity
-        }
-      end
+      items.map {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
     end
 
-    # Takes a hash of items and adds them to the rehydrated order. This is 
-    # processed through the purchasing code, so stock levels are rechecked etc.
+    # Takes a hash of items and adds them to the rehydrated order.
     #
     # @param Hash attrs
     #
     # @return Array<OrderItem>
     def items_dump=(attrs)
-      attrs.map do |item|
-        purchase = case item['type']
-        when 'OrderSkuItem'     then Sku.find(item['id'])
-        when 'OrderServiceItem' then Service.find(item['id'])
-        end
-
-        set_quantity(purchase, item['quantity'])
-      end
+      attrs.each {|i| self.items.build(i).valid?}
     end
   end
 end

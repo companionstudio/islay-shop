@@ -99,7 +99,6 @@ class Order < ActiveRecord::Base
   end
 
   accepts_nested_attributes_for :items
-  # before_save :calculate_totals
   track_user_edits
 
   validations_from_schema :except => [:reference, :shipping_total, :original_shipping_total]
@@ -159,67 +158,17 @@ class Order < ActiveRecord::Base
     status != 'complete' and status != 'cancelled'
   end
 
-  # Generates and order from a JSON object. The apply boolean indicates if
-  # promotions should be applied to the order after it has been loaded.
-  #
-  # @param [String] json JSON representation of order (result of #dump)
-  # @param [Boolean] apply apply promotions after loading
-  #
-  # @return [Order]
-  #
-  # @todo Investigate checking stock levels when loading to see if it has
-  # been decremented by another action between requests.
-  def self.load(json, apply = true)
-    order = new(JSON.parse(json))
-
-    # Check stock levels for each regular_item, replacing each with an alert
-    # where they are out of stock.
-    order.check_stock_levels
-
-    # Conditionally apply the promotions (which will mutate the order)
-    #order.apply_promotions if apply
-    order
-  end
-
   # Specifies the values that can be safely exposed to the public. This is used
   # by the #dump method to create a JSON string that can be written to session.
-  DUMP_OPTS = {
-    root: false,
+  dump_config( 
     :methods => [:items_dump, :stock_alerts_dump],
-    :only => [
+    :properties => [
       :person_id, :name, :phone, :email, :is_gift, :shipping_name, :gift_message,
       :billing_company, :billing_street, :billing_city, :billing_state, :billing_postcode, :billing_country,
       :shipping_company, :shipping_street, :shipping_city, :shipping_state, :shipping_postcode, :shipping_country,
       :shipping_instructions, :use_shipping_address, :use_billing_address, :items_dump, :stock_alerts_dump
     ]
-  }
-
-  # Generates a JSON string representation of the order and it's items. It
-  # only dumps the regular items and their quantities. Bonus and discount
-  # details are ignored, since they are reapplied when the order is loaded.
-  #
-  # @return [String] JSON representation of order
-  def dump
-    to_json(DUMP_OPTS)
-  end
-
-  # Provides a simplified representation of the items in an order, consolidating
-  # regular and discounted items into a single collection.
-  #
-  # It is intended to be used when dumping the order contents to JSON.
-  #
-  # @return [String] JSON representation of order items
-  def items_dump
-    items.map {|item| {:sku_id => item.sku_id, :quantity => item.quantity}}
-  end
-
-  # When loading up an order from session, this accessor is used to generate the
-  # regular item instances on the order model.
-  #
-  # @param [Array<Hash>] items raw values for order items
-  def items_dump=(items)
-    items.each {|i| self.items.build(i).valid? }
-  end
+  )
 
   # Provides an array of SKU ids which are in the order, but have gone out of
   # stock. Used when dumping a JSON representation of the order.
@@ -393,6 +342,13 @@ class Order < ActiveRecord::Base
     format_money(product_total)
   end
 
+  # Returns a formatted string of the original (pre-discount) product total.
+  #
+  # @return String
+  def formatted_original_product_total
+    format_money(original_product_total)
+  end
+
   # Returns a formatted string of the order shipping total.
   #
   # @return [String, nil]
@@ -402,6 +358,19 @@ class Order < ActiveRecord::Base
         'Free'
       elsif shipping_total > 0
         format_money(shipping_total)
+      end
+    end
+  end
+
+  # Returns a formatted string of the original shipping total.
+  #
+  # @return [String, nil]
+  def formatted_original_shipping_total
+    if original_shipping_total != nil
+      if original_shipping_total == 0
+        'Free'
+      elsif original_shipping_total > 0
+        format_money(original_shipping_total)
       end
     end
   end
@@ -426,24 +395,6 @@ class Order < ActiveRecord::Base
         items.delete(item)
       end
     end
-  end
-
-  class PromotionApplyError < StandardError
-    def to_s
-      "This order has promotions applied to it. You cannot modify it without
-       removing them first. Try calling #remove_promotions on the order first."
-    end
-  end
-
-  def remove_promotions
-    bonus_items.delete
-
-    discount_items.each do |item|
-      regular_items.build(:sku_id => item.sku_id, :quantity => item.quantity)
-      discount_items.delete(item)
-    end
-
-    @_promotions_applied = false
   end
 
   # Calculates the shipping for the order.

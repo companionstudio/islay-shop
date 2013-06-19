@@ -1,12 +1,11 @@
 module OrderPromotions
   def self.included(klass)
-    
-    mattr_accessor :promo_code
-
     klass.has_many :applied_promotions, :foreign_key => 'order_id'
     klass.has_many :promotions, :through => :applied_promotions
+    klass.send :attr_accessor, :promo_code
+    klass.dump_config :methods => [:promotion_id_dump, :promo_code]
 
-    klass.dump_config :methods => [:promotion_id_dump]
+    klass.attr_accessible(:promotion_id_dump, :promo_code)
 
     klass
   end
@@ -51,6 +50,17 @@ module OrderPromotions
     @promotions_applied = true
 
     applied_promotions
+  end
+
+  def remove_promotions
+    bonus_items.delete
+
+    discount_items.each do |item|
+      regular_items.build(:sku_id => item.sku_id, :quantity => item.quantity)
+      discount_items.delete(item)
+    end
+
+    @promotions_applied = false
   end
 
   # The promotions that have been applied since the order was last serialised
