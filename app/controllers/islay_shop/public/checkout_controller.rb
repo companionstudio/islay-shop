@@ -1,7 +1,7 @@
 class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationController
   use_https
 
-  before_filter :check_for_order,   :except => [:thank_you]
+  before_filter :check_for_order_contents,   :except => [:thank_you]
   before_filter :fetch_promotions,  :only   => [:basket, :details, :thank_you]
 
   def details
@@ -46,10 +46,11 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
 
   private
 
-  def check_for_order
+  # This is made annoying by the fact that @order is set by a before filter in the application controller
+  # This workaround checks the session dump directly.
+  def check_for_order_contents
     if session['order']
-      @order = OrderBasket.load(session['order'])
-      redirect_to path(:order_basket) if @order.empty?
+      redirect_to path(:order_basket) if JSON.parse(session['order'])['items_dump'].length == 0
     else
       redirect_to path(:order_basket)
     end

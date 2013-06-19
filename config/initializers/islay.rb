@@ -14,3 +14,7 @@ Islay::Engine.extensions.register do |e|
   e.dashboard(:primary, :top, :order_overview)
   e.dashboard(:secondary, :top, :stock_alerts)
 end
+
+Islay::Public::ApplicationController.class_eval do
+  include IslayShop::ControllerExtensions::Public
+end

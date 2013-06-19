@@ -1,5 +1,4 @@
 class IslayShop::Public::BasketController < IslayShop::Public::ApplicationController
-  before_filter :check_for_order, :except => [:clear]
 
   def contents
 
@@ -71,16 +70,6 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   private
-
-  # Checks to see if there is an order in the session. If there is, it loads it
-  # without applying promotions. Otherwise it creates a new instance.
-  def check_for_order
-    @order = if session['order']
-      OrderBasket.load(session['order'], false)
-    else
-      OrderBasket.new
-    end
-  end
 
   # Dumps a JSON representation of an order into the user's session
   def store!
