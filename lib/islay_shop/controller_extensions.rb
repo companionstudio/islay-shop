@@ -2,7 +2,6 @@ module IslayShop
   module ControllerExtensions
     module Public
       def self.included(klass)
-        klass.send :before_filter, :retrieve_order, :except => [:clear]
         klass.send :helper_method, :retrieve_order, :create_order
       end
       
