@@ -101,8 +101,8 @@ class OrderBasket < Order
     n = quantity.to_i
     items.find_or_initialize(sku_id).tap do |i|
       n == 0 ? items.delete(i) : i.update_quantity(n)
+      calculate_totals if recalculate
     end
-    calculate_totals if recalculate
   end
 
   # This is a shortcut for updating multiple items in one go. It replaces any
