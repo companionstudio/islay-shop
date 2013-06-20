@@ -66,6 +66,78 @@ class Promotion < ActiveRecord::Base
     active  and start_at <= now and (end_at.nil? || end_at >= now)
   end
 
+  # Calculates the status of the promotion based on the combination of the
+  # start date, end date and active option.
+  attr_reader :status
+  def status
+    now = Time.now
+
+    if active
+      if    start_at > now  then 'pending'
+      elsif end_at > now    then 'running'
+      elsif end_at < now    then 'finished'
+      end
+    else
+      if date_range_is_current? then 'paused'
+      else 'inactive'
+      end
+    end
+  end
+
+    # The current day of a promotion. This could be a negative value or a value
+  # exceeding the total length of the promotion. We don't do bounds checking.
+  def current_day
+    (Time.now.to_date - start_at.to_date).to_i + 1
+  end
+
+  def days_til_start
+    if running? or finished?
+      0
+    else
+     (start_at.to_date - Time.now.to_date).to_i
+    end
+  end
+
+  def total_days
+    if open_ended
+      "-"
+    else
+      (end_at.to_date - start_at.to_date).to_i
+    end
+  end
+
+  def remaining_days
+    days = (start_at.to_date - Time.now.to_date).to_i
+    days < 0 ? 0 : days
+  end
+
+  def remaining_time
+    if running?
+      from_date = Time.now
+    else
+      from_date = start_at
+    end
+
+    if open_ended
+      "(Open ended promotion)"
+    elsif (end_at.to_date - from_date.to_date).to_i == 0
+      "Ends today"
+    elsif (end_at.to_date - from_date.to_date).to_i > 1
+      "#{(end_at.to_date - from_date.to_date).to_i} days left"
+    elsif (from_date.to_date - Time.now.to_date).to_i == 0
+      "Ends today"
+    else
+      "Ends in #{(from_date.to_date - Time.now.to_date).to_i} days"
+    end
+  end
+
+  # Indicates if the promotion would be running at the current time based on
+  # the start_at and end_at.
+  def date_range_is_current?
+    now = Time.now
+    start_at <= now and (end_at.nil? || end_at >= now)
+  end
+
 
   class ResultCollection < Array
     # Checks to see if any of the promotions succeeded.

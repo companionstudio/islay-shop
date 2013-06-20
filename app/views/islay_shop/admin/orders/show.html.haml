@@ -78,6 +78,24 @@
         %br/
         %span.state #{@order.shipping_state} #{@order.shipping_postcode}  
 
+  - unless @order.promotions.blank?
+    %h3.items.inset #{@order.promotions.count} #{@order.promotions.count > 1 ? 'promotions apply' : 'promotion applies'} to this order
+    %table.promotions.inset
+      %thead
+        %tr
+          %th Promotion
+          %th Status
+
+      %tbody
+        - @order.promotions.each do |promo|
+          %tr
+            %td
+              %a{:href => admin_promotion_url(promo)}
+                %strong #{promo.name}:
+              = promo.description  
+            %td
+              = promo.status
+
   %h3.items.inset Order Items
   %table.items.inset
     %thead
@@ -85,8 +103,14 @@
         %th Product/SKU
         %th Quantity
         %th.currency Price
-        %th.currency Total
-        %th.currency Discount
+        %th.currency
+          - if @order.discounted?
+            Pre-discount
+          - else
+            Total
+        %th.currency
+          - if @order.discounted?
+            Total
 
     %tbody
       - @order.items.summary.each do |item|
@@ -110,10 +134,10 @@
         %th(colspan=3)
           Product Total
         %td.currency
-          %span.numeric= @order.formatted_product_total
+          %span.numeric= @order.formatted_original_product_total
         %td.currency
-          - if @order.discounted_total?
-            %span.numeric.discount #{@order.formatted_product_discount} discount
+          - if @order.discounted_products?
+            %span.numeric.discount #{@order.formatted_product_total}
           - else
             &nbsp;
 
@@ -121,20 +145,30 @@
         %th(colspan=3)
           Shipping
         %td.currency
+          %span.numeric= @order.formatted_original_shipping_total
+        %td.currency
           - if @order.free_shipping?
             FREE
-          - else
+          - elsif @order.discounted_shipping?
             %span.numeric= @order.formatted_shipping_total
-        %td
-          &nbsp;
+
+      - if @order.discounted?
+        %tr
+          %th(colspan=3)
+            Total discount
+          %td.currency
+            &nbsp;
+          %td.currency
+            %span.numeric= "-#{@order.formatted_total_discount}"
 
       %tr.total
         %th(colspan=3)
           Total
         %td.currency
-          %span.numeric= @order.formatted_total
+          %span.numeric= @order.formatted_original_total
         %td
-          &nbsp;
+          - if @order.discounted?
+            %span.numeric.discount #{@order.formatted_total}
 
   %h3.inset Tracking
   %div.tracking.inset.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}

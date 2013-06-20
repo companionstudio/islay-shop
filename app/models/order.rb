@@ -288,6 +288,13 @@ class Order < ActiveRecord::Base
     original_product_total > product_total
   end
 
+  # Indicates if any of the products have had a discount applied to them.
+  #
+  # @return Boolean
+  def discounted_shipping?
+    original_shipping_total > shipping_total
+  end
+
   # The total discount applied to the products in an order.
   #
   # @return Float
@@ -333,6 +340,14 @@ class Order < ActiveRecord::Base
   # @return String
   def formatted_total
     self[:formatted_total] || format_money(total)
+  end
+
+
+  # Returns a formatted string of the original (pre-discount) grand total.
+  #
+  # @return String
+  def formatted_original_total
+    format_money(original_total)
   end
 
   # Returns a formatted string of the order product total.
@@ -441,10 +456,10 @@ class Order < ActiveRecord::Base
   def calculate_totals
     
     self.original_shipping_total = calculate_shipping
-    self.shipping_total ||= self.original_shipping_total
+    self.shipping_total = self.original_shipping_total
 
     self.original_product_total = items.map(&:original_total).sum
-    self.product_total ||= items.map(&:total).sum
+    self.product_total = items.map(&:total).sum
 
     self.original_total = original_product_total + (original_shipping_total || 0)
     self.total = product_total + (shipping_total || 0)
