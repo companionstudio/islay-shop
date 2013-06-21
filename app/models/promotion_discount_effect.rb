@@ -34,6 +34,7 @@ class PromotionDiscountEffect < PromotionEffect
   end
 
   def apply!(order, qualifications)
+
     order.product_total = case kind
     when 'percentage' then order.product_total - (order.product_total * (amount.to_f / 100)).round(2)
     when 'fixed'      then order.product_total - (amount / 100) # Amount is in dollars

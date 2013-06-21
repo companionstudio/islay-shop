@@ -454,15 +454,14 @@ class Order < ActiveRecord::Base
   #
   # @return nil
   def calculate_totals
-    
     self.original_shipping_total = calculate_shipping
-    self.shipping_total = self.original_shipping_total
+    self.shipping_total ||= self.original_shipping_total
 
     self.original_product_total = items.map(&:original_total).sum
-    self.product_total = items.map(&:total).sum
+    self.product_total ||= items.map(&:total).sum
 
-    self.original_total = original_product_total + (original_shipping_total || 0)
-    self.total = product_total + (shipping_total || 0)
+    self.original_total = (original_product_total || 0) + (original_shipping_total || 0)
+    self.total = (product_total || 0) + (shipping_total || 0)
         
     self.discount = (self.original_total - self.total).round(2)
 

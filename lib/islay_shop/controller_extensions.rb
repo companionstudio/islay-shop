@@ -14,16 +14,21 @@ module IslayShop
       end
       
       def order_from_session(apply = true)
-        if session['order']
-          @order = OrderBasket.load(session['order'])
+        order_from_source(session, apply)
+      end
 
-          if apply
-            @order.apply_promotions! 
-          end
+      def order_from_flash(apply = true)
+        order_from_source(flash, apply)
+      end
 
-          if @order.new_promotions?
-            session['order'] = @order.dump
-          end
+      def order_from_source(source, apply)
+        if source['order']
+          @order = OrderBasket.load(source['order'])
+
+          @order.apply_promotions! if apply
+
+          source['order'] = @order.dump if @order.new_promotions?
+          
         else
           create_order
         end

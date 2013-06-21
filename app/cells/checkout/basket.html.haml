@@ -37,7 +37,7 @@
           Shipping
         %td.sub-total
           = @order.formatted_shipping_total
-      - if @order.discounted? 
+      - if @order.discounted?
         %tr.discount
           %th{:colspan => 4, :scope => 'row'}
             Discount

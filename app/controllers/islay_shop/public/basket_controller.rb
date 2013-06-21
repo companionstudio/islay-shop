@@ -35,10 +35,11 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
     @code_promotions = !Promotion.active_code_based.empty?
 
     if params[:order_basket][:promo_code] and @code_promotions
+
       @order.promo_code = params[:order_basket][:promo_code]
       results = Promotion.check_qualification(@order)
 
-      if results.none? 
+      if results.none?
         message = if results.partial_success?
           messages = results.partially_successful.messages
           if messages.include?(:invalid_code)
@@ -48,7 +49,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
           messages = results.failures.messages
           :invalid_code if messages.include?(:invalid_code) 
         end
-
+        @order.promo_code = nil
         flash[:promotion_code_result] = message
       elsif results.any?
         applied_promos = results.successful.map(){|r| r.promotion.description}.join(', ')
@@ -74,6 +75,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   # Dumps a JSON representation of an order into the user's session
   def store!
     session['order'] = @order.dump
+    retrieve_order #Temporary: until we complete work on the full promotions engine. 
   end
 
   # Dumps a JSON representation of an order into the user's session, then
