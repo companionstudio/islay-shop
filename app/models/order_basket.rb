@@ -84,7 +84,7 @@ class OrderBasket < Order
   # @returns OrderItem
   def increment_item(sku_id, quantity, recalculate = true)
     items.find_or_initialize(sku_id).tap do |i|
-      increment = i.increment_quantity(quantity.to_i)1
+      increment = i.increment_quantity(quantity.to_i)
       errors.add("order_item_#{sku_id}", increment.errors) unless increment.errors.blank?
       calculate_totals if recalculate
     end
