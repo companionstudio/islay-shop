@@ -2,9 +2,8 @@ module OrderPromotions
   def self.included(klass)
     klass.has_many :applied_promotions, :foreign_key => 'order_id'
     klass.has_many :promotions, :through => :applied_promotions
-    klass.send :attr_accessor, :promo_code
+    #klass.send :attr_accessor, :promo_code # Why does this not work? Moved to the order model
     klass.dump_config :methods => [:promotion_id_dump, :promo_code]
-
     klass.attr_accessible(:promotion_id_dump, :promo_code)
 
     klass

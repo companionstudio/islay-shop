@@ -117,6 +117,8 @@ class Order < ActiveRecord::Base
 
   after_initialize :initialize_totals
 
+  attr_accessor :promo_code
+
   # This callback is used to initialize any totals for this order. Will only
   # run for new records.
   #
