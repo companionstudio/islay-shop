@@ -28,13 +28,6 @@ Islay::Engine.searches do |config|
     {r.name => 'A'}
   end
 
-  config.search(:sku) do |sku|
-    {
-      sku.name         => 'A',
-      sku.product.name => 'A'
-    }
-  end
-
   config.search(:product) do |product|
     terms = product.skus.reduce({}) do |h, s|
       h[s.name] = 'C'
