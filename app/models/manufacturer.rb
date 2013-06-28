@@ -29,5 +29,7 @@ class Manufacturer < ActiveRecord::Base
       (SELECT name FROM users WHERE id = updater_id) AS updater_name
     })
   end
+
+  check_for_extensions
 end
 
