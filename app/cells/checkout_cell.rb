@@ -1,4 +1,7 @@
 class CheckoutCell < Cell::Rails
+  helper IslayShop::Public::PromotionDisplayHelper
+  helper_method :parent_controller
+
   # Seriously Ruby, screw you for making me do this. Y U NO NO DATES?
   MONTH_NAMES = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec).freeze
   MONTHS = MONTH_NAMES.each_with_index.map do |m, i|
@@ -8,6 +11,8 @@ class CheckoutCell < Cell::Rails
 
   def basket(order)
     @order = order
+    fetch_promotions
+    @order.apply_promotions!
     render
   end
 
@@ -24,5 +29,16 @@ class CheckoutCell < Cell::Rails
     @years = (current..(current + 20)).to_a
     @months = MONTHS
     render
+  end
+
+  def fetch_promotions
+    #Any promotions that can be qualified for at the checkout (code based)
+    @checkout_promotions = Promotion.active_code_based
+
+    #Any promotions ready to be applied to the order
+    if @order and !@order.pending_promotions.empty?
+      @promotions = @order.pending_promotions
+    end
+
   end
 end

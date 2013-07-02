@@ -1,5 +1,4 @@
 class IslayShop::Public::BasketController < IslayShop::Public::ApplicationController
-  before_filter :check_for_order, :except => [:clear]
 
   def contents
 
@@ -29,7 +28,35 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def update
+    
     @order.update_items(params[:order_basket][:items_attributes].values)
+
+    #Apply a code based promotion if it's supplied:
+    @code_promotions = !Promotion.active_code_based.empty?
+
+    if params[:order_basket][:promo_code] and @code_promotions
+
+      @order.promo_code = params[:order_basket][:promo_code]
+      results = Promotion.check_qualification(@order)
+
+      if results.none?
+        message = if results.partial_success?
+          messages = results.partially_successful.messages
+          if messages.include?(:invalid_code)
+            :invalid_code
+          end
+        else
+          messages = results.failures.messages
+          :invalid_code if messages.include?(:invalid_code) 
+        end
+        @order.promo_code = nil
+        flash[:promotion_code_result] = message
+      elsif results.any?
+        applied_promos = results.successful.map(){|r| r.promotion.description}.join(', ')
+        flash[:promotion_code_result] = "Thank you, your code was applied."
+      end
+    end
+
     store_and_redirect(:order_updated, {:message => "Your order has been updated"})
   end
 
@@ -45,19 +72,10 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   private
 
-  # Checks to see if there is an order in the session. If there is, it loads it
-  # without applying promotions. Otherwise it creates a new instance.
-  def check_for_order
-    @order = if session['order']
-      OrderBasket.load(session['order'], false)
-    else
-      OrderBasket.new
-    end
-  end
-
   # Dumps a JSON representation of an order into the user's session
   def store!
     session['order'] = @order.dump
+    retrieve_order #Temporary: until we complete work on the full promotions engine. 
   end
 
   # Dumps a JSON representation of an order into the user's session, then

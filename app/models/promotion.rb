@@ -22,6 +22,10 @@ class Promotion < ActiveRecord::Base
     PromotionQuery.active
   end
 
+  def self.active_code_based
+    PromotionQuery.active_code_based
+  end
+
   # Returns any active promotions that apply to a particular SKU.
   def self.for_sku(sku)
     active.select {|p| p.product_qualifies?(sku)}
@@ -60,6 +64,255 @@ class Promotion < ActiveRecord::Base
   def active?
     now = Time.now
     active  and start_at <= now and (end_at.nil? || end_at >= now)
+  end
+
+  # Calculates the status of the promotion based on the combination of the
+  # start date, end date and active option.
+  attr_reader :status
+  def status
+    now = Time.now
+
+    if active
+      if    start_at > now  then 'pending'
+      elsif end_at > now    then 'running'
+      elsif end_at < now    then 'finished'
+      end
+    else
+      if date_range_is_current? then 'paused'
+      else 'inactive'
+      end
+    end
+  end
+
+    # The current day of a promotion. This could be a negative value or a value
+  # exceeding the total length of the promotion. We don't do bounds checking.
+  def current_day
+    (Time.now.to_date - start_at.to_date).to_i + 1
+  end
+
+  def days_til_start
+    if running? or finished?
+      0
+    else
+     (start_at.to_date - Time.now.to_date).to_i
+    end
+  end
+
+  def total_days
+    if open_ended
+      "-"
+    else
+      (end_at.to_date - start_at.to_date).to_i
+    end
+  end
+
+  def remaining_days
+    days = (start_at.to_date - Time.now.to_date).to_i
+    days < 0 ? 0 : days
+  end
+
+  def remaining_time
+    if running?
+      from_date = Time.now
+    else
+      from_date = start_at
+    end
+
+    if open_ended
+      "(Open ended promotion)"
+    elsif (end_at.to_date - from_date.to_date).to_i == 0
+      "Ends today"
+    elsif (end_at.to_date - from_date.to_date).to_i > 1
+      "#{(end_at.to_date - from_date.to_date).to_i} days left"
+    elsif (from_date.to_date - Time.now.to_date).to_i == 0
+      "Ends today"
+    else
+      "Ends in #{(from_date.to_date - Time.now.to_date).to_i} days"
+    end
+  end
+
+  # Indicates if the promotion would be running at the current time based on
+  # the start_at and end_at.
+  def date_range_is_current?
+    now = Time.now
+    start_at <= now and (end_at.nil? || end_at >= now)
+  end
+
+
+  class ResultCollection < Array
+    # Checks to see if any of the promotions succeeded.
+    #
+    # @return Boolean
+    def any?
+      @any ||= flags.any?
+    end
+
+    # Checks for complete failure — order does not qualify for any promotion.
+    #
+    # @return Boolean
+    def none?
+      !any?
+    end
+
+    # Checks for partial success i.e. some conditions were satisfied.
+    #
+    # @return Boolean
+    def partial_success?
+      @partial_success ||= partial_flags.any?
+    end
+
+    # Returns the promotions result for which an order qualifies.
+    #
+    # @return ResultCollection
+    def successful
+      ResultCollection.new(select(&:success?))
+    end
+
+    # Returns the promotions result for which an order partially qualifies.
+    #
+    # @return ResultCollection
+    def partially_successful
+      ResultCollection.new(select(&:partial_success?))
+    end
+
+    # Returns the promotion results for which an order does not qualify.
+    #
+    # @return ResultCollection
+    def failures
+      ResultCollection.new(select(&:failure?))
+    end
+
+    # A really simple method that accumulates all the failure messages across
+    # all the conditions in all the promotions — eliminating dupes.
+    #
+    # Just be mindful that these messages are without context; you can't know 
+    # what promotion they came from.
+    #
+    # @return Array<Symbol>
+    def messages
+      map {|r| r.results.values.map(&:reason)}.flatten.uniq.compact
+    end
+
+    private
+
+    # A helper method which creates an array of success/failure flags from each
+    # result.
+    #
+    # @return Array<Boolean>
+    def flags
+      @flags ||= map(&:success?)
+    end
+
+    # A helper method which creates and array of booleans indicating partially
+    # successful promotions i.e. some conditions were satisfied.
+    #
+    # @return Array<Boolean>
+    def partial_flags
+      @partial_flags ||= map(&:partial_success?)
+    end
+  end
+
+  # A helper class which encapsulates the results of checking for an order's
+  # qualification for a promotion. Firstly it indicates success or failure.
+  # Additionally, it collections the names of each condition and their success
+  # or failure. In this way, failures can be handled at a more fine-grained
+  # level.
+  class Result
+    # Refers to the promotion which produced the result.
+    attr_reader :promotion
+
+    # Exposes the results from the conditions
+    attr_reader :results
+
+    # Creates a new instance
+    #
+    # @param Promotion promotion
+    # @param Hash results keyed by condition name
+    #
+    # @return QualificationResult
+    def initialize(promotion, results)
+      @promotion = promotion
+      @results = results
+    end
+
+    # Provides access to the underlying conditions.
+    #
+    # @param Symbol condition
+    #
+    # @returns [PromotionCondition::QualificationResult, nil]
+    def [](condition)
+      @results[condition]
+    end
+
+    # Checks for partial success i.e. some conditions were satisfied.
+    #
+    # @return Boolean
+    def partial_success?
+      @partial_success ||= flags.include?(true) and flags.include?(false)
+    end
+
+    # Checks to see if any of the conditions succeeded.
+    #
+    # @return Boolean
+    def any?
+      @any ||= flags.any?
+    end
+
+    # Indicates if the qualification is a success.
+    #
+    # @return Boolean
+    def success?
+      @qualifies ||= flags.all?
+    end
+
+    # Indicates if the qualification is a failure.
+    #
+    # @return Boolean
+    def failure?
+      !success?
+    end
+
+    private
+
+    # A helper method which creates an array of success/failure flags from each
+    # condition.
+    #
+    # @return Array<Boolean>
+    def flags
+      @flags ||= @results.values.map(&:success?)
+    end
+  end
+
+  # Checks each condition on the promotion and produces a result object which
+  # encapsulates the success or failure state. In the case of failure, it will
+  # include the reasons for failure.
+  #
+  # @param CustomerOrder
+  #
+  # @return Result
+  def check_qualification(order)
+    results = conditions.inject({}) do |h, c| 
+      r = c.check_qualification(order)
+      h[r.condition] = r
+      h
+    end
+
+    Result.new(self, results)
+  end
+
+  # A convenience method for checking an order against multiple promotions,
+  # encapsulating the results in a ResultCollection. The actual checks are
+  # handled by the #check_qualification method on each promotion instance.
+  #
+  # Ideally, this should be called on an ActiveRecord::Relation i.e. you have
+  # limited the scope of your check to active promotions.
+  #
+  # @param CustomerOrder
+  #
+  # @return ResultCollection
+  def self.check_qualification(order)
+    results = all.map {|p| p.check_qualification(order)}
+    ResultCollection.new(results)
   end
 
   # Derives a description of the promotion by looking at the conditions and the
@@ -104,7 +357,10 @@ class Promotion < ActiveRecord::Base
   # Applies each of the effects to the order, then assigns this promotion to
   # the order via the PromotionOrder model.
   def apply!(order)
-    effects.each {|e| e.apply!(order, qualifications(order))}
+    effects.each do |e|     
+      e.apply!(order, qualifications(order))
+    end
+    order.applied_promotions.build(:promotion => self)
   end
 
   # When editing a promotion, this method is used to prefill the condition and

@@ -37,6 +37,12 @@
           Shipping
         %td.sub-total
           = @order.formatted_shipping_total
+      - if @order.discounted?
+        %tr.discount
+          %th{:colspan => 4, :scope => 'row'}
+            Discount
+          %td.sub-total
+            = @order.formatted_total_discount
       %tr
         %th{:colspan => 4, :scope => 'row'}
           Amount to pay
@@ -47,3 +53,18 @@
           Click update to see new totals
         %td.controls
           %button{:type => 'submit', :class => 'primary'} Update
+
+  - unless @checkout_promotions.blank?
+    = promo_code_response(parent_controller.flash[:promotion_code_result], f)
+
+  - unless @order.pending_promotions.blank?
+    .order-promotions
+      %h3 The following promotions have been applied to your order:
+      %ul
+        - @order.pending_promotions.each do |promo|
+          %li= promo.description
+
+  
+
+
+
