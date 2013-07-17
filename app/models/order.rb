@@ -1,5 +1,7 @@
 class Order < ActiveRecord::Base
-  include IslayShop::OrderWorkflow
+  include Order::Workflow
+  include Order::Purchasing
+
   include IslayShop::OrderSession
   include IslayShop::OrderPromotions
 
@@ -27,39 +29,9 @@ class Order < ActiveRecord::Base
   has_one     :credit_card_payment
   has_many    :logs, :class_name => 'OrderLog'
 
-  # This association has an extra method attached to it. This is so we can
-  # easily retrieve an item by it's sku_id, which is necessary for both
-  # #add_item and #remove_item.
-  #
-  # It is implemented so it can handle the case the there items are in memory
-  # only, or where they are persisted in the DB.
-  has_many :items, :class_name => 'OrderItem' do
-    # Tries to find an existing item in the order by sku_id
-    #
-    # @param [String, Integer] sku_id
-    #
-    # @return [OrderItem, nil]
-    def by_sku_id(sku_id)
-      id = sku_id.to_i
-
-      # We check for existance like this, since this catches records that have
-      # both been loaded from the DB and new instances built on the assocation.
-      if self[0]
-        select {|i| i.sku_id == id}.first
-      else
-        where(:sku_id => sku_id).first
-      end
-    end
-
-    # Either finds an existing item with the sku_id, or creates a new instance.
-    #
-    # @param [String, Integer] sku_id
-    #
-    # @return OrderItem
-    def find_or_initialize(sku_id)
-      by_sku_id(sku_id) || build(:sku_id => sku_id)
-    end
-  end
+  has_many    :items,                 :class_name => 'OrderItem'
+  has_many    :sku_items,             :class_name => 'OrderSkuItem',      :extend => [OrderItem::SkuPurchasing]
+  has_many    :service_items,         :class_name => 'OrderServiceItem',  :extend => [OrderItem::ServicePurchasing]
 
   # These are the only attributes that we want to expose publically.
   attr_accessible(

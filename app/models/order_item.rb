@@ -1,7 +1,4 @@
 class OrderItem < ActiveRecord::Base
-  # Turn off single-table inheritance
-  self.inheritance_column = :_type_disabled
-
   belongs_to :promotion
   belongs_to :order
   belongs_to :sku
