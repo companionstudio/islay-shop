@@ -12,7 +12,6 @@ class CheckoutCell < Cell::Rails
   def basket(order)
     @order = order
     fetch_promotions
-    @order.apply_promotions!
     render
   end
 
