@@ -1,4 +1,4 @@
-= simple_form_for(@order, :url => public_order_checkout_path) do |f|
+= simple_form_for(@order, :url => public_order_checkout_path, :html => {:id => nil, :class => "islay-shop-checkout-details"}) do |f|
   - unless @order.errors.empty?
     %div.islay-shop-checkout-errors
       %p There are some problems with your order details.
