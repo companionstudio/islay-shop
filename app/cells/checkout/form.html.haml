@@ -1,15 +1,15 @@
 = simple_form_for(@order, :url => public_order_checkout_path) do |f|
   - unless @order.errors.empty?
-    %p There are some problems with your order details.
-    = @order.errors.inspect
+    %div.islay-shop-checkout-errors
+      %p There are some problems with your order details.
     
-  %fieldset
+  %fieldset.islay-shop-checkout-contact
     %legend Contact Details
     = f.input(:name)
     = f.input(:phone)
     = f.input(:email)
 
-  %fieldset
+  %fieldset.islay-shop-checkout-billing
     %legend Billing Address
     = f.input(:billing_street, :label => 'Street')
     = f.input(:billing_city, :label => 'City')
@@ -17,7 +17,7 @@
     = f.input(:billing_postcode, :label => 'Postcode')
     = f.hidden_field(:billing_country, :value => 'AU')
 
-  %fieldset
+  %fieldset.islay-shop-checkout-shipping
     %legend Shipping Address
     = f.input(:use_shipping_address)
     = f.input(:shipping_name, :label => 'Recipient')
@@ -29,9 +29,10 @@
 
     = f.input(:shipping_instructions, :as => :text)
 
-  %fieldset
+  %fieldset.islay-shop-checkout-gift
     %legend Gifts
     = f.input(:is_gift, :label => 'Order is a gift')
     = f.input(:gift_message, :label => 'Message', :as => 'text')
 
-  %button(type="submit") Next: Payment
+  %div.islay-shop-checkout-controls
+    %button(type="submit") Next: Payment
