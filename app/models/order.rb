@@ -275,6 +275,14 @@ class Order < ActiveRecord::Base
     items.sku_total_quantity
   end
 
+  # Counts the number of units in an order. Same as sku_total_quantity,
+  # but takes sku.unit_count into account.
+  #
+  # @return Integer
+  def unit_total_quantity
+    items.unit_total_quantity
+  end
+
   # Indicates if the order has any kind of discount applied to it.
   #
   # @return Boolean

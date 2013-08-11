@@ -26,9 +26,18 @@ class OrderItem < ActiveRecord::Base
   # Used to count the total number of individual SKUs. Most useful when called
   # via an association. In fact, that's probably the only time you should use it.
   #
-  # @return ActiveRecord::Relation
+  # @return Integer
   def self.sku_total_quantity
     sum(:quantity)
+  end
+
+  # Used to count the total number of units ordered. Same as sku_total_quantity,
+  # but takes sku.unit_count into account.
+  # Currently used for the total item quantity promotion condition
+  #
+  # @return Integer
+  def self.unit_total_quantity
+    sum {|i| i.quantity * i.sku.unit_count}
   end
 
   # Adds calculated columns to a query to aid when making a summary listing of
