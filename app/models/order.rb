@@ -342,7 +342,7 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def free_shipping?
-    shipping_total < 1
+    shipping_total and shipping_total < 1
   end
 
   # Returns a formatted string of the order total.

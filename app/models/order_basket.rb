@@ -19,6 +19,13 @@ class OrderBasket < Order
     items.reduce(0) {|a, i| a + i.quantity}
   end
 
+  # The total number of units in the order
+  #
+  # @return Integer
+  def unit_total_quantity
+    items.reduce(0) {|a, i| a + (i.quantity * i.sku.unit_count)}
+  end
+
   # Finds a line item, based on a sku
   #
   # @return Item

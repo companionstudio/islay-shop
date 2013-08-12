@@ -7,6 +7,5 @@ class PromotionShippingEffect < PromotionEffect
 
   def apply!(order, qualifications)
     order.shipping_total = amount
-    order.applied_promotions << applications.build(:promotion => promotion)
   end
 end

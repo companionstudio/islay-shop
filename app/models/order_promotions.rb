@@ -35,6 +35,10 @@ module OrderPromotions
     raise PromotionApplyError if @promotions_applied
 
     Promotion.active.each do |p|
+      puts "APPLIERY! #{p.name}"
+      puts self.inspect
+      puts "#{p.qualifies?(self)}"
+      puts self.sku_total_quantity
       if p.qualifies?(self)
         p.apply!(self)
         unless previous_promotion_ids.include?(p.id)

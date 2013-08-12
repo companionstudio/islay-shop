@@ -18,11 +18,12 @@ class BasketCell < Cell::Rails
 
   private
 
-  def load_order
+  def load_order(apply = true)
     @order = if session['order']
       OrderBasket.load(session['order'])
     else
       OrderBasket.new
     end
+    @order.apply_promotions! if apply
   end
 end

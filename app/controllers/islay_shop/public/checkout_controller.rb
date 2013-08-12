@@ -58,9 +58,8 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   def fetch_promotions
     #Any promotions that can be qualified for at the checkout (code based)
     @checkout_promotions = Promotion.active_code_based
-
     #Any promotions ready to be applied to the order
-    if @order and !@order.pending_promotions.empty?
+    if @order
       @promotions = @order.pending_promotions
     end
 
