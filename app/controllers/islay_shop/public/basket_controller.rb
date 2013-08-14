@@ -12,7 +12,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
         :result => (@order.errors.blank? ? 'success' : 'failure'),
         :sku => params[:sku_id],
         :added => params[:quantity],
-        :quantity => @order.total_sku_quantity,
+        :quantity => @order.unit_total_quantity,
         :shipping => @order.formatted_shipping_total,
         :total => @order.formatted_total,
         :errors => @order.errors
