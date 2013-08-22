@@ -35,7 +35,7 @@ class OrderBasket < Order
       :number             => result.credit_card.number,
       :expiration_month   => result.credit_card.expiration_month,
       :expiration_year    => result.credit_card.expiration_year,
-      :provider_name      => "braintree",
+      :provider_name      => IslayShop::Engine.config.payments.provider,
       :provider_token     => result.transaction.id,
       :status             => result.transaction.status,
       :card_type          => result.credit_card.card_type

@@ -65,15 +65,6 @@ class OrderPayment < ActiveRecord::Base
     self[:card_type] = type.downcase.gsub(' ', '_')
   end
 
-  # A getter which takes the order number stored in the DB and generates a nice
-  # masked version.
-  #
-  # @return String
-  # @todo Investigate making this a little smarter based on card type
-  def number
-    "XXXX-XXXX-XXXX-#{self[:number]}"
-  end
-
   # Captures the funds from the authorized transaction in the payment 
   # provider's system.
   #
