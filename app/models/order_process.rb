@@ -13,10 +13,10 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_billing!
-    if credit_card_payment.capture!
+    if payment.capture!
       next!("Captured #{formatted_total}")
     else
-      fail!
+      fail!("Could not capture payment due to a problem with the payment provider")
     end
   end
 
@@ -25,15 +25,25 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_cancellation!
-    if credit_card_payment.authorized?
-      return_stock
-      IslayShop::OrderMailer.cancelled(self).deliver
-      next!("Funds were not captured; authorization must be allowed to expire")
-    elsif credit_card_payment.captured? and credit_card_payment.credit!
-      return_stock
-      next!("Credited #{formatted_total}")
+    if payment.settled?
+      # If we have the money, refund it.
+      if payment.refund!
+        return_stock
+        IslayShop::OrderMailer.cancelled(self).deliver
+        next!("Credited #{formatted_total}")
+      else
+        fail!("Could not refund payment due to a problem with the payment provider")
+      end
     else
-      fail!
+      # Otherwise it is authorized or submitted for settlement, in which case 
+      # it can be voided rather than refunded.
+      if payment.void!
+        return_stock
+        IslayShop::OrderMailer.cancelled(self).deliver
+        next!("Payment has been voided")
+      else
+        fail!("Could not void payment due to a problem with the payment provider")
+      end
     end
   end
 

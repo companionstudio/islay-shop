@@ -24,8 +24,8 @@ class Order < ActiveRecord::Base
   self.shipment_tracker = :default_shipment_tracker
 
   belongs_to  :person
-  has_one     :credit_card_payment
-  has_many    :logs, :class_name => 'OrderLog'
+  has_one     :payment, :class_name => 'OrderPayment'
+  has_many    :logs,    :class_name => 'OrderLog'
 
   # This association has an extra method attached to it. This is so we can
   # easily retrieve an item by it's sku_id, which is necessary for both
@@ -95,9 +95,6 @@ class Order < ActiveRecord::Base
 
   # Validate email format
   validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
-
-  # Make sure the CC is also valid.
-  validates_associated :credit_card_payment
 
   after_initialize :initialize_totals
 

@@ -1,4 +1,6 @@
 class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationController
+  include IslayShop::Payments
+
   use_https
 
   before_filter :check_for_order_contents,   :except => [:thank_you]
@@ -18,15 +20,15 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   def payment
-    @payment = CreditCardPayment.new
+    @payment = PaymentSubmission.new
   end
 
   def payment_process
-    @payment = CreditCardPayment.new(:gateway_id => params[:token], :amount => @order.total)
-    @order.credit_card_payment = @payment
+    result = payment_provider.confirm_payment_submission(request.env["QUERY_STRING"])
+    @payment = PaymentSubmission.new(result)
 
-    if @order.run(:add)
-      @order.save!
+    if result.successful?
+      @order.run!(:add, result)
       flash['order'] = session['order'] #keep the order around for the next request only
       session.delete('order')
       redirect_to path(:order_checkout_thank_you, :reference => @order.reference)
