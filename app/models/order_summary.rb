@@ -14,8 +14,9 @@ class OrderSummary < Order
        GROUP BY order_id HAVING order_id = orders.id) AS items_summary,
        CASE
          WHEN orders.status = 'pending' AND EXISTS (
-           SELECT 1 FROM credit_card_payments AS ccps
-           WHERE ccps.order_id = orders.id AND ccps.gateway_expiry < (NOW() - '3 days'::interval)
+           SELECT 1 FROM order_payments AS ops
+           WHERE ops.order_id = orders.id 
+           AND (ops.provider_expiry IS NOT NULL AND ops.provider_expiry < (NOW() - '3 days'::interval))
          ) THEN true
          ELSE false
        END AS expiring
@@ -54,8 +55,9 @@ class OrderSummary < Order
     where(%{
       status = 'pending'
       AND EXISTS (
-        SELECT 1 FROM credit_card_payments AS ccps
-        WHERE ccps.order_id = orders.id AND ccps.gateway_expiry < (NOW() - '3 days'::interval)
+        SELECT 1 FROM order_payments AS ops
+        WHERE ops.order_id = orders.id 
+        AND (ops.provider_expiry IS NOT NULL AND ops.provider_expiry < (NOW() - '3 days'::interval))
       )
     })
   end

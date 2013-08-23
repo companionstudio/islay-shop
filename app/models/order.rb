@@ -26,8 +26,8 @@ class Order < ActiveRecord::Base
   self.shipment_tracker = :default_shipment_tracker
 
   belongs_to  :person
-  has_one     :credit_card_payment
-  has_many    :logs, :class_name => 'OrderLog'
+  has_one     :payment, :class_name => 'OrderPayment'
+  has_many    :logs,    :class_name => 'OrderLog'
 
   has_many    :items,                 :class_name => 'OrderItem'
   has_many    :sku_items,             :class_name => 'OrderSkuItem',      :extend => [OrderItem::SkuPurchasing]
@@ -67,9 +67,6 @@ class Order < ActiveRecord::Base
 
   # Validate email format
   validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
-
-  # Make sure the CC is also valid.
-  validates_associated :credit_card_payment
 
   after_initialize :initialize_totals
 

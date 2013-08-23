@@ -1,5 +1,4 @@
 class OrderBasket < Order
-
   before_create :store_reference
   after_create :send_thank_you_mail
 
@@ -26,17 +25,25 @@ class OrderBasket < Order
     items.find {|i| i.sku_id == sku.id}
   end
 
-  # Attempts to authorize a payment method on spreedly core.
+  # Persists an order and purchases the stock.
   #
+  # @param SpookAndPay::Result result
   # @return Boolean
-  def process_add!
-    if credit_card_payment.valid? and credit_card_payment.authorize!
-      skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
-      Sku.purchase_stock!(skus)
-      next!("Authorizing #{formatted_total}")
-    else
-      fail!
-    end
+  def process_add!(result)
+    self.payment = OrderPayment.new(
+      :name               => result.credit_card.name,
+      :number             => result.credit_card.number,
+      :expiration_month   => result.credit_card.expiration_month,
+      :expiration_year    => result.credit_card.expiration_year,
+      :provider_name      => IslayShop::Engine.config.payments.provider,
+      :provider_token     => result.transaction.id,
+      :status             => result.transaction.status,
+      :card_type          => result.credit_card.card_type
+    )
+
+    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    Sku.purchase_stock!(skus)
+    next!("Authorizing #{formatted_total}")
   end
 
   # Attempts to generate a reference for the order. Since the reference needs to

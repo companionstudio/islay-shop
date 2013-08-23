@@ -28,11 +28,11 @@
           %span.key Total
           %span.value= "#{@order.sku_total_quantity} Item#{@order.sku_total_quantity > 1 ? 's' : ''},"
           %strong.value= @order.formatted_total
-        - unless @order.credit_card_payment.blank?
-          - if @order.credit_card_payment.authorization_expiry_warning?
+        - unless @order.payment.blank?
+          - if @order.payment.authorization_expiry_warning?
             %li
               %span.key Authorization
-              - if @order.credit_card_payment.authorization_expired?
+              - if @order.payment.authorization_expired?
                 %span.value.indicator.warning Expired!
               - else
                 %span.value.indicator.warning Expires Soon!
@@ -41,10 +41,11 @@
       %h3 Billing Details
 
       %p.card-details
-        %span.type{:class => "card-type-#{@order.credit_card_payment.card_type}"}= @order.credit_card_payment.card_type
-        %span.number= @order.credit_card_payment.number
-        %span.name= @order.credit_card_payment.full_name
-        %span.expiry Expiry: #{@order.credit_card_payment.expiry}
+        %span.type{:class => "card-type-#{@order.payment.card_type}"}= @order.payment.card_type
+        %span.number= @order.payment.number
+        - unless @order.payment.name.blank?
+          %span.name= @order.payment.name
+        %span.expiry Expiry: #{@order.payment.expiry}
 
     %div.address
       %h3 Billing Address
