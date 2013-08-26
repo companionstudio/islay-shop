@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'islay',         '~> 0.5.0'
   s.add_dependency 'friendly_id',   '~> 4.0.8'
+  s.add_dependency 'spook_and_pay', '0.2.0.alpha'
 
   s.add_development_dependency "pg"
 end
