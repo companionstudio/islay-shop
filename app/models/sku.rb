@@ -2,7 +2,7 @@ class Sku < ActiveRecord::Base
   include Islay::MetaData
   include IslayShop::Statuses
   include Islay::Publishable
-  include Islay::Searchable
+  #include Islay::Searchable
   include SkuDescription
 
   belongs_to :product
