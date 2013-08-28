@@ -44,7 +44,7 @@ class Sku < ActiveRecord::Base
   attr_accessible(
     :product_id, :description, :unit, :amount, :price, :stock_level, :status,
     :published, :template, :position, :name, :weight, :volume, :size,
-    :batch_size, :batch_price, :purchase_limiting, :purchase_limit, :asset_ids
+    :batch_size, :batch_price, :purchase_limiting, :purchase_limit, :asset_ids, :unit_count
   )
 
   track_user_edits
