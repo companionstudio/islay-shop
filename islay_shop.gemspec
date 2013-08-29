@@ -15,10 +15,10 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
-
-  s.add_dependency 'islay',         '~> 0.5.0'
-  s.add_dependency 'friendly_id',   '~> 4.0.8'
-  s.add_dependency 'spook_and_pay', '0.2.0.alpha'
+  s.add_dependency 'islay',                 '~> 0.5.0'
+  s.add_dependency 'friendly_id',           '~> 4.0.8'
+  s.add_dependency 'spook_and_pay',         '0.2.0.alpha'
+  s.add_dependency 'spook_and_puff_money',  '0.5.6'
 
   s.add_development_dependency "pg"
 end

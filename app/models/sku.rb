@@ -42,18 +42,15 @@ class Sku < ActiveRecord::Base
   end
 
   attr_accessible(
-    :product_id, :description, :unit, :amount, :price, :stock_level, :status,
+    :product_id, :description, :unit, :amount, :stock_level, :status,
     :published, :template, :position, :name, :weight, :volume, :size,
-    :batch_size, :batch_price, :purchase_limiting, :purchase_limit, :asset_ids
+    :purchase_limiting, :purchase_limit, :asset_ids
   )
 
   track_user_edits
 
   validations_from_schema
-  validate :batch_size_and_pricing
   validates_presence_of :purchase_limit, :if => :purchase_limiting?, :message => "required when limiting is on"
-
-  before_update     :log_price
   before_validation :calculate_short_desc
 
   attr_accessor :template
@@ -233,30 +230,6 @@ class Sku < ActiveRecord::Base
         o << formatted_weight if weight?
         o << formatted_volume if volume?
       end.join(' - ')
-    end
-  end
-
-  # Both batch volume and pricing may be empty, but if one is present, then
-  # both must be filled in.
-  def batch_size_and_pricing
-    if batch_size? and !batch_price?
-      errors.add(:batch_price, "can't be missing when setting batch size")
-    elsif batch_price? and !batch_size?
-      errors.add(:batch_size, "can't be missing when setting batch price")
-    end
-  end
-
-  # Checks to see if the price has changed and if it has, creates a log.
-  def log_price
-    if price_changed? or batch_size_changed? or batch_price_changed?
-      log = price_logs.build(
-        :price_before       => price_was || 0,
-        :price_after        => price,
-        :batch_size_before  => batch_size_was,
-        :batch_size_after   => batch_size,
-        :batch_price_before => batch_price_was,
-        :batch_price_after  => batch_price
-      )
     end
   end
 

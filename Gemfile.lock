@@ -1,4 +1,13 @@
 PATH
+  remote: .
+  specs:
+    islay_shop (0.5.0)
+      friendly_id (~> 4.0.8)
+      islay (~> 0.5.0)
+      spook_and_pay (= 0.2.0.alpha)
+      spook_and_puff_money (= 0.5.6)
+
+PATH
   remote: ../islay
   specs:
     islay (0.5.0)
@@ -29,14 +38,6 @@ PATH
       simple_form (~> 2.0.2)
       streamio-ffmpeg (~> 0.8.5)
       zipruby (~> 0.3.6)
-
-PATH
-  remote: .
-  specs:
-    islay_shop (0.5.0)
-      friendly_id (~> 4.0.8)
-      islay (~> 0.5.0)
-      spook_and_pay (= 0.2.0.alpha)
 
 GEM
   remote: http://rubygems.org/
@@ -199,6 +200,7 @@ GEM
       activemodel (~> 3.0)
     spook_and_pay (0.2.0.alpha)
       braintree (= 2.25.0)
+    spook_and_puff_money (0.5.6)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
