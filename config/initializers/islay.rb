@@ -4,10 +4,11 @@ Islay::Engine.extensions.register do |e|
   e.admin_styles true
   e.admin_scripts true
 
-  # Navigation
-  e.nav_entry('Products', :catalogue)
-  e.nav_entry('Promotions', :promotions)
-  e.nav_entry('Orders', :orders)
+  e.navigation do |n|
+    n.section('Catalogue', :catalogue, 'gift')
+    n.section('Promotions', :promotions, 'bullhorn')
+    n.section('Orders', :orders, 'shopping-cart')
+  end
 
   e.reports('Shop', :shop_reports, :class => 'basket')
 
