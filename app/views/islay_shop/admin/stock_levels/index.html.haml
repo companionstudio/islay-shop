@@ -16,7 +16,6 @@
         %tr
           %th SKU
           %th Status
-          %th Price
           %th Stock Level
           %th Updated At
 
@@ -27,8 +26,6 @@
               = link_to(sku.long_desc, path(:product, :id => sku.product_id), :class => 'title')
             %td.indicator
               %span.indicator= sku.normalized_status.humanize
-            %td.indicator
-              %span.indicator= sku.formatted_price
             %td
               = text_field_tag("stock_levels[#{sku.id}]", sku.stock_level, :class => 'text small')
             %td.meta

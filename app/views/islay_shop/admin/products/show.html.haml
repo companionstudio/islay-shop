@@ -94,9 +94,9 @@
               %span.title= link_to(sku.short_desc, path(:edit, @product, sku), :class => 'edit')
             %td
               - sku.current_price_points.summary.each do |s|
-                %span.price-point{:class => s[:mode]}
-                  %span.price-point-price= s[:price]
-                  %span.price-point-desc= s[:mode_desc]
+                %span.islay-shop-price-point{:class => s[:mode]}
+                  %span.price= s[:price]
+                  %span.desc= s[:mode_desc]
             %td.number.stock
               = link_to(sku.stock_level, path(:stock_levels, :anchor => "sku-#{sku.id}"), :title => 'Adjust stock level')
             %td.meta.adjust
