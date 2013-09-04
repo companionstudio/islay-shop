@@ -3,14 +3,14 @@ class CreateServices < ActiveRecord::Migration
     create_table :services do |t|
       t.string  :name,        :null => false, :limit => 200
       t.string  :key,         :null => true,  :limit => 20
-      t.boolean :destroyable, :null => false, :default => true
+      t.boolean :deletable,   :null => false, :default => true
 
       t.user_tracking
       t.timestamps
     end
 
     execute(%{
-      INSERT INTO services (name, key, destroyable, created_at, updated_at, creator_id, updater_id)
+      INSERT INTO services (name, key, deletable, created_at, updated_at, creator_id, updater_id)
       VALUES (
         'Shipping',
         'shipping',

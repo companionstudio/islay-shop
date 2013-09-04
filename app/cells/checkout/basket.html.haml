@@ -32,7 +32,7 @@
           Sub-total
         %td.sub-total
           %span.product-total= @order.formatted_product_total
-      %tr{:class => "#{@order.shipping_total == 0 ? 'free' : ''}"}
+      %tr{:class => "#{@order.shipping_total.zero? ? 'free' : ''}"}
         %th{:colspan => 4, :scope => 'row'}
           Shipping
         %td.sub-total

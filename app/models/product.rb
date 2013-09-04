@@ -11,11 +11,13 @@ class Product < ActiveRecord::Base
   belongs_to :category, :class_name => 'ProductCategory', :foreign_key => 'product_category_id'
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
   belongs_to :manufacturer
-  has_many   :skus, :order => 'position ASC'
-  has_many   :sku_assets, :through => :skus, :through => :assets
-  has_many   :variants, :class_name => 'ProductVariant', :order => 'position ASC'
-  has_many   :stock_logs, :through => :skus, :order => 'created_at DESC'
-  has_many   :price_logs, :through => :skus, :order => 'created_at DESC'
+
+  has_many   :skus,         :order => 'position ASC'
+  has_many   :sku_assets,   :through => :skus, :through => :assets
+  has_many   :stock_logs,   :through => :skus, :order => 'created_at DESC'
+  has_many   :price_logs,   :through => :skus, :order => 'created_at DESC'
+  has_many   :current_skus, :class_name => "Sku", :order => 'position ASC', :conditions => {:published => true, :status => %w(for_sale not_for_sale)}
+  has_many   :variants,     :class_name => 'ProductVariant', :order => 'position ASC'
 
   has_many   :product_assets
   has_many   :assets,     :through => :product_assets, :order => 'position ASC'

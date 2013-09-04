@@ -56,24 +56,30 @@ class OrderItem
     # purchasing. It either finds or creates an order item for the purchase and
     # divides the specified quantity up amoungst the apppropriate price points.
     #
+    # Setting the quantity to zero will result in the entry being removed.
+    #
     # @param ActiveRecord::Base purchase
     # @param Integer n
     # @param ActveRecord::Base entry
-    #
     # @return ActiveRecord::Base
     def set_quantity(purchase, n, entry = find_or_create_item(purchase))
-      entry.components.clear
       entry.quantity = n
-       
-      if stock_available?(purchase, n)
-        assign_components(entry, purchase, n)
+      
+      if n == 0
+        delete(entry)
       else
-        # Add some error
-        assign_components(entry, purchase, maximum_quantity_allowed(purchase))
-      end
+        entry.components.clear
+         
+        if stock_available?(purchase, n)
+          assign_components(entry, purchase, n)
+        else
+          # Add some error
+          assign_components(entry, purchase, maximum_quantity_allowed(purchase))
+        end
 
-      entry.total = entry.components.reduce(SpookAndPuff::Money.new('0')) {|m, c| m + c.total }
-      entry.pre_discount_total = entry.total
+        entry.total = entry.components.reduce(SpookAndPuff::Money.new('0')) {|m, c| m + c.total }
+        entry.pre_discount_total = entry.total
+      end
 
       entry
     end
@@ -83,7 +89,7 @@ class OrderItem
     # 
     # @param ActiveRecord::Base purchase
     # @param Integer n
-    # @param [String, Numeric] price
+    # @param SpookAndPuff::Money price
     # @param ActiveRecord::Base entry
     #
     # @return ActiveRecord::Base

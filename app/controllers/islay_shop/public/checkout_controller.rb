@@ -1,5 +1,6 @@
 class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationController
   include IslayShop::Payments
+  include IslayShop::ControllerExtensions::Public
 
   use_https
 
@@ -10,7 +11,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   def update
-    @order.update_details(params[:order_basket])
+    order.update_details(params[:order_basket])
     session['order'] = @order.dump
     if @order.valid?
       redirect_to path(:order_checkout_payment)
@@ -28,10 +29,10 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     @payment = PaymentSubmission.new(result)
 
     if result.successful?
-      @order.run!(:add, result)
+      order.run!(:add, result)
       flash['order'] = session['order'] #keep the order around for the next request only
       session.delete('order')
-      redirect_to path(:order_checkout_thank_you, :reference => @order.reference)
+      redirect_to path(:order_checkout_thank_you, :reference => order.reference)
     else
       render :payment
     end
@@ -50,9 +51,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   # This is made annoying by the fact that @order is set by a before filter in the application controller
   # This workaround checks the session dump directly.
   def check_for_order_contents
-    if session['order']
-      redirect_to path(:order_basket) if JSON.parse(session['order'])['items_dump'].length == 0
-    else
+    if order.empty?
       redirect_to path(:order_basket)
     end
   end
@@ -62,8 +61,8 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     @checkout_promotions = Promotion.active_code_based
 
     #Any promotions ready to be applied to the order
-    if @order and !@order.pending_promotions.empty?
-      @promotions = @order.pending_promotions
+    if order and !order.pending_promotions.empty?
+      @promotions = order.pending_promotions
     end
 
   end

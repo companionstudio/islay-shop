@@ -2,7 +2,19 @@ module IslayShop
   module ControllerExtensions
     module Public
       def self.included(klass)
-        klass.send :helper_method, :retrieve_order, :create_order
+        klass.send :helper_method, :retrieve_order, :create_order, :order
+      end
+
+      # An accessor which lazily constructs them memoizes the order. The order
+      # itself might come from session or it might be a new instance.
+      #
+      # @return OrderBasket
+      def order
+        @order ||= if session['order']
+          OrderBasket.load(session['order'])
+        else
+          OrderBasket.new
+        end
       end
       
       def retrieve_order

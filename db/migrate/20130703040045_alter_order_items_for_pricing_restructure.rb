@@ -37,16 +37,15 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
     # Add and modify some existing columns
     change_column_null(:order_items, :sku_id, true)
     add_column(:order_items, :service_id, :integer, :null => true)
-    rename_column(:order_items, :original_price, :price)
 
     # Generate shipping items + components
     execute(%{
-      INSERT INTO order_items (order_id, quantity, type, price, total, created_at, updated_at, service_id)
+      INSERT INTO order_items (order_id, quantity, type, original_price, total, created_at, updated_at, service_id)
       SELECT 
         id AS order_id,
         1 AS quantity,
         'ServiceOrderItem' AS type,
-        shipping_total AS price,
+        shipping_total AS original_price,
         shipping_total AS total,
         orders.created_at AS created_at,
         orders.created_at AS updated_at,
@@ -54,7 +53,7 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
       FROM orders;
 
       INSERT INTO order_item_components (order_item_id, kind, quantity, price, total)
-      SELECT id, 'calculated', 1, price, total
+      SELECT id, 'calculated', 1, original_price, total
       FROM order_items WHERE type = 'ServiceOrderItem'
     })
 
@@ -74,31 +73,36 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
     # Remove old columns
     remove_column(:order_items, :batch_size)
     remove_column(:order_items, :batch_price)
-    remove_column(:order_items, :original_total)
+    remove_column(:order_items, :original_price)
     remove_column(:order_items, :adjusted_price)
+    remove_column(:order_items, :discount)
+
+    rename_column(:order_items, :original_total, :pre_discount_total)
 
     # Alter existing columns for precision
-    change_column(:order_items, :discount, :decimal, :precision => 14, :scale => 7)
     change_column(:order_items, :total, :decimal, :precision => 14, :scale => 7)
-    change_column(:order_items, :price, :decimal, :precision => 14, :scale => 7)
+    change_column(:order_items, :pre_discount_total, :decimal, :precision => 14, :scale => 7)
+
+    # Discount should default to zero
+    change_column(:order_items, :discount, :decimal, :precision => 14, :scale => 7, :default => 0)
   end
 
   def down
     # Add columns back
     add_column(:order_items, :batch_size,     :integer, :null => true, :limit => 5)
     add_column(:order_items, :batch_price,    :float,   :null => true, :precision => 7, :scale => 5)
-    add_column(:order_items, :original_total, :float,   :null => true, :precision => 7, :scale => 5)
+    add_column(:order_items, :original_price, :float,   :null => true, :precision => 7, :scale => 5)
     add_column(:order_items, :adjusted_price, :float,   :null => true, :precision => 7, :scale => 5)
+    add_column(:order_items, :discount,       :float,   :null => true, :precision => 7, :scale => 5)
 
     # Alter columns back
-    change_column(:order_items, :discount, :float, :precision => 7, :scale => 2)
     change_column(:order_items, :total, :float, :precision => 7, :scale => 2)
-    change_column(:order_items, :price, :float, :precision => 7, :scale => 2)
+    change_column(:order_items, :pre_discount_total, :float, :precision => 7, :scale => 2)
+    change_column(:order_items, :discount, :float, :precision => 7, :scale => 2)
+    rename_column(:order_items, :pre_discount_total, :original_total)
 
     # Rename columns and remove additions
-    rename_column(:order_items, :price, :original_price)
     remove_column(:order_items, :service_id)
-
 
     # Add back old data
     execute(%{

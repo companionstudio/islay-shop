@@ -28,7 +28,7 @@ class OrderBasket < Order
   # Persists an order and purchases the stock.
   #
   # @param SpookAndPay::Result result
-  # @return Boolean
+  # @return [true, false]
   def process_add!(result)
     self.payment = OrderPayment.new(
       :name               => result.credit_card.name,
@@ -41,7 +41,7 @@ class OrderBasket < Order
       :card_type          => result.credit_card.card_type
     )
 
-    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    skus = Hash[*sku_items.map {|i| [i.sku_id, i.quantity]}.flatten]
     Sku.purchase_stock!(skus)
     next!("Authorizing #{formatted_total}")
   end

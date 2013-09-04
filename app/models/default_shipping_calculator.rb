@@ -3,11 +3,8 @@ class DefaultShippingCalculator
   # which gives free shipping. Yay?
   #
   # @param Order order
-  #
-  # @return Float
+  # @return SpookAndPuff::Money
   def calculate(order)
-    if !order.shipping_postcode.blank?
-      0
-    end
+    SpookAndPuff::Money.new("5") * order.sku_items.quantity
   end
 end

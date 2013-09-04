@@ -1,8 +1,11 @@
 class Order < ActiveRecord::Base
+  extend SpookAndPuff::MoneyAttributes
+  attr_money :total, :original_total, :product_total, :original_product_total, :discount
+
   include Order::Workflow
   include Order::Purchasing
+  include Order::Session
 
-  include IslayShop::OrderSession
   include IslayShop::OrderPromotions
 
   # Turn off single table inheritance
@@ -57,7 +60,7 @@ class Order < ActiveRecord::Base
   accepts_nested_attributes_for :items
   track_user_edits
 
-  validations_from_schema :except => [:reference, :shipping_total, :original_shipping_total]
+  validations_from_schema :except => [:reference]
 
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?
@@ -67,16 +70,6 @@ class Order < ActiveRecord::Base
 
   # Validate email format
   validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
-
-  after_initialize :initialize_totals
-
-  # This callback is used to initialize any totals for this order. Will only
-  # run for new records.
-  #
-  # @return nil
-  def initialize_totals
-    calculate_totals if new_record?
-  end
 
   # Used to track any items that have gone out of stock.
   #
@@ -102,7 +95,7 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def empty?
-    items.empty?
+    sku_items.empty?
   end
 
   # Indicates if the order is editable at all. This could mean only partially
@@ -250,126 +243,48 @@ class Order < ActiveRecord::Base
 
   # The total discount applied to the products in an order.
   #
-  # @return Float
+  # @return SpookAndPuff::Money
   def product_discount
     original_product_total - product_total
   end
 
-  # Discount formatted to a money string
-  #
-  # @return String
-  def formatted_product_discount
-    format_money(product_discount)
-  end
+  alias :formatted_product_discount :product_discount
 
   # Indicates if the order has had a discount of any kind applied to it.
   #
-  # @return Boolean
+  # @return [true, false]
   def discounted_total?
     original_total > total
   end
 
   # The discount applied to the entire order.
+  # 
+  # @return SpookAndPuff::Money
+  # @todo Deprecate, then remove this.
   def total_discount
-    original_total - total
+    discount
   end
 
-  # Discount formatted to a money string
-  #
-  # @return String
-  def formatted_total_discount
-    format_money(total_discount)
-  end
+  alias :formatted_total_discount :total_discount
 
   # Indicates if the order has free shipping.
   #
-  # @return Boolean
+  # @return [true, false]
   def free_shipping?
-    shipping_total < 1
+    shipping_total.zero?
   end
 
-  # Returns a formatted string of the order total.
+  # This bit of meta-programming generates accessors with a deprecation warning.
+  # It is intended to replace the #formatted_* methods on this class.
   #
-  # @return String
-  def formatted_total
-    self[:formatted_total] || format_money(total)
-  end
-
-
-  # Returns a formatted string of the original (pre-discount) grand total.
-  #
-  # @return String
-  def formatted_original_total
-    format_money(original_total)
-  end
-
-  # Returns a formatted string of the order product total.
-  #
-  # @return String
-  def formatted_product_total
-    format_money(product_total)
-  end
-
-  # Returns a formatted string of the original (pre-discount) product total.
-  #
-  # @return String
-  def formatted_original_product_total
-    format_money(original_product_total)
-  end
-
-  # Returns a formatted string of the order shipping total.
-  #
-  # @return [String, nil]
-  def formatted_shipping_total
-    if shipping_total != nil
-      if shipping_total == 0
-        'Free'
-      elsif shipping_total > 0
-        format_money(shipping_total)
+  # @todo Remove these deprecated methods.
+  [:product_total, :original_product_total, :total, :original_total].each do |m|
+    class_eval %{
+      def formatted_#{m}
+        ActiveSupport::Deprecation.warn("#formatted_#{m} is deprecated, use ##{m}.to_s instead.")
+        #{m}
       end
-    end
-  end
-
-  # Returns a formatted string of the original shipping total.
-  #
-  # @return [String, nil]
-  def formatted_original_shipping_total
-    if original_shipping_total != nil
-      if original_shipping_total == 0
-        'Free'
-      elsif original_shipping_total > 0
-        format_money(original_shipping_total)
-      end
-    end
-  end
-
-  # Formats a float into a monentary formatted string i.e. sticks a '$' in the
-  # front and pads the decimals.
-  #
-  # @param Float value
-  #
-  # @return String
-  def format_money(value)
-    "$%.2f" % value
-  end
-
-  # Iterates over the regular_items in the order, checking each to see if they
-  # are in stock. Where they are out of stock, the item is removed and we add a
-  # stock alert for that item to the order.
-  def check_stock_levels
-    items.each do |item|
-      if item.sku.out_of_stock?
-        stock_alerts << item.sku
-        items.delete(item)
-      end
-    end
-  end
-
-  # Calculates the shipping for the order.
-  #
-  # @return [Float, nil]
-  def calculate_shipping
-    self.class.shipping_calculator_class.new.calculate(self)
+    }
   end
 
   # Tracks the order with the tracker class's track method
@@ -385,6 +300,31 @@ class Order < ActiveRecord::Base
   def trackable?
     ['packed', 'shipped', 'complete'].include? status
   end
+
+  # Returns the shipping service attached to this order.
+  #
+  # @return OrderServiceItem
+  def shipping_service
+    @shipping_service ||= service_items.select {|i| i.service.key == 'shipping'}.first
+  end
+
+  # Returns the shipping total before any adjustments.
+  #
+  # @return SpookAndPuff::Money
+  def original_shipping_total
+    shipping_service.pre_discount_total
+  end
+
+  # Returns the shipping total.
+  #
+  # @return SpookAndPuff::Money
+  def shipping_total
+    shipping_service.total
+  end
+
+  # @todo: Deprecate and remove this later.
+  alias :formatted_shipping_total :shipping_total
+  alias :formatted_original_shipping_total :original_shipping_total
 
   private
 
@@ -407,18 +347,29 @@ class Order < ActiveRecord::Base
   #
   # @return nil
   def calculate_totals
-    self.original_shipping_total = calculate_shipping
-    self.shipping_total ||= self.original_shipping_total
+    # Calculate shipping and add it to the order, without retriggering a
+    # recalculation of the total.
+    shipping = self.class.shipping_calculator_class.new.calculate(self)
+    set_quantity_and_price(Service.shipping_service, 1, shipping, :retotal => false)
 
-    self.original_product_total = items.map(&:original_total).sum
-    self.product_total ||= items.map(&:total).sum
+    # Calculate the totals
+    self.product_total          = sku_items.total
+    self.original_product_total = sku_items.pre_discount_total
+    self.total                  = (product_total + service_items.total).round
+    self.original_total         = (original_product_total + service_items.pre_discount_total).round
 
-    self.original_total = (original_product_total || 0) + (original_shipping_total || 0)
-    self.total = (product_total || 0) + (shipping_total || 0)
-        
-    self.discount = (self.original_total - self.total).round(2)
-
-    nil
+    # Determine if there has been an increase or a discount on the order and
+    # set the appropriate attributes.
+    adjustment = self.original_total - self.total
+    zero = SpookAndPuff::Money.new("0")
+    
+    if adjustment.negative?
+      self.increase = adjustment.abs
+      self.discount = zero
+    else
+      self.increase = zero
+      self.discount = adjustment
+    end
   end
 
   check_for_extensions

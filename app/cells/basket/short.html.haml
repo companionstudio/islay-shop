@@ -1,4 +1,4 @@
-%div.basket
+%div.islay-shop-basket
   %h3 Items
   - if parent_controller.flash[:order_item_added]
     %p.flash-item-added
@@ -8,21 +8,28 @@
     %p.flash-item-removed
       #{parent_controller.flash[:order_item_removed]} removed from your order
 
-  - if @order.items[0]
-    = form_for(@order, :url => public_order_basket_update_path) do |f|
+  - unless order.empty?
+    = form_tag(public_order_basket_update_url) do
       %ul
-        = f.fields_for(:items) do |i|
+        - order.sku_items.each do |item|
           %li
-            = i.label(:quantity, i.object.sku_id)
-            = i.text_field(:quantity)
-            = i.hidden_field(:sku_id)
-            - unless i.object.errors.empty?
-              - i.object.errors.each do |attr, msgs|
-                = i.label(:quantity, msgs, :class => 'error')
+            = item.description
+            = text_field_tag("items[#{item.sku_id}]", item.quantity)
 
       %button Update
+
+    %ul.totals
+      %li
+        %span.key Sub-total
+        %span.value= order.product_total
+      %li
+        %span.key Shipping
+        %span.value= order.shipping_total
+      %li
+        %span.key Total
+        %span.value= order.total
 
     %p= link_to('Checkout', public_order_checkout_path)
 
   - else
-    %p Empty
+    %p There are no items in you basket

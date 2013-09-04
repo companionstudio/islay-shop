@@ -19,7 +19,7 @@ class Order
     #
     # @return ActiveRecord::Base 
     def set_quantity(purchase, quantity)
-      for_purchase(purchase, :set_quantity, quantity)
+      for_purchase(purchase, :set_quantity, true, quantity)
     end
 
     # Sets the quantity and price for an item. This bypasses the bracketed 
@@ -28,10 +28,13 @@ class Order
     # @param ActiveRecord::Base purchase
     # @param Integer n
     # @param [String, Numeric] price
+    # @param Hash opts
+    # @option opts [true, false] :retotal
     #
     # @return ActiveRecord::Base
-    def set_quantity_and_price(purchase, n, price)
-      for_purchase(purchase, :set_quantity_and_price, n, price)
+    def set_quantity_and_price(purchase, n, price, opts = {})
+      _opts = {:retotal => true}.merge(opts)
+      for_purchase(purchase, :set_quantity_and_price, _opts[:retotal], n, price)
     end
 
     # Increments the quantity for an item. 
@@ -41,7 +44,7 @@ class Order
     #
     # @return ActiveRecord::Base 
     def increment_quantity(purchase, quantity)
-      for_purchase(purchase, :increment_quantity, quantity)
+      for_purchase(purchase, :increment_quantity, true, quantity)
     end
 
     # Decrements the quantity of an item. If it is decremented to zero or less
@@ -52,7 +55,7 @@ class Order
     #
     # @return ActiveRecord::Base 
     def decrement_quantity(purchase, quantity)
-      for_purchase(purchase, :decrement_quantity, quantity)
+      for_purchase(purchase, :decrement_quantity, true, quantity)
     end
 
     # Removes an item from the order.
@@ -61,7 +64,7 @@ class Order
     #
     # @return ActiveRecord::Base 
     def remove(purchase)
-      for_purchase(purchase, :remove)
+      for_purchase(purchase, :remove, true)
     end
 
     # Finds an item against the order.
@@ -90,20 +93,21 @@ class Order
     #
     # @param ActiveRecord::Base purchase
     # @param Symbol action
+    # @param [true, false] recalculate
     #
     # @return ActiveRecord::Base
     #
     # @todo Currently fixed to the sku_items association.
-    def for_purchase(purchase, action, *args)
+    def for_purchase(purchase, action, recalculate, *args)
       result = if !args.empty?
         item_association_for_purchase(purchase).send(action, purchase, *args)
       else
         item_association_for_purchase(purchase).send(action, purchase)
       end
 
-      calculate_totals
+      calculate_totals if recalculate
 
       result
     end
-end
+  end
 end

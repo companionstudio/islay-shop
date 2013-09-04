@@ -8,7 +8,6 @@ class Sku < ActiveRecord::Base
 
   belongs_to :product
 
-  has_many :price_logs, :class_name => 'SkuPriceLog', :order => 'created_at DESC'
   has_many :order_items
 
   has_many   :sku_assets,                          :order => 'position ASC'

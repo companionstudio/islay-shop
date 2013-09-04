@@ -276,27 +276,25 @@ class Order
       # A helper for building workflow responses. Should not be used directly. 
       # Instead refer to the #next! and #fail! methods.
       #
-      # @param Boolean state
+      # @param [true, false] state
       # @param String notes
-      #
       # @return Boolean
       def workflow_response(state, notes = nil)
         status = _workflow.next_status(self, @current_event)
         notes = [@event_opts[:notes], notes].compact.join('. ')
-        build_log(status, notes)
+        build_log(state, @current_event, notes)
         state
       end
 
-      # Builds a log. Should be implemented by the target class/module. Can be
-      # left as a noop for classes that don't do any logging.
+      # Shortcut for generating logs
       #
-      # @param String status
+      # @param [true, false] succeeded
+      # @param String action
       # @param String notes
-      #
-      # @return Object
-      def build_log(status, notes = nil)
-
+      # @return OrderLog
+      def build_log(succeeded, action, notes = nil)
+        logs.build(:action => action, :notes => notes, :succeeded => succeeded)
       end
-  end
+    end
   end
 end
