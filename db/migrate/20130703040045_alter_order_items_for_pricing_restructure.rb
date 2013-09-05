@@ -75,16 +75,12 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
     remove_column(:order_items, :batch_price)
     remove_column(:order_items, :original_price)
     remove_column(:order_items, :adjusted_price)
-    remove_column(:order_items, :discount)
 
     rename_column(:order_items, :original_total, :pre_discount_total)
 
     # Alter existing columns for precision
     change_column(:order_items, :total, :decimal, :precision => 14, :scale => 7)
     change_column(:order_items, :pre_discount_total, :decimal, :precision => 14, :scale => 7)
-
-    # Discount should default to zero
-    change_column(:order_items, :discount, :decimal, :precision => 14, :scale => 7, :default => 0)
   end
 
   def down
@@ -93,12 +89,10 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
     add_column(:order_items, :batch_price,    :float,   :null => true, :precision => 7, :scale => 5)
     add_column(:order_items, :original_price, :float,   :null => true, :precision => 7, :scale => 5)
     add_column(:order_items, :adjusted_price, :float,   :null => true, :precision => 7, :scale => 5)
-    add_column(:order_items, :discount,       :float,   :null => true, :precision => 7, :scale => 5)
 
     # Alter columns back
     change_column(:order_items, :total, :float, :precision => 7, :scale => 2)
     change_column(:order_items, :pre_discount_total, :float, :precision => 7, :scale => 2)
-    change_column(:order_items, :discount, :float, :precision => 7, :scale => 2)
     rename_column(:order_items, :pre_discount_total, :original_total)
 
     # Rename columns and remove additions
