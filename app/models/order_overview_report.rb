@@ -70,7 +70,6 @@ class OrderOverviewReport < Report
     SELECT
       chart.*,
       skus.product_id,
-      formatted_money(skus.price) AS formatted_price,
       skus.short_desc,
       (SELECT name FROM products AS ps WHERE ps.id = skus.product_id) AS product_name,
       ABS(chart.position - previous_position) AS shift,
