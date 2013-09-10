@@ -29,15 +29,15 @@ ActivityLog.register(:stock, StockLogDecorator, %{
 ActivityLog.register(:price_change, PriceLogDecorator, %{
   SELECT
     'price_change' AS type,
-    pls.created_at,
+    pls.valid_from AS created_at,
     (SELECT name FROM users WHERE id = pls.creator_id) AS user_name,
     'Price update' AS event,
     (SELECT name FROM products WHERE id = skus.product_id) || ' - ' || skus.short_desc AS name,
     skus.id,
     skus.product_id AS parent_id
-  FROM sku_price_logs AS pls
+  FROM sku_price_points AS pls
   JOIN skus ON skus.id = sku_id
-  ORDER BY created_at DESC
+  ORDER BY valid_from DESC
 })
 
 ActivityLog.register(:sku, SkuLogDecorator, %{

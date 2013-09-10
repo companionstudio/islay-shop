@@ -1,0 +1,35 @@
+- sub_header(link_to('Catalogue', path(:product_categories)))
+- sub_header(link_to(@product.name, path(@product)))
+- sub_header('Price History')
+
+= content do
+  %table
+    %thead
+      %tr
+        %th SKU
+        %th Current
+        %th Price
+        %th Created
+        %th Retired
+
+    %tbody
+      - @price_points.each do |log|
+        %tr
+          %td
+            %span.title= link_to(log.sku_short_desc, path(:edit, @product, :sku, :id => log.sku_id))
+          %td
+            %span{:class => "boolean #{log.current?}"}
+              %span= friendly_bool(log.current?)
+          %td
+            %span.islay-shop-price-point{:class => log.mode}
+              %span.price= log.price
+              %span.desc= log.mode_desc
+          %td.meta
+            %span.time= log.valid_from
+            by #{log.creator_name}
+          %td.meta
+            - if log.current?
+              \--
+            - else
+              %span.time= log.valid_to
+              by #{log.updater_name}

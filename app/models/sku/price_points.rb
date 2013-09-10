@@ -52,16 +52,10 @@ class Sku
       # @return Array<Hash>
       def summary
         map do |point|
-          mode_desc = case point.mode
-          when 'single'     then 'each'
-          when 'bracketed'  then "for #{point.volume} or more"
-          when 'boxed'      then "for every #{point.volume}"
-          end
-
           {
             :price => point.price,
             :mode => point.mode,
-            :mode_desc => mode_desc
+            :mode_desc => point.mode_desc
           }
         end
       end

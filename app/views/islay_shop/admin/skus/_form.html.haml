@@ -25,19 +25,32 @@
 
         %tbody
           = f.fields_for(:price_points, @sku.price_points, {:include_id => false}) do |point|
-            %tr
-              %td
-                %span.time= point.object.valid_from
-                = point.hidden_field(:id)
-              %td
-                = point.select(:mode, %w(single boxed bracketed))
-              %td
-                = point.text_field(:volume, :field_class => 'number tiny')
-              %td
-                = point.text_field(:display_price, :field_class => 'tiny currency', :autocomplete => 'off')
-              %td
-                - unless point.object.new_record? or point.object.mode == 'single'
-                  = point.check_box(:expire)
+            - if point.object.current?
+              %tr
+                %td
+                  %span.time= point.object.valid_from
+                  = point.hidden_field(:id)
+                %td
+                  = point.select(:mode, %w(single boxed bracketed))
+                %td
+                  = point.text_field(:volume, :field_class => 'number tiny')
+                %td
+                  = point.text_field(:display_price, :field_class => 'tiny currency', :autocomplete => 'off')
+                %td
+                  - unless point.object.new_record? or point.object.mode == 'single'
+                    = point.check_box(:expire)
+            - else
+              %tr.historical
+                %td
+                  %span.time
+                    = point.object.valid_from
+                  \-
+                  %span.time
+                    = point.object.valid_to
+                %td= point.object.mode
+                %td= point.object.volume
+                %td= point.object.display_price
+                %td &nbsp;
 
     = f.fieldset('Size & Weight', :class => 'size-and-weight') do
       = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')

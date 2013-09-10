@@ -23,9 +23,9 @@ Rails.application.routes.draw do
 
         get :delete, :on => :member
 
-        resources :product_assets,  :path => 'assets'
-        resources :stock_logs,      :only => 'index'
-        resources :sku_price_logs,  :only => 'index', :path => 'price_logs'
+        resources :product_assets,   :path => 'assets'
+        resources :stock_logs,       :only => 'index'
+        resources :sku_price_points, :only => 'index', :path => 'price_points'
 
         resources :skus do
           put 'position', :action => :update_position, :as => 'position', :on => :collection

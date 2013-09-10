@@ -1,17 +1,26 @@
 class SkuPricePoint < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :price
-
   belongs_to  :sku
-  has_many    :order_items, :class_name => 'OrderSkuItem'
-
   validate :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
   validate :price,  :presence   => true
   validate :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
-
   attr_accessible(:current, :valid_from, :valid_to, :price, :volume, :mode, :display_price)
-
   track_user_edits
+
+  # Returns an ActiveRecord::Relation with a bunch of joins and calculated 
+  # fields necessary for summarising each price point e.g. SKU, if it's 
+  # current etc.
+  #
+  # @return ActiveRecord::Relation
+  def self.summary
+    select(%{
+      (SELECT short_desc FROM skus WHERE skus.id = sku_price_points.sku_id) AS sku_short_desc,
+      (SELECT name FROM users WHERE users.id = sku_price_points.creator_id) AS creator_name,
+      (SELECT name FROM users WHERE users.id = sku_price_points.updater_id) AS updater_name,
+      sku_price_points.*
+    })
+  end
 
   # Returns an ActiveRecord::Relation with the results scoped to the current
   # price points.
@@ -43,6 +52,18 @@ class SkuPricePoint < ActiveRecord::Base
   # @return SkuPricePoint
   def self.price_for(quantity)
     where("volume >= ?", quantity).order('volume ASC').first
+  end
+
+  # Returns a human-readable fragment describing the mode of the price point
+  # e.g. for single volume is says 'each'.
+  #
+  # @return String
+  def mode_desc 
+    case mode
+    when 'single'     then 'each'
+    when 'bracketed'  then "for #{point.volume} or more"
+    when 'boxed'      then "for every #{point.volume}"
+    end
   end
 
   # For a boxed price point, the price for a box of the given volume

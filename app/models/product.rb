@@ -15,7 +15,7 @@ class Product < ActiveRecord::Base
   has_many   :skus,         :order => 'position ASC'
   has_many   :sku_assets,   :through => :skus, :through => :assets
   has_many   :stock_logs,   :through => :skus, :order => 'created_at DESC'
-  has_many   :price_logs,   :through => :skus, :order => 'created_at DESC'
+  has_many   :price_points, :through => :skus
   has_many   :current_skus, :class_name => "Sku", :order => 'position ASC', :conditions => {:published => true, :status => %w(for_sale not_for_sale)}
   has_many   :variants,     :class_name => 'ProductVariant', :order => 'position ASC'
 
