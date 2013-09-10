@@ -1,0 +1,15 @@
+- sub_header(@promotion.name)
+
+= content do
+  = column(12) do
+    %ul.key-value
+      %li
+        %span.key Start at
+        %span.value= @promotion.start_at
+      %li
+        %span.key End at
+        %span.value= @promotion.end_at
+
+= footer do
+  = edit_button(@promotion)
+  = delete_button(@promotion)

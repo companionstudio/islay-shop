@@ -1,10 +1,10 @@
 = resource_form(@promotion) do |f|
   = content do
     = f.fieldset(:class => 'primary') do
-      = f.input(:name, :col => 'first-inline')
-      = f.input(:active, :col => 'inline')
-      = f.input(:start_at, :col => 'first-inline', :as => :date_picker)
-      = f.input(:end_at, :col => 'inline', :as => :date_picker)
+      = f.input(:name)
+      = f.input(:active)
+      = f.input(:start_at, :as => :date_picker)
+      = f.input(:end_at, :as => :date_picker)
 
     = f.fieldset do
       = f.input(:description, :as => 'text')
@@ -28,4 +28,5 @@
               = e.metadata_input(name, opts)
 
   = footer do
-    %button Save
+    = save_button
+    = cancel_button(@promotion)

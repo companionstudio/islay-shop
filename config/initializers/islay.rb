@@ -6,7 +6,6 @@ Islay::Engine.extensions.register do |e|
 
   e.navigation do |n|
     n.section('Catalogue', :catalogue, 'gift')
-    n.section('Promotions', :promotions, 'bullhorn')
     n.section('Orders', :orders, 'shopping-cart')
   end
 

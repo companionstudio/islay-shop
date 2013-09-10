@@ -62,6 +62,16 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :promotions, :path => 'orders/promotions' do
+      get '(/filter-:filter)(/sort-:sort)(/page-:page)', 
+          :action => 'index', 
+          :on     => :collection, 
+          :as     => 'filter_and_sort'
+
+      get :delete, 
+          :on => :member
+    end
+
     scope :path => 'orders' do
       resources :order_processes, :path => 'processing', :only => 'index' do
         collection do
@@ -108,8 +118,6 @@ Rails.application.routes.draw do
     end
 
     resources :order_summaries, :controller => 'orders', :path => 'orders', :only => 'show'
-
-    resources :promotions
   end # admin
 
   unless Settings.defined?(:shop, :disabled) and Settings.for(:shop, :disabled)

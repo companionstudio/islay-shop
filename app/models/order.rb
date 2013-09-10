@@ -2,11 +2,10 @@ class Order < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :total, :original_total, :product_total, :original_product_total, :discount
 
+  include Order::Session
   include Order::Workflow
   include Order::Purchasing
-  include Order::Session
-
-  include IslayShop::OrderPromotions
+  include Order::Promotions
 
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled

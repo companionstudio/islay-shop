@@ -68,7 +68,6 @@ class Promotion < ActiveRecord::Base
 
   # Calculates the status of the promotion based on the combination of the
   # start date, end date and active option.
-  attr_reader :status
   def status
     now = Time.now
 
@@ -366,6 +365,8 @@ class Promotion < ActiveRecord::Base
   # When editing a promotion, this method is used to prefill the condition and
   # effect collections. For each type of condition or effect that is missing,
   # we stub out a new record.
+  #
+  # @return nil
   def prefill
     cond_types = conditions.map(&:type)
     PromotionCondition.subclasses.each do |klass|
@@ -376,6 +377,8 @@ class Promotion < ActiveRecord::Base
     PromotionEffect.subclasses.each do |klass|
       effects.build(:type => klass.to_s) unless effect_types.include?(klass.to_s)
     end
+
+    nil
   end
 
   private
