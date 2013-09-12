@@ -17,11 +17,12 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'islay',                 '~> 0.5.0'
   s.add_dependency 'spook_and_pay',         '0.2.0.alpha'
-  s.add_dependency 'spook_and_puff_money',  '0.5.6'
+  s.add_dependency 'spook_and_puff_money',  '0.5.7'
 
   s.add_development_dependency 'rspec-rails',         '2.14.0'
   s.add_development_dependency 'factory_girl_rails',  '4.2.1'
   s.add_development_dependency 'vcr',                 '2.5.0'
   s.add_development_dependency 'ffaker',              '~> 1.16.1'
   s.add_development_dependency 'webmock',             '~> 1.8.7'
+  s.add_development_dependency 'debugger',            '1.6.1'
 end

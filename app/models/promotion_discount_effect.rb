@@ -3,11 +3,16 @@ class PromotionDiscountEffect < PromotionEffect
 
   metadata(:config) do
     enum    :kind,    :required => true, :values => %w(fixed percentage)
-    integer :amount,  :required => true, :greater_than => 0
+    string  :amount,  :required => true, :greater_than => 0
   end
 
   attr_accessible :amount_and_kind
 
+  # A setter which sets the kind/mode and amount based on the input string.
+  #
+  # @param String input
+  # @return string
+  # @raises ArgumentError
   def amount_and_kind=(input)
     extract = /(\$*)([\d\.]+)(\%*)/.match(input)
 
@@ -26,6 +31,9 @@ class PromotionDiscountEffect < PromotionEffect
     end
   end
 
+  # Returns a formatted string
+  #
+  # @return String
   def amount_and_kind
     case kind
     when 'percentage' then "#{amount}%"
@@ -34,16 +42,13 @@ class PromotionDiscountEffect < PromotionEffect
   end
 
   def apply!(order, qualifications)
-
-    order.product_total = case kind
-    when 'percentage' then order.product_total - (order.product_total * (amount.to_f / 100)).round(2)
-    when 'fixed'      then order.product_total - (amount / 100) # Amount is in dollars
+    case kind
+    when 'percentage' 
+      order.enqueue_adjustment(:percentage_discount, BigDecimal.new(amount), 'promotion')
+    when 'fixed'
+      order.enqueue_adjustment(:fixed_discount, SpookAndPuff::Money.new(amount), 'promotion')
     end
 
-    if !order.shipping_total.blank? and order.shipping_total > 0
-      order.shipping_total = case kind
-      when 'percentage' then order.shipping_total - (order.shipping_total * (amount.to_f / 100)).round(2)
-      end
-    end
+    result("Applied a #{amount_and_kind} discount")
   end
 end

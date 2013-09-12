@@ -6,6 +6,7 @@ class CreateOrderItemAdjustments < ActiveRecord::Migration
       t.string  :source,        :null => false # enum: promotion, manual
       t.integer :quantity,      :null => false
       t.decimal :adjustment,    :null => false, :default => 0, :precision => 14, :scale => 7
+      t.decimal :manual_price,  :null => false, :default => 0, :precision => 14, :scale => 7
     end
   end
 end

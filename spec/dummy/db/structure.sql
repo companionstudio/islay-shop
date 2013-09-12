@@ -794,6 +794,39 @@ ALTER SEQUENCE manufacturers_id_seq OWNED BY manufacturers.id;
 
 
 --
+-- Name: order_adjustments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE order_adjustments (
+    id integer NOT NULL,
+    order_id integer NOT NULL,
+    source character varying(255) NOT NULL,
+    adjustment numeric(14,7) DEFAULT 0 NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: order_adjustments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE order_adjustments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: order_adjustments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE order_adjustments_id_seq OWNED BY order_adjustments.id;
+
+
+--
 -- Name: order_item_adjustments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -803,7 +836,8 @@ CREATE TABLE order_item_adjustments (
     kind character varying(255) NOT NULL,
     source character varying(255) NOT NULL,
     quantity integer NOT NULL,
-    adjustment numeric(14,7) DEFAULT 0 NOT NULL
+    adjustment numeric(14,7) DEFAULT 0 NOT NULL,
+    manual_price numeric(14,7) DEFAULT 0 NOT NULL
 );
 
 
@@ -1446,7 +1480,7 @@ CREATE TABLE promotions (
     description character varying(4000),
     active boolean DEFAULT false NOT NULL,
     start_at timestamp without time zone NOT NULL,
-    end_at timestamp without time zone NOT NULL,
+    end_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     terms tsvector
@@ -1853,6 +1887,13 @@ ALTER TABLE ONLY manufacturers ALTER COLUMN id SET DEFAULT nextval('manufacturer
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY order_adjustments ALTER COLUMN id SET DEFAULT nextval('order_adjustments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY order_item_adjustments ALTER COLUMN id SET DEFAULT nextval('order_item_adjustments_id_seq'::regclass);
 
 
@@ -2133,6 +2174,14 @@ ALTER TABLE ONLY manufacturer_assets
 
 ALTER TABLE ONLY manufacturers
     ADD CONSTRAINT manufacturers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_adjustments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY order_adjustments
+    ADD CONSTRAINT order_adjustments_pkey PRIMARY KEY (id);
 
 
 --
@@ -2503,6 +2552,13 @@ CREATE INDEX fk__manufacturers_creator_id ON manufacturers USING btree (creator_
 --
 
 CREATE INDEX fk__manufacturers_updater_id ON manufacturers USING btree (updater_id);
+
+
+--
+-- Name: fk__order_adjustments_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX fk__order_adjustments_order_id ON order_adjustments USING btree (order_id);
 
 
 --
@@ -3201,6 +3257,14 @@ ALTER TABLE ONLY manufacturers
 
 
 --
+-- Name: fk_order_adjustments_order_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY order_adjustments
+    ADD CONSTRAINT fk_order_adjustments_order_id FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+
+
+--
 -- Name: fk_order_item_adjustments_order_item_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3733,3 +3797,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130904233846');
 INSERT INTO schema_migrations (version) VALUES ('20130904233847');
 
 INSERT INTO schema_migrations (version) VALUES ('20130904233848');
+
+INSERT INTO schema_migrations (version) VALUES ('20130910054748');
+
+INSERT INTO schema_migrations (version) VALUES ('20130911234809');

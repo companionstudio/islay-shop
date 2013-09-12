@@ -33,23 +33,14 @@ class Order
     # Attempts to apply promotions to this order. It'll return any promotions it
     # successfully applies.
     #
-    # @return Array<Promotion>
+    # @return Promotion::PromotionResultCollection
+    # @todo Capture result of applying promotions? Probably.
     def apply_promotions!
       raise PromotionApplyError if @promotions_applied
-
-      Promotion.active.each do |p|
-        if p.qualifies?(self)
-          p.apply!(self)
-          unless previous_promotion_ids.include?(p.id)
-            new_promotions << p.id
-          end
-        end
-      end
-
+      results = Promotion.active.apply!(self)
       apply_adjustments!
-
       @promotions_applied = true
-      applied_promotions
+      results
     end
 
     # The promotions that have been applied since the order was last serialised

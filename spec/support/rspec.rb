@@ -1,15 +1,36 @@
-RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
-  config.include Module.new do 
-    # A shortcut for constructing a money instance.
-    #
-    # @param String value
-    #
-    # @return SpookAndPuff::Money
-    def money(value)
-      SpookAndPuff::Money.new(value)
+module RSpecHelpers
+  # A shortcut for constructing a money instance.
+  #
+  # @param String value
+  #
+  # @return SpookAndPuff::Money
+  def money(value)
+    SpookAndPuff::Money.new(value)
+  end
+end
+
+class ShippingCalculator
+  def calculate(order)
+    SpookAndPuff::Money.new("15")
+  end
+end
+
+module RSpecHooks
+  def mock_shipping
+    before(:all) do
+      Order.shipping_calculator = :shipping_calculator
+    end
+
+    after(:all) do
+      Order.shipping_calculator = :default_shipping_calculator
     end
   end
+end
+
+RSpec.configure do |config|
+  config.include FactoryGirl::Syntax::Methods
+  config.include RSpecHelpers
+  config.extend  RSpecHooks
 
   config.mock_with :rspec
   config.fixture_path = "#{Rails.root}/spec/fixtures"

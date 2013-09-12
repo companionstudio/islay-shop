@@ -5,6 +5,6 @@ class DefaultShippingCalculator
   # @param Order order
   # @return SpookAndPuff::Money
   def calculate(order)
-    SpookAndPuff::Money.new("5") * order.sku_items.quantity
+    SpookAndPuff::Money.zero
   end
 end

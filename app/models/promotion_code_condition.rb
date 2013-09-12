@@ -1,5 +1,6 @@
 class PromotionCodeCondition < PromotionCondition
   desc "Order has Code"
+  scope :order
 
   metadata(:config) do
     string :code, :required => true
@@ -7,6 +8,14 @@ class PromotionCodeCondition < PromotionCondition
 
   before_validation :clean_code
   validate          :unique_code
+
+  def check(order)
+    if order.promo_code and order.promo_code.upcase == code
+      success
+    else
+      failure
+    end
+  end
 
   def qualifications(order)
     if qualifies?(order)

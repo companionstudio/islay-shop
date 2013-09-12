@@ -95,13 +95,9 @@ class OrderItem
     # @return ActiveRecord::Base
     def set_quantity_and_price(purchase, n, price, entry = find_or_create_item(purchase))
       entry.components.clear
-      entry.quantity = n
-
-      total = SpookAndPuff::Money.new(price) * quantity
-      entry.components.build(:price => price, :quantity => n, :total => total)
-      entry.total = entry.pre_discount_total = total
-
-      entry
+      update_entry(entry) do |i|
+        i.components.build(:price => price, :quantity => n, :total => price * n)
+      end
     end
 
     # Increments the quantity for an item.
@@ -208,7 +204,8 @@ class OrderItem
       blk.call(entry)
 
       entry.pre_discount_total = entry.components.map(&:total).sum.round
-      entry.total = (entry.pre_discount_total + entry.adjustments.map(&:adjustment).sum).round
+      adjustments = entry.adjustments.reduce(SpookAndPuff::Money.zero) {|s, a| s + a.adjustment}
+      entry.total = (entry.pre_discount_total + adjustments).round
       entry.quantity = entry.components.map(&:quantity).sum
 
       entry

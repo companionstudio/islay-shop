@@ -17,6 +17,8 @@ class Service < ActiveRecord::Base
 
   after_save :retire_price_points
 
+  track_user_edits
+
   # All editing of price points is done via the SKU
   accepts_nested_attributes_for :price_points
   

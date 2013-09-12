@@ -16,51 +16,29 @@ class Promotion < ActiveRecord::Base
   validations_from_schema
   validates_associated :conditions, :effects
 
-  # Returns the promotions that have been published and have current start and
-  # end dates
+  # Returns a relation scoped to the promotions that have been published and 
+  # have current start and end dates.
+  #
+  # @return ActiveRecord::Relation
   def self.active
-    PromotionQuery.active
+    where(%{
+      promotions.active = true
+      AND (promotions.start_at IS NULL OR promotions.start_at <= NOW())
+      AND (promotions.end_at IS NULL OR promotions.end_at >= NOW())
+    })
   end
 
+  # Finds all promotions which have a code-based condition.
+  #
+  # @return Array<Promotion>
   def self.active_code_based
     PromotionQuery.active_code_based
   end
 
-  # Returns any active promotions that apply to a particular SKU.
-  def self.for_sku(sku)
-    active.select {|p| p.product_qualifies?(sku)}
-  end
-
-  # Returns any active promotions that apply to a particular product.
-  def self.for_product(product)
-    active.select {|p| p.product_qualifies?(product)}
-  end
-
-  # Returns any active promotions that apply to a particular product category.
-  def self.for_category(category)
-    active.select {|p| p.category_qualifies?(category)}
-  end
-
-  # This is used to indicate if a promotion involves the specified SKU in some
-  # way.
-  def sku_qualifies?(sku)
-    conditions.map {|c| c.sku_qualifies?(sku)}.any?
-  end
-
-  # This is used to indicate if a promotion involves the specified product in
-  # some way.
-  def product_qualifies?(product)
-    conditions.map {|c| c.product_qualifies?(product)}.any?
-  end
-
-  # This is used to indicate if a promotion involves the specified product
-  # category in some way.
-  def category_qualifies?(category)
-    conditions.map {|c| c.category_qualifies?(category)}.any?
-  end
-
-  # Returns a boolean indicating if the promotion is actually running. This means
-  # it has to be both published and have a current start/end date.
+  # Returns a boolean indicating if the promotion is actually running. This 
+  # means it has to be both published and have a current start/end date.
+  #
+  # @return [true, false]
   def active?
     now = Time.now
     active  and start_at <= now and (end_at.nil? || end_at >= now)
@@ -68,6 +46,8 @@ class Promotion < ActiveRecord::Base
 
   # Calculates the status of the promotion based on the combination of the
   # start date, end date and active option.
+  #
+  # @return String
   def status
     now = Time.now
 
@@ -83,7 +63,7 @@ class Promotion < ActiveRecord::Base
     end
   end
 
-    # The current day of a promotion. This could be a negative value or a value
+  # The current day of a promotion. This could be a negative value or a value
   # exceeding the total length of the promotion. We don't do bounds checking.
   def current_day
     (Time.now.to_date - start_at.to_date).to_i + 1
@@ -137,229 +117,191 @@ class Promotion < ActiveRecord::Base
     start_at <= now and (end_at.nil? || end_at >= now)
   end
 
+  # Checks the order against each promotion.
+  #
+  # This method is designed to be called against a scope 
+  # e.g. active.check(order)
+  #
+  # @param Order order
+  # @return PromotionResultCollection
+  def self.check(order)
+    PromotionResultCollection.new(all.map {|p| p.check(order)})
+  end
 
-  class ResultCollection < Array
-    # Checks to see if any of the promotions succeeded.
-    #
-    # @return Boolean
-    def any?
-      @any ||= flags.any?
+  # Checks the order against each promotion and for each that succeeds, also
+  # applies the promotion's effects.
+  #
+  # This method is designed to be called against a scope 
+  # e.g. active.apply(order)
+  #
+  # @param Order order
+  # @return PromotionResultCollection
+  def self.apply!(order)
+    PromotionResultCollection.new(all.map {|p| p.apply!(order)})
+  end
+
+  # Checks the order against each promotion condition.
+  #
+  # @param Order order
+  # @return Result
+  def check(order)
+    results = conditions.map {|c| c.check(order)}
+    Result.new(self, ConditionResultCollection.new(results))
+  end
+
+  # Applies the promotion's effect to the supplied order.
+  #
+  # @param Order order
+  # @return Result
+  def apply!(order)
+    result = check(order)
+    if result.successful?
+      order.applied_promotions.build(:promotion => self)
+      result.effects = effects.map {|e| e.apply!(order, result.conditions)}
     end
 
-    # Checks for complete failure — order does not qualify for any promotion.
+    result
+  end
+
+  # Base collection which has predicates for checking success/failure and 
+  # filters for grabbing entries based on thier predicates e.g. successful
+  # entries.
+  class CollectionBase < Array
+    # Checks to see if all the results are successful.
     #
-    # @return Boolean
-    def none?
-      !any?
+    # @return [true, false]
+    def successful?
+      length > 0 and successful.length == length
     end
 
-    # Checks for partial success i.e. some conditions were satisfied.
+    # Checks to see if there are any partial results, all failures or a 
+    # mixture of successful and failed results.
     #
-    # @return Boolean
-    def partial_success?
-      @partial_success ||= partial_flags.any?
+    # @return [true, false]
+    def partial?
+      partial.length > 0 or (successful.length > 0 and successful.length < length)
+    end
+
+    # Simply, not successful.
+    #
+    # @return [true, false]
+    def failed?
+      !successful?
     end
 
     # Returns the promotions result for which an order qualifies.
     #
     # @return ResultCollection
     def successful
-      ResultCollection.new(select(&:success?))
+      @successful ||= select(&:successful?)
     end
 
     # Returns the promotions result for which an order partially qualifies.
     #
     # @return ResultCollection
-    def partially_successful
-      ResultCollection.new(select(&:partial_success?))
+    def partial
+      @partial ||= select(&:partial?)
     end
 
     # Returns the promotion results for which an order does not qualify.
     #
     # @return ResultCollection
-    def failures
-      ResultCollection.new(select(&:failure?))
-    end
-
-    # A really simple method that accumulates all the failure messages across
-    # all the conditions in all the promotions — eliminating dupes.
-    #
-    # Just be mindful that these messages are without context; you can't know 
-    # what promotion they came from.
-    #
-    # @return Array<Symbol>
-    def messages
-      map {|r| r.results.values.map(&:reason)}.flatten.uniq.compact
-    end
-
-    private
-
-    # A helper method which creates an array of success/failure flags from each
-    # result.
-    #
-    # @return Array<Boolean>
-    def flags
-      @flags ||= map(&:success?)
-    end
-
-    # A helper method which creates and array of booleans indicating partially
-    # successful promotions i.e. some conditions were satisfied.
-    #
-    # @return Array<Boolean>
-    def partial_flags
-      @partial_flags ||= map(&:partial_success?)
+    def failed
+      @failed ||= select(&:failed?)
     end
   end
 
-  # A helper class which encapsulates the results of checking for an order's
-  # qualification for a promotion. Firstly it indicates success or failure.
-  # Additionally, it collections the names of each condition and their success
-  # or failure. In this way, failures can be handled at a more fine-grained
-  # level.
+  # Represents the result of checking multiple promotions against an order.
+  class PromotionResultCollection < CollectionBase
+
+  end
+
+  # Represents the check and/or application of a promotion to an order.
   class Result
-    # Refers to the promotion which produced the result.
+    extend Forwardable
+
+    # A whole bunch of methods are delgated to the conditions collection.
+    # This a nice shortcut for checking a promotion.
+    def_delegators :conditions, :successful?, :partial?, :failed?
+
+    # The promotion this result is related to.
+    #
+    # @attr_reader Promotion
     attr_reader :promotion
 
-    # Exposes the results from the conditions
-    attr_reader :results
+    # The results from checking an order against a promotion's conditions.
+    #
+    # @attr_reader ConditionResultCollection<PromotionCondition::Result>
+    attr_reader :conditions
 
-    # Creates a new instance
+    # The result of applying a promotion's effects against an order. Will be
+    # empty in the case where an order does not qualify.
+    #
+    # @attr_accessor Array<PromotionEffect::Result>
+    attr_accessor :effects
+
+    # Construct a new result with a reference to the promotion.
     #
     # @param Promotion promotion
-    # @param Hash results keyed by condition name
-    #
-    # @return QualificationResult
-    def initialize(promotion, results)
+    # @param ConditionResultCollection<PromotionCondition::Result> conditions
+    # @param Array<PromotionEffect::Result> effects
+    def initialize(promotion, conditions, effects = [])
       @promotion = promotion
-      @results = results
+      @conditions = conditions
+      @effects = effects
     end
 
-    # Provides access to the underlying conditions.
+    # Checks to see if this result represents an application of effects to an 
+    # order.
     #
-    # @param Symbol condition
-    #
-    # @returns [PromotionCondition::QualificationResult, nil]
-    def [](condition)
-      @results[condition]
-    end
-
-    # Checks for partial success i.e. some conditions were satisfied.
-    #
-    # @return Boolean
-    def partial_success?
-      @partial_success ||= flags.include?(true) and flags.include?(false)
-    end
-
-    # Checks to see if any of the conditions succeeded.
-    #
-    # @return Boolean
-    def any?
-      @any ||= flags.any?
-    end
-
-    # Indicates if the qualification is a success.
-    #
-    # @return Boolean
-    def success?
-      @qualifies ||= flags.all?
-    end
-
-    # Indicates if the qualification is a failure.
-    #
-    # @return Boolean
-    def failure?
-      !success?
-    end
-
-    private
-
-    # A helper method which creates an array of success/failure flags from each
-    # condition.
-    #
-    # @return Array<Boolean>
-    def flags
-      @flags ||= @results.values.map(&:success?)
+    # @return [true, false]
+    def applied?
+      !effects.empty?
     end
   end
 
-  # Checks each condition on the promotion and produces a result object which
-  # encapsulates the success or failure state. In the case of failure, it will
-  # include the reasons for failure.
-  #
-  # @param CustomerOrder
-  #
-  # @return Result
-  def check_qualification(order)
-    results = conditions.inject({}) do |h, c| 
-      r = c.check_qualification(order)
-      h[r.condition] = r
-      h
+  # A nice class for wrapping the individual results generated when a 
+  # collection checks an order against each of it's conditions.
+  class ConditionResultCollection < CollectionBase
+    # Filters the results to just those with the specified scope.
+    #
+    # @return ResultCollection
+    def scope(name)
+      select {|r| r.scope == name}
     end
 
-    Result.new(self, results)
-  end
+    # Returns a map of the order items which in some way 'qualify' for the 
+    # conditions. Generally only meaningful when the result is successful, 
+    # but useful when an order partially qualifies.
+    #
+    # Hash is keyed by OrderItem, with the value being the number of 
+    # qualifications.
+    #
+    # Can optionally by filtered down by providing a scope.
+    #
+    # @param Symbol name
+    # @return Hash<OrderItem, Numeric>
+    def merged_targets(name = nil)
+      @targets ||= (name ? scope(name) : self).reduce({}) do |h, result|
+        result.targets.each do |target, q|
+          if h.has_key?(target)
+            h[target] + q
+          else
+            h[target] = q
+          end
+        end
 
-  # A convenience method for checking an order against multiple promotions,
-  # encapsulating the results in a ResultCollection. The actual checks are
-  # handled by the #check_qualification method on each promotion instance.
-  #
-  # Ideally, this should be called on an ActiveRecord::Relation i.e. you have
-  # limited the scope of your check to active promotions.
-  #
-  # @param CustomerOrder
-  #
-  # @return ResultCollection
-  def self.check_qualification(order)
-    results = all.map {|p| p.check_qualification(order)}
-    ResultCollection.new(results)
-  end
-
-  # Derives a description of the promotion by looking at the conditions and the
-  # effect.
-  #
-  # TODO:
-  def summary
-
-  end
-
-  # Returns a hash keyed by sku_id, with values indicating the amount of stock
-  # required in order fulfill the effects of a promotion.
-  #
-  # In some cases, this will return an empty hash e.g. for free shipping or
-  # order total discounts.
-  #
-  # TODO:
-  def required_stock
-
-  end
-
-  # Queries each condition attached to the promotion, and returns a boolean
-  # indicating the qualification of the specified order.
-  #
-  # The conditions are ANDed together. All or nothing.
-  def qualifies?(order)
-    conditions.map {|c| c.qualifies?(order)}.all?
-  end
-
-  # This returns a hash keyed by sku_id and values indicating the number of times
-  # a SKU has qualified for the conditions.
-  #
-  # This is used by some of the effects to calculate bonuses e.g. buy one get
-  # one free needs to know how many skus qualify.
-  def qualifications(order)
-    @qualifications ||= conditions.inject({}) do |h, c|
-      h.merge!(c.qualifications(order))
-      h
+        h
+      end
     end
-  end
 
-  # Applies each of the effects to the order, then assigns this promotion to
-  # the order via the PromotionOrder model.
-  def apply!(order)
-    effects.each do |e|     
-      e.apply!(order, qualifications(order))
+    # A sum of all the qualifications e.g. across 'target' OrderItem, sum up 
+    # the number of qualifications.
+    #
+    # @return Numeric
+    def targets_sum
+      merged_targets.values.sum
     end
-    order.applied_promotions.build(:promotion => self)
   end
 
   # When editing a promotion, this method is used to prefill the condition and

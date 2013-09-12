@@ -9,12 +9,62 @@ class PromotionEffect < ActiveRecord::Base
 
   belongs_to  :promotion
 
-  def apply!(order, qualifications)
+  # Applies the effect to the provided order. It may also optionally use the
+  # condition results passed in as the second arg.
+  #
+  # @param Order order
+  # @param Promotion::ConditionResultCollection
+  # @return PromotionEffect::Result
+  def apply!(order, results)
     raise NotImplementedError
   end
 
   def required_stock
     {}
+  end
+
+  private
+
+  class_attribute :_condition_scope
+  alias :condition_scope :_condition_scope
+
+  def self.condition_scope(name)
+    self._condition_scope = name
+  end
+
+  # A shortcut for generating a result.
+  #
+  # @param String message
+  # @param [OrderItem, Array<OrderItem>] items
+  # @return Result
+  def result(message, items = [])
+    name = self.class.to_s.underscore.match(/^promotion_(.+)_effect$/)[1].to_sym
+    Result.new(name, scope, message, [items].flatten)
+  end
+
+  # Represents the result of applying the effect to an order.
+  class Result
+    attr_reader :scope
+
+    # Name of the effect, derived from it's class name
+    #
+    # @attr_reader Symbol
+    attr_reader :effect
+
+    # Human readable message
+    attr_reader :message
+
+    # The order items affected. May be empty.
+    #
+    # @attr_reader Array<OrderItem>
+    attr_reader :items
+
+    def initialize(effect, scope, message, items = [])
+      @effect   = effect
+      @scope    = scope
+      @message  = message
+      @items    = items
+    end
   end
 
   # Force the subclasses to be loaded

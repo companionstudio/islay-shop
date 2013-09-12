@@ -2,10 +2,14 @@ module IslayShop
   module PromotionConfig
     def self.included(klass)
       klass.class_eval do
-        class_attribute   :_desc, :definitions
+        class_attribute   :_desc, :_position, :_scope, :definitions
         attr_accessible   :active, :type
         after_initialize  :set_active
         attr_reader       :active
+        
+        alias :position :_position
+        alias :desc :_desc
+        alias :scope :_scope
 
         include InstanceMethods
         extend ClassMethods
@@ -40,15 +44,19 @@ module IslayShop
         when 1, '1' then true
         end
       end
-
-      def desc
-        _desc
-      end
     end
 
     module ClassMethods
       def desc(s)
         self._desc = s
+      end
+
+      def scope(s)
+        self._scope = s
+      end
+
+      def position(p)
+        self._position = p
       end
     end #ClassMethods
   end # PromotionsConfig

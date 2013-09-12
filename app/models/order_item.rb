@@ -26,6 +26,67 @@ class OrderItem < ActiveRecord::Base
     end
   end
 
+  has_many :adjustments, :class_name => 'OrderItemAdjustment', :dependent => :destroy, :autosave => true do
+    # Returns any adjustments up.
+    #
+    # @return Array<OrderItemAdjustment>
+    def up
+      select {|a| a.adjustment > 0}
+    end
+
+    # Returns any adjustments down.
+    #
+    # @return Array<OrderItemAdjustment>
+    def down
+      select {|a| a.adjustment < 0}
+    end
+
+    # Return adjustments of a particular source and kind
+    #
+    # @param String source
+    # @param String kind
+    #
+    # @return [nil, OrderItemAdjustment]
+    def by_source_and_kind(source, kind)
+      select {|a| a.kind == kind and a.source == source}
+    end
+
+    # If it exists, returns the manual adjustment on this item.
+    #
+    # @return [nil, OrderItemAdjustment]
+    def manual 
+      select {|a| a.source == 'manual'}.first
+    end
+
+    # Return any manual adjustments applied directly to the item
+    #
+    # @return [nil, OrderItemAdjustment]
+    def manual_item_level
+      select {|a| ['line_level', 'item_adjustment', 'set_unit_price', 'set_item_total'].include? a.kind and a.source == 'manual'}
+    end
+
+    # Return any manual adjustments that have come from the order level
+    #
+    # @return [nil, OrderItemAdjustment]
+    def manual_order_level
+      by_source_and_kind('manual', 'order_level').first
+    end
+
+    # Return any adjustment that sets a unit price on the item
+    #
+    # @return [nil, OrderItemAdjustment]
+    def unit_price
+      select {|a| a.kind == 'set_unit_price'}.first
+    end
+
+    # Return any adjustment that sets a manual total on the item
+    #
+    # @return [nil, OrderItemAdjustment]
+    def item_total
+      select {|a| a.kind == 'set_item_total'}.first
+    end
+  end
+
   attr_accessible :quantity
 
   # Used to count the total number of individual SKUs. Most useful when called
@@ -114,13 +175,4 @@ class OrderItem < ActiveRecord::Base
   end
 
   private
-
-  # Formats a float into a monentary formatted string i.e. sticks a '$' in the
-  # front and pads the decimals.
-  #
-  # @param Float value
-  # @return String
-  def format_money(value)
-    value
-  end
 end
