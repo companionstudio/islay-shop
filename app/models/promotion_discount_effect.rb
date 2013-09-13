@@ -1,5 +1,7 @@
 class PromotionDiscountEffect < PromotionEffect
   desc "Whole Order Discount"
+  condition_scope :order
+  effect_scope :order
 
   metadata(:config) do
     enum    :kind,    :required => true, :values => %w(fixed percentage)

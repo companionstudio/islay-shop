@@ -1,7 +1,7 @@
 class PromotionShippingEffect < PromotionEffect
   desc "Discounts the shipping"
-  scope :service_items
   condition_scope :any
+  effect_scope :service_items
 
   metadata(:config) do
     float :money

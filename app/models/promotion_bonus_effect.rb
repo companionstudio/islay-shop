@@ -1,6 +1,7 @@
 class PromotionBonusEffect < PromotionEffect
   desc "Bonus SKU"
-  scope :sku_items
+  condition_scope :sku_items
+  effect_scope :sku_items
   position 3
 
   metadata(:config) do

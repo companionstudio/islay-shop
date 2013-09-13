@@ -123,9 +123,9 @@ class Promotion < ActiveRecord::Base
   # e.g. active.check(order)
   #
   # @param Order order
-  # @return PromotionResultCollection
+  # @return Promotions::CheckResultCollection
   def self.check(order)
-    PromotionResultCollection.new(all.map {|p| p.check(order)})
+    Promotions::CheckResultCollection.new(all.map {|p| p.check(order)})
   end
 
   # Checks the order against each promotion and for each that succeeds, also
@@ -135,24 +135,24 @@ class Promotion < ActiveRecord::Base
   # e.g. active.apply(order)
   #
   # @param Order order
-  # @return PromotionResultCollection
+  # @return Promotions::CheckResultCollection
   def self.apply!(order)
-    PromotionResultCollection.new(all.map {|p| p.apply!(order)})
+    Promotions::CheckResultCollection.new(all.map {|p| p.apply!(order)})
   end
 
   # Checks the order against each promotion condition.
   #
   # @param Order order
-  # @return Result
+  # @return Promotions::CheckResult
   def check(order)
     results = conditions.map {|c| c.check(order)}
-    Result.new(self, ConditionResultCollection.new(results))
+    Promotions::CheckResult.new(self, Promotions::ConditionResultCollection.new(results))
   end
 
   # Applies the promotion's effect to the supplied order.
   #
   # @param Order order
-  # @return Result
+  # @return Promotions::CheckResult
   def apply!(order)
     result = check(order)
     if result.successful?
@@ -161,147 +161,6 @@ class Promotion < ActiveRecord::Base
     end
 
     result
-  end
-
-  # Base collection which has predicates for checking success/failure and 
-  # filters for grabbing entries based on thier predicates e.g. successful
-  # entries.
-  class CollectionBase < Array
-    # Checks to see if all the results are successful.
-    #
-    # @return [true, false]
-    def successful?
-      length > 0 and successful.length == length
-    end
-
-    # Checks to see if there are any partial results, all failures or a 
-    # mixture of successful and failed results.
-    #
-    # @return [true, false]
-    def partial?
-      partial.length > 0 or (successful.length > 0 and successful.length < length)
-    end
-
-    # Simply, not successful.
-    #
-    # @return [true, false]
-    def failed?
-      !successful?
-    end
-
-    # Returns the promotions result for which an order qualifies.
-    #
-    # @return ResultCollection
-    def successful
-      @successful ||= select(&:successful?)
-    end
-
-    # Returns the promotions result for which an order partially qualifies.
-    #
-    # @return ResultCollection
-    def partial
-      @partial ||= select(&:partial?)
-    end
-
-    # Returns the promotion results for which an order does not qualify.
-    #
-    # @return ResultCollection
-    def failed
-      @failed ||= select(&:failed?)
-    end
-  end
-
-  # Represents the result of checking multiple promotions against an order.
-  class PromotionResultCollection < CollectionBase
-
-  end
-
-  # Represents the check and/or application of a promotion to an order.
-  class Result
-    extend Forwardable
-
-    # A whole bunch of methods are delgated to the conditions collection.
-    # This a nice shortcut for checking a promotion.
-    def_delegators :conditions, :successful?, :partial?, :failed?
-
-    # The promotion this result is related to.
-    #
-    # @attr_reader Promotion
-    attr_reader :promotion
-
-    # The results from checking an order against a promotion's conditions.
-    #
-    # @attr_reader ConditionResultCollection<PromotionCondition::Result>
-    attr_reader :conditions
-
-    # The result of applying a promotion's effects against an order. Will be
-    # empty in the case where an order does not qualify.
-    #
-    # @attr_accessor Array<PromotionEffect::Result>
-    attr_accessor :effects
-
-    # Construct a new result with a reference to the promotion.
-    #
-    # @param Promotion promotion
-    # @param ConditionResultCollection<PromotionCondition::Result> conditions
-    # @param Array<PromotionEffect::Result> effects
-    def initialize(promotion, conditions, effects = [])
-      @promotion = promotion
-      @conditions = conditions
-      @effects = effects
-    end
-
-    # Checks to see if this result represents an application of effects to an 
-    # order.
-    #
-    # @return [true, false]
-    def applied?
-      !effects.empty?
-    end
-  end
-
-  # A nice class for wrapping the individual results generated when a 
-  # collection checks an order against each of it's conditions.
-  class ConditionResultCollection < CollectionBase
-    # Filters the results to just those with the specified scope.
-    #
-    # @return ResultCollection
-    def scope(name)
-      select {|r| r.scope == name}
-    end
-
-    # Returns a map of the order items which in some way 'qualify' for the 
-    # conditions. Generally only meaningful when the result is successful, 
-    # but useful when an order partially qualifies.
-    #
-    # Hash is keyed by OrderItem, with the value being the number of 
-    # qualifications.
-    #
-    # Can optionally by filtered down by providing a scope.
-    #
-    # @param Symbol name
-    # @return Hash<OrderItem, Numeric>
-    def merged_targets(name = nil)
-      @targets ||= (name ? scope(name) : self).reduce({}) do |h, result|
-        result.targets.each do |target, q|
-          if h.has_key?(target)
-            h[target] + q
-          else
-            h[target] = q
-          end
-        end
-
-        h
-      end
-    end
-
-    # A sum of all the qualifications e.g. across 'target' OrderItem, sum up 
-    # the number of qualifications.
-    #
-    # @return Numeric
-    def targets_sum
-      merged_targets.values.sum
-    end
   end
 
   # When editing a promotion, this method is used to prefill the condition and

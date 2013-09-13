@@ -1,19 +1,29 @@
 module IslayShop
+  # This module provides methods for defining and accessing configuration. It
+  # is mixed into both the PromotionCondition and PromotionEffect abstract 
+  # classes.
   module PromotionConfig
+    # The hook is used to stub out configuration and do some metaprogramming
+    # against the target class.
+    #
+    # @param [PromotionEffect, PromotionCondition] klass
+    # @return nil
     def self.included(klass)
       klass.class_eval do
-        class_attribute   :_desc, :_position, :_scope, :definitions
+        class_attribute :promo_config
         attr_accessible   :active, :type
         after_initialize  :set_active
         attr_reader       :active
         
-        alias :position :_position
-        alias :desc :_desc
-        alias :scope :_scope
-
         include InstanceMethods
         extend ClassMethods
       end
+
+      # Stub out the config with defaults.
+      klass.promo_config = {
+        :condition_scope => :order,
+        :effect_scope    => :order
+      }
 
       # This nasty stuff here is a way of making STI work with nested_attributes.
       # Basically, you can pass in :type when initializing a model and it will
@@ -30,13 +40,48 @@ module IslayShop
 
         alias_method_chain :new, :cast
       end
+
+      nil
     end
 
     module InstanceMethods
-      def set_active
-        @active ||= !new_record?
+      # Accessor which returns the position configured against the promotion
+      # component's class.
+      #
+      # @return Integer
+      def position
+        promo_config[:position]
       end
 
+      # Accessor which returns the desc configured against the promotion
+      # component's class.
+      #
+      # @return Integer
+      def desc
+        promo_config[:desc]
+      end
+
+      # Accessor which returns the condition scope configured against the 
+      # promotion component's class.
+      #
+      # @return Symbol
+      def condition_scope
+        promo_config[:condition_scope]
+      end
+
+      # Accessor which returns the effect scope configured against the 
+      # promotion component's class.
+      #
+      # @return Symbol
+      def effect_scope
+        promo_config[:effect_scope]
+      end
+
+      # Writer for setting the active flag. It coerces a range of inputs into a
+      # boolean. Typically these values will come in via forms.
+      #
+      # @param [String, Numeric, true, false] b
+      # @return [true, false]
       def active=(b)
         @active = case b
         when true, false then b
@@ -44,20 +89,56 @@ module IslayShop
         when 1, '1' then true
         end
       end
+
+      private
+
+      # An after_initialze hook which ensures that @active has a value set by
+      # default.
+      #
+      # @return [true, false]
+      def set_active
+        @active ||= !new_record?
+      end
     end
 
     module ClassMethods
+      # Sets the condition scope for the promotion components. For conditions
+      # this communicates the portion of the order it examines. For effects 
+      # this specifies a requirement for corresponding conditions with the same
+      # scope.
+      #
+      # @param Symbol s
+      # @return Symbol
+      def condition_scope(s)
+        self.promo_config[:condition_desc] = s
+      end
+
+      # Sets the effect scope for the promotion components. For effects, this
+      # specifies the portion of the order to which it will apply it's effects.
+      #
+      # @param Symbol s
+      # @return Symbol
+      def effect_scope(s)
+        self.promo_config[:effect_scope] = s
+      end
+
+      # Configures a short description.
+      #
+      # @param String s
+      # @return String
       def desc(s)
-        self._desc = s
+        self.promo_config[:desc] = s
       end
 
-      def scope(s)
-        self._scope = s
-      end
-
+      # Configures the desired position of a component relative to it's 
+      # siblings. Default orderings are often unclear, so this lets us enforce
+      # a specific order globally.
+      #
+      # @param Integer p
+      # @return Integer
       def position(p)
-        self._position = p
+        self.promo_config[:position] = p
       end
-    end #ClassMethods
+    end # ClassMethods
   end # PromotionsConfig
 end # Islay

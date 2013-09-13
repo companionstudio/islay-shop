@@ -1,6 +1,6 @@
 class PromotionSpendCondition < PromotionCondition
   desc  "Minimum Spend"
-  scope :sku_items
+  condition_scope :order
   position 5
 
   metadata(:config) do

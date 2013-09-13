@@ -119,7 +119,7 @@ class PromotionCondition < ActiveRecord::Base
   # @param Hash<OrderItem, Numeric> targets
   # @return Result
   def success(targets = {})
-    Result.new(short_name, :full, scope, targets)
+    Result.new(short_name, :full, condition_scope, targets)
   end
 
   # Generates a partial result.
@@ -127,14 +127,14 @@ class PromotionCondition < ActiveRecord::Base
   # @param Hash<OrderItem, Numeric> targets
   # @return Result
   def partial(targets = {})
-    Result.new(short_name, :partial, scope, targets)
+    Result.new(short_name, :partial, condition_scope, targets)
   end
 
   # Generates a failure result.
   # 
   # @return Result
   def failure
-    Result.new(short_name, :none, scope)
+    Result.new(short_name, :none, condition_scope)
   end
 
   # Force the subclasses to be loaded

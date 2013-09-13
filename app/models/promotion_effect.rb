@@ -39,7 +39,7 @@ class PromotionEffect < ActiveRecord::Base
   # @return Result
   def result(message, items = [])
     name = self.class.to_s.underscore.match(/^promotion_(.+)_effect$/)[1].to_sym
-    Result.new(name, scope, message, [items].flatten)
+    Result.new(name, effect_scope, message, [items].flatten)
   end
 
   # Represents the result of applying the effect to an order.
