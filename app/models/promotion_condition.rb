@@ -24,6 +24,32 @@ class PromotionCondition < ActiveRecord::Base
     {}
   end
 
+  # Loads effect subclasses by looking for files on disk and kicking off Rails'
+  # constant_missing magic by extracting the class name from the file name.
+  #
+  # Bloody horrible really, but the only way to get the subclasses reliably.
+  #
+  # @return Array<PromotionCondition>
+  def self.condition_classes
+    @@condition_classes ||= Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)].map do |f|
+      f.match(/(promotion_[a-z_]+_condition)/)[1].classify.constantize
+    end
+  end
+
+  # Returns an array of effect names which are compatible with this condition.
+  #
+  # @return Array<Symbol>
+  def self.compatible_effects
+    Promotions::Scopes.compatible_effects(self)
+  end
+
+  # Method is a shortcut to ::compatible_effects
+  #
+  # @return Array<Symbol>
+  def compatible_effects
+    self.class.compatible_effects
+  end
+
   # Used to check if the promotion condition succeeds for the provided order.
   # It returns a Result class, which encapsulates success, partial success, 
   # failure and any additional information.
@@ -136,7 +162,4 @@ class PromotionCondition < ActiveRecord::Base
   def failure
     Result.new(short_name, :none, condition_scope)
   end
-
-  # Force the subclasses to be loaded
-  Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)].each {|f| require f}
 end

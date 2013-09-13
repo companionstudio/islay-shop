@@ -19,6 +19,26 @@ class PromotionEffect < ActiveRecord::Base
     raise NotImplementedError
   end
 
+  # Generates a nice symbol representing the name of the effect based on the
+  # class name e.g. PromotionBonusEffect becomes :bonus
+  #
+  # @return Symbol
+  def self.short_name
+    self.name.underscore.match(/^promotion_(.+)_effect$/)[1].to_sym
+  end
+
+  # Loads effect subclasses by looking for files on disk and kicking off Rails'
+  # constant_missing magic by extracting the class name from the file name.
+  #
+  # Bloody horrible really, but the only way to get the subclasses reliably.
+  #
+  # @return Array<PromotionEffect>
+  def self.effect_classes
+    @@effect_classes ||= Dir[File.expand_path('../promotion_*_effect.rb', __FILE__)].map do |f|
+      f.match(/(promotion_[a-z_]+_effect)/)[1].classify.constantize
+    end
+  end
+
   private
 
   # A shortcut for generating a result.
@@ -27,8 +47,7 @@ class PromotionEffect < ActiveRecord::Base
   # @param [OrderItem, Array<OrderItem>] items
   # @return Result
   def result(message, items = [])
-    name = self.class.to_s.underscore.match(/^promotion_(.+)_effect$/)[1].to_sym
-    Result.new(name, effect_scope, message, [items].flatten)
+    Result.new(self.class.short_name, effect_scope, message, [items].flatten)
   end
 
   # Represents the result of applying the effect to an order.
@@ -55,7 +74,4 @@ class PromotionEffect < ActiveRecord::Base
       @items    = items
     end
   end
-
-  # Force the subclasses to be loaded
-  Dir[File.expand_path('../promotion_*_effect.rb', __FILE__)].each {|f| require f}
 end
