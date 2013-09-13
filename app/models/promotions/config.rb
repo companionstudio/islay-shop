@@ -1,8 +1,8 @@
-module IslayShop
+module Promotions
   # This module provides methods for defining and accessing configuration. It
   # is mixed into both the PromotionCondition and PromotionEffect abstract 
   # classes.
-  module PromotionConfig
+  module Config
     # The hook is used to stub out configuration and do some metaprogramming
     # against the target class.
     #
@@ -140,5 +140,5 @@ module IslayShop
         self.promo_config[:position] = p
       end
     end # ClassMethods
-  end # PromotionsConfig
-end # Islay
+  end # Config
+end # Promotions

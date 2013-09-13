@@ -1,6 +1,6 @@
 class PromotionEffect < ActiveRecord::Base
   include Islay::MetaData
-  include IslayShop::PromotionConfig
+  include Promotions::Config
 
   has_many    :applications,            :class_name => 'AppliedPromotion'
   has_many    :orders,                  :through => :applications
@@ -19,18 +19,7 @@ class PromotionEffect < ActiveRecord::Base
     raise NotImplementedError
   end
 
-  def required_stock
-    {}
-  end
-
   private
-
-  class_attribute :_condition_scope
-  alias :condition_scope :_condition_scope
-
-  def self.condition_scope(name)
-    self._condition_scope = name
-  end
 
   # A shortcut for generating a result.
   #

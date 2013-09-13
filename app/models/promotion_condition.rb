@@ -1,6 +1,6 @@
 class PromotionCondition < ActiveRecord::Base
   include Islay::MetaData
-  include IslayShop::PromotionConfig
+  include Promotions::Config
 
   belongs_to :promotion
 
