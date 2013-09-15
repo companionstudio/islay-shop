@@ -4,6 +4,7 @@
 log/*.log
 pkg/
 spec/dummy/config/database.yml
+spec/dummy/config/application.yml
 spec/dummy/tmp/*
 spec/dummy/log/*
 doc
