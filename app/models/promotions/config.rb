@@ -19,12 +19,6 @@ module Promotions
         extend ClassMethods
       end
 
-      # Stub out the config with defaults.
-      klass.promo_config = {
-        :condition_scope => :order,
-        :effect_scope    => :order
-      }
-
       # This nasty stuff here is a way of making STI work with nested_attributes.
       # Basically, you can pass in :type when initializing a model and it will
       # return an instance.
@@ -102,6 +96,18 @@ module Promotions
     end
 
     module ClassMethods
+      # When the promotion component is inherited, we need to ensure that it's 
+      # configuration is initialized with defaults.
+      #
+      # @param Class klass
+      def inherited(klass)
+        klass.promo_config = {
+          :condition_scope => :order,
+          :effect_scope    => :order
+        }
+        super
+      end
+
       # Sets the condition scope for the promotion components. For conditions
       # this communicates the portion of the order it examines. For effects 
       # this specifies a requirement for corresponding conditions with the same
@@ -110,7 +116,7 @@ module Promotions
       # @param Symbol s
       # @return Symbol
       def condition_scope(s)
-        self.promo_config[:condition_desc] = s
+        self.promo_config[:condition_scope] = s
       end
 
       # Sets the effect scope for the promotion components. For effects, this

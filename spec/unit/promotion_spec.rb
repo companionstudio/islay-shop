@@ -27,7 +27,7 @@ describe Order::Promotions do
       blk.call(p)
       p.conditions.each {|c| c.active = true}
       p.effects.each {|c| c.active = true}
-      p.save!
+      p.save
     end
   end
 
@@ -256,5 +256,35 @@ describe Order::Promotions do
     expect(item.quantity).to eq(3)
 
     expect_no_misapplication
+  end
+
+  describe "compatibility check" do
+    it "should reject incompatible pairings" do
+      promotion = create_promotion do |p|
+        p.conditions << PromotionSpendCondition.new(:amount => 100)
+        p.effects << PromotionGetNFreeEffect.new(:quantity => 1)
+      end
+
+      expect(promotion.valid?).to eq(false)
+      expect(promotion.effects.first.errors.get(:base).nil?).to eq(false)
+    end
+
+    it "should allow exact scope matches" do
+      promotion = create_promotion do |p|
+        p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 2)
+        p.effects << PromotionGetNFreeEffect.new(:quantity => 1)
+      end
+
+      expect(promotion.valid?).to eq(true)
+    end
+
+    it "should allow compatible sub-scopes" do
+      promotion = create_promotion do |p|
+        p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 2)
+        p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$10')
+      end
+
+      expect(promotion.valid?).to eq(true)
+    end
   end
 end

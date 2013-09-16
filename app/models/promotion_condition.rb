@@ -4,26 +4,6 @@ class PromotionCondition < ActiveRecord::Base
 
   belongs_to :promotion
 
-  def sku_qualifies?(sku)
-    false
-  end
-
-  def product_qualifies?(product)
-    false
-  end
-
-  def category_qualifies?(category)
-    false
-  end
-
-  def qualifies?(order)
-    raise NotImplementedError
-  end
-
-  def qualifications(order)
-    {}
-  end
-
   # Loads effect subclasses by looking for files on disk and kicking off Rails'
   # constant_missing magic by extracting the class name from the file name.
   #

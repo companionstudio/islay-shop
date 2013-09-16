@@ -11,10 +11,9 @@ class Promotion < ActiveRecord::Base
   accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
-  before_validation :clean_conditions_and_effects
 
   validations_from_schema
-  validates_associated :conditions, :effects
+  validate :validate_component_compatibility
 
   # Returns a relation scoped to the promotions that have been published and 
   # have current start and end dates.
@@ -170,12 +169,12 @@ class Promotion < ActiveRecord::Base
   # @return nil
   def prefill
     cond_types = conditions.map(&:type)
-    PromotionCondition.subclasses.each do |klass|
+    PromotionCondition.condition_classes.each do |klass|
       conditions.build(:type => klass.to_s) unless cond_types.include?(klass.to_s)
     end
 
     effect_types = effects.map(&:type)
-    PromotionEffect.subclasses.each do |klass|
+    PromotionEffect.effect_classes.each do |klass|
       effects.build(:type => klass.to_s) unless effect_types.include?(klass.to_s)
     end
 
@@ -184,21 +183,44 @@ class Promotion < ActiveRecord::Base
 
   private
 
+  # Checks to make sure that the specified conditions and effects are 
+  # compatible with each other. It does this by passing each condition/effect
+  # pair's scopes to the Scopes module, which maintains lookup hashes etc.
+  #
+  # It also runs the validations for each component. This is done here rather
+  # than through a validates_associated declaration due to the default ordering
+  # of validations. We need explicit control.
+  #
+  # @return nil
+  def validate_component_compatibility
+    # Remove any inactive components
+    conditions.delete(conditions.reject(&:active))
+    effects.delete(effects.reject(&:active))
+
+    # Run validations against remaining components
+    conditions.each(&:valid?)
+    effects.each(&:valid?)
+
+    # Check compatibility
+    incompatible = false
+
+    conditions.product(effects).each do |c, e|
+      if Promotions::Scopes.not_acceptable?(c.condition_scope, e.condition_scope)
+        incompatible = true
+        e.errors.add(:base, "Not compatible with the '#{c.desc}' condition")
+      end
+    end
+
+    if incompatible
+      errors.add(:base, "The combination of conditions and effects are not compatible")
+    end
+
+    nil
+  end
+
   # Run on the accepts_nested_for_* collections. Prevents any stubbed out records
   # that are marked as inactive from even being considered.
   def condition_or_order_inactive?(params)
     params[:active] == '0' and params[:id].blank?
-  end
-
-  # Reject any conditions or effects that have not been marked as inactive. This
-  # will remove existing records and omit any new/stubbed records.
-  def clean_conditions_and_effects
-    conditions.each do |condition|
-      conditions.delete(condition) unless condition.active
-    end
-
-    effects.each do |effect|
-      effects.delete(effect) unless effect.active
-    end
   end
 end

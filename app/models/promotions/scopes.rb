@@ -16,6 +16,16 @@ module Promotions
       provides == needs or (LOOKUP.has_key?(needs) and LOOKUP[needs].include?(provides))
     end
 
+    # A predicate which checks to see if the scope provided by a condition does
+    # not meet the needs of an effect. See also #acceptable?
+    #
+    # @param Symbol provides
+    # @param Symbol needs
+    # @return [true, false]
+    def self.not_acceptable?(provides, needs)
+      !acceptable?(provides, needs)
+    end
+
     # Inspects the PromotionEffect Subclasses and collects the names of those
     # that have scopes compatible with the provided PromotionCondition.
     #
