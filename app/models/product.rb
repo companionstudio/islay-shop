@@ -86,6 +86,24 @@ class Product < ActiveRecord::Base
     end
   end
 
+  # Returns a collection of promotions that are related to the Product. It 
+  # leans on the Promotions::Relevance module to do most of the work. The
+  # resulting object has a bunch of methods for inspecting the results. See the
+  # docs for Promotions::Relevance::Results.
+  #
+  # @return Promotions::Relevance::Results
+  def related_promotions
+    @related_promotions ||= Promotions::Relevance.to_product(self)
+  end
+
+  # Checks to see if there are any promotions related to this record. See 
+  # #related_promotions for more detail.
+  #
+  # @return [true, false]
+  def related_promotions?
+    !related_promotions.empty?
+  end
+
   # Check to see if any of the SKUs attached to this product are in stock.
   #
   # @return Boolean

@@ -39,6 +39,13 @@ class PromotionEffect < ActiveRecord::Base
     end
   end
 
+  # Generates a symbol representing the type of condition.
+  #
+  # @return Symbol
+  def short_name
+    @short_name ||= self.class.to_s.underscore.match(/^promotion_(.+)_effect$/)[1].to_sym
+  end
+
   private
 
   # A shortcut for generating a result.

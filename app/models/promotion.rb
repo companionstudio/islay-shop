@@ -43,6 +43,13 @@ class Promotion < ActiveRecord::Base
     active  and start_at <= now and (end_at.nil? || end_at >= now)
   end
 
+  # Checks to see if the promotion has an application limit specified.
+  #
+  # @return [true, false]
+  def limited?
+    !!application_limit
+  end
+
   # Calculates the status of the promotion based on the combination of the
   # start date, end date and active option.
   #
@@ -60,6 +67,24 @@ class Promotion < ActiveRecord::Base
       else 'inactive'
       end
     end
+  end  
+
+  # Indicates if the promotion has an effect of a particular type
+  #
+  # @param Symbol name
+  # @return Boolean
+  def has_effect?(type)
+    result = effects.map {|c| c.short_name == type}
+    !result.empty? and result.any?
+  end
+
+  # Indicates if the promotion has a condition of a particular type
+  #
+  # @param Symbol name
+  # @return Boolean
+  def has_condition?(type)
+    result = conditions.map {|c| c.short_name == type}
+    !result.empty? and result.any?
   end
 
   # The current day of a promotion. This could be a negative value or a value

@@ -131,6 +131,23 @@ class Sku < ActiveRecord::Base
     end
   end
 
+  # Returns a collection of promotions that are related to the Sku. It 
+  # leans on the Promotions::Relevance module to do most of the work. The
+  # resulting object has a bunch of methods for inspecting the results. See the
+  # docs for Promotions::Relevance::Results.
+  #
+  # @return Promotions::Relevance::Results
+  def related_promotions
+    @related_promotions ||= Promotions::Relevance.to_sku(self)
+  end
+
+  # Checks to see if there are any promotions related to this record. See 
+  # #related_promotions for more detail.
+  #
+  # @return [true, false]
+  def related_promotions?
+    !related_promotions.empty?
+  end
 
   # Indicates if this record can be destroyed. If this SKU has been used in an
   # order, it cannot be destroyed, since that would break historical records.
