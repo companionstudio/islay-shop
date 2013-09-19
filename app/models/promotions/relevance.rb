@@ -187,5 +187,51 @@ module Promotions
 
       Results.new(product, Promotion.active.where(query, args).includes(:conditions, :effects))
     end
+
+    # Finds any promotions relevant to the specified ProductCategory. Relevance 
+    # is determined by the following:
+    #
+    # - Condition relates to category
+    # - Condition relates to a product in the category
+    # - Condition relates to a sub-category of the category
+    #
+    # @param Product product
+    # @return Array<Promotion>
+    def self.to_category(category)
+      args = {:path => category.path}
+
+      query = %{
+        EXISTS (
+          SELECT 1 FROM promotion_conditions AS pcs
+          WHERE pcs.promotion_id = promotions.id AND (
+            config -> 'product_category_id' IN (
+              SELECT id::text FROM product_categories AS pcs
+              WHERE pcs.path @> :path::ltree
+            )
+            OR
+            config -> 'product_id' IN (
+              SELECT ps.id::text FROM products AS ps
+              JOIN product_categories AS pcs ON pcs.path @> :path::ltree AND pcs.id = ps.product_category_id
+            )
+            OR 
+            config -> 'sku_id' IN (
+              SELECT ss.id::text FROM products AS ps
+              JOIN product_categories AS pcs ON pcs.path @> :path::ltree AND pcs.id = ps.product_category_id
+              JOIN skus AS ss ON ss.product_id = ps.id
+            )
+          )
+        )
+        OR EXISTS (
+          SELECT 1 FROM promotion_effects AS pes
+          WHERE pes.promotion_id = promotions.id AND config -> 'sku_id' IN (
+            SELECT ss.id::text FROM products AS ps
+            JOIN product_categories AS pcs ON pcs.path @> :path::ltree AND pcs.id = ps.product_category_id
+            JOIN skus AS ss ON ss.product_id = ps.id
+          )
+        )
+      }
+
+      Results.new(category, Promotion.active.where(query, args).includes(:conditions, :effects))
+    end
   end
 end

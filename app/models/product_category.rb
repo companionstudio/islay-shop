@@ -115,6 +115,24 @@ class ProductCategory < ActiveRecord::Base
     end
   end
 
+  # Returns a collection of promotions that are related to the Category. It 
+  # leans on the Promotions::Relevance module to do most of the work. The
+  # resulting object has a bunch of methods for inspecting the results. See the
+  # docs for Promotions::Relevance::Results.
+  #
+  # @return Promotions::Relevance::Results
+  def related_promotions
+    @related_promotions ||= Promotions::Relevance.to_category(self)
+  end
+
+  # Checks to see if there are any promotions related to this record. See 
+  # #related_promotions for more detail.
+  #
+  # @return [true, false]
+  def related_promotions?
+    !related_promotions.empty?
+  end
+
   # Checks to see if the category has either products of categories assigned to
   # it. If it is empty, this means the users can start assigning either — but
   # not both — to it.
