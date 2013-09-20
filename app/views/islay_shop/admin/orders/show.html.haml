@@ -93,9 +93,9 @@
             %td
               %a{:href => admin_promotion_url(promo)}
                 %strong #{promo.name}:
-              = promo.description  
+              = promotion_summary(promo)
             %td
-              = promo.status
+              = promo.status.capitalize
 
   %h3.items.inset Order Items
   %table.items.inset
