@@ -159,13 +159,6 @@ class Sku < ActiveRecord::Base
     order_items.empty?
   end
 
-  # Indicates if this SKU has any batch pricing specified.
-  #
-  # @return Boolean
-  def batch_pricing?
-    batch_price? and batch_size?
-  end
-
   # Like the regular publish check, except it also goes looking for the
   # published status against the product.
   #
@@ -196,30 +189,6 @@ class Sku < ActiveRecord::Base
   # @return Boolean
   def for_sale?
     status == 'for_sale'
-  end
-
-  # Returns a money formatted string of the price.
-  #
-  # @return String
-  def formatted_price
-    format_money(price)
-  end
-
-  # Returns a money formatted string of the batch price.
-  #
-  # @return String
-  def formatted_batch_price
-    format_money(batch_price)
-  end
-
-  # Formats a float into a monentary formatted string i.e. sticks a '$' in the
-  # front and pads the decimals.
-  #
-  # @param Float value
-  #
-  # @return String
-  def format_money(value)
-    "$%.2f" % value
   end
 
   class InsufficientStock < StandardError

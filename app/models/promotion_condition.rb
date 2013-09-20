@@ -70,6 +70,22 @@ class PromotionCondition < ActiveRecord::Base
     # @attr_reader Symbol
     attr_accessor :scope
 
+    # Captures the reason for a result succeeding or failing. Really only
+    # significant for partial or complete failures.
+    #
+    # @attr_reader Symbol
+    attr_accessor :reason
+
+    # Captures the reason for a result succeeding or failing. Really only
+    # significant for partial or complete failures.
+    #
+    # This corresponsds to the reason accessor, except that it is intended to 
+    # be a human readable version explanation of the partial or complete 
+    # failure.
+    #
+    # @attr_reader Symbol
+    attr_accessor :explanation
+
     # The components of the order affected by the condition.  
     #
     # @attr_reader Hash<OrderItem, Numeric>
@@ -80,13 +96,16 @@ class PromotionCondition < ActiveRecord::Base
     # @param Symbol condition
     # @param [:full, :partial, :none] qualification
     # @param [:order, :items, :sku_items, :service_items] scope
+    # @param Symbol reason
     # @param Hash<OrderItem, Numeric> targets
     # @todo Validate the enums against the constants
-    def initialize(condition, qualification, scope, targets = {})
+    def initialize(condition, qualification, scope, opts = {})
       @condition      = condition
       @qualification  = qualification
       @scope          = scope
-      @targets        = targets
+      @reason         = opts[:reason]
+      @explanation    = opts[:explanation]
+      @targets        = opts[:targets] || {}
     end
 
     # Indicates the success or failure of the qualification.
@@ -125,21 +144,35 @@ class PromotionCondition < ActiveRecord::Base
   # @param Hash<OrderItem, Numeric> targets
   # @return Result
   def success(targets = {})
-    Result.new(short_name, :full, condition_scope, targets)
+    Result.new(short_name, :full, condition_scope, :targets => targets)
   end
 
   # Generates a partial result.
   # 
+  # @param Symbol reason
+  # @param String explanation
   # @param Hash<OrderItem, Numeric> targets
   # @return Result
-  def partial(targets = {})
-    Result.new(short_name, :partial, condition_scope, targets)
+  def partial(reason, explanation, targets = {})
+    opts = {
+      :reason       => reason,
+      :explanation  => explanation,
+      :targets      => targets
+    }
+
+    Result.new(short_name, :partial, condition_scope, opts)
   end
 
   # Generates a failure result.
   # 
+  # @param Symbol reason
+  # @param String explanation
   # @return Result
-  def failure
-    Result.new(short_name, :none, condition_scope)
+  def failure(reason, explanation)
+    opts = {
+      :reason       => reason,
+      :explanation  => explanation
+    }
+    Result.new(short_name, :none, condition_scope, opts)
   end
 end

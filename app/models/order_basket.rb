@@ -134,14 +134,4 @@ class OrderBasket < Order
   def add_bonus_item(sku_id, quantity)
 
   end
-
-  # Is a convenience method for promotion conditions. It returns a duplicate of
-  # the regular_items association. The reason for this is because AR does
-  # stupid things with association collections that haven't been saved to the
-  # DB e.g. they don't actually respond to all the array methods.
-  #
-  # @return [Array<OrderItem>] duplicate array of order items
-  def candidate_items
-    @candidate_items ||= items.dup
-  end
 end

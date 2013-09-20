@@ -3,13 +3,12 @@
     %thead
       %tr
         %th{:colspan => 2} Product
-        %th.sub-total Price each
+        %th.sub-total Price
         %th.quantity Quantity
         %th.sub-total Sub-total
 
     %tbody
-      = f.fields_for(:items) do |i|
-        - item = i.object
+      - @order.sku_items.each do |item|
         %tr
           %td.image
             .frame
@@ -19,10 +18,9 @@
               = item.sku.product.name
               %span.sku-description= item.sku.short_desc
           %td.price
-            = item.formatted_price
+            = item.price_summary
           %td.quantity
-            = i.input(:quantity)
-            = i.hidden_field(:sku_id)
+            = text_field_tag("items[#{item.sku_id}]", item.quantity)
           %td.sub-total
             = item.formatted_total
 
@@ -54,17 +52,19 @@
         %td.controls
           %button{:type => 'submit', :class => 'primary'} Update
 
-  - unless @checkout_promotions.blank?
-    = promo_code_response(parent_controller.flash[:promotion_code_result], f)
+  - unless @checkout_promotions.blank? or @order.code_promotion_successful?
+    - if @order.code_promotion_pending?
+      = label_tag(:promo_code, 'Do you have an offer code?')
+
+    - elsif @order.code_promotion_failed?
+      = label_tag(:promo_code, 'This promotion code is incorrect')
+
+    = text_field_tag(:promo_code, @order.promo_code, :class => 'code', :placeholder => 'Offer Code')
+    %button{:type => 'submit'} Apply code
 
   - unless @order.pending_promotions.blank?
     .order-promotions
       %h3 The following promotions have been applied to your order:
       %ul
         - @order.pending_promotions.each do |promo|
-          %li= promo.description
-
-  
-
-
-
+          %li= promo.summary_html

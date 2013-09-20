@@ -21,13 +21,28 @@
     %ul.totals
       %li
         %span.key Sub-total
-        %span.value= order.product_total
+        %span.value= order.original_product_total
       %li
         %span.key Shipping
-        %span.value= order.shipping_total
+        %span.value= order.original_shipping_total
+      - if order.discount.positive?
+        %li
+          %span.key Discount
+          %span.value #{order.discount}
       %li
         %span.key Total
         %span.value= order.total
+
+    - if order.pending_promotions?
+      %div.promotions
+        %p.notice These promotions have been applied to your order.
+        %ul.list
+          - if order.new_promotions?
+            - order.new_promotions.each do |p|
+              %li.summary.new= p.summary_html
+          - if order.existing_promotions?
+            - order.existing_promotions.each do |p|
+              %li.summary.new= p.summary_html
 
     %p= link_to('Checkout', public_order_checkout_path)
 

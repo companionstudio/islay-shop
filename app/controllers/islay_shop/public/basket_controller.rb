@@ -7,18 +7,19 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def add
     sku = Sku.find(params[:sku_id])
-    item = order.increment_quantity(sku, params[:quantity].to_i)
+    item = unpromoted_order.increment_quantity(sku, params[:quantity].to_i)
 
     if request.xhr?
+      unpromoted_order.apply_promotions!
       store!
       render :json => {
-        :result => (order.errors.blank? ? 'success' : 'failure'),
-        :sku => params[:sku_id],
-        :added => params[:quantity],
-        :quantity => order.total_sku_quantity,
-        :shipping => order.formatted_shipping_total,
-        :total => order.formatted_total,
-        :errors => order.errors
+        :result   => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
+        :sku      => params[:sku_id],
+        :added    => params[:quantity],
+        :quantity => unpromoted_order.total_sku_quantity,
+        :shipping => unpromoted_order.formatted_shipping_total,
+        :total    => unpromoted_order.formatted_total,
+        :errors   => unpromoted_order.errors
       }
     else
       store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})
@@ -26,17 +27,24 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def remove
-    item = order.remove_item(params[:sku_id])
+    item = unpromoted_order.remove_item(params[:sku_id])
     store_and_redirect(:order_item_removed, {:message => item.sku.long_desc})
   end
 
   def update
-    order.update_quantities(params[:items])
+    unless params[:items].blank?
+      unpromoted_order.update_quantities(params[:items]) 
+    end
+
+    unless params[:promo_code].blank?
+      unpromoted_order.promo_code = params[:promo_code]
+    end
+
     store_and_redirect(:order_updated, {:message => "Your order has been updated"})
   end
 
   def destroy_alerts
-    order.destroy_alerts
+    unpromoted_order.destroy_alerts
     store_and_redirect
   end
 
@@ -47,9 +55,11 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   private
 
-  # Dumps a JSON representation of an order into the user's session
+  # Dumps a JSON representation of an order into the user's session.
+  #
+  # @return Hash
   def store!
-    session['order'] = order.dump
+    session['order'] = unpromoted_order.dump
   end
 
   # Dumps a JSON representation of an order into the user's session, then

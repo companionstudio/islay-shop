@@ -4,6 +4,7 @@
       = f.input(:published, :col => 'first-inline')
       = f.input(:status, :col => 'inline', :collection => f.object.statuses, :as => 'radio_buttons')
       = f.input(:name)
+      = f.input(:stock_level)
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
 
     = f.fieldset('Purchase Limit') do

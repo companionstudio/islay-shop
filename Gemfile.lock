@@ -32,7 +32,6 @@ PATH
       premailer (~> 1.7.3)
       rails (~> 3.2.13)
       rmagick (~> 2.13.1)
-      rmagick (~> 2.13.1)
       sass-rails (~> 3.2.5)
       schema_plus (= 1.1.2)
       simple_form (~> 2.0.2)

@@ -3,11 +3,10 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   include IslayShop::ControllerExtensions::Public
 
   use_https
-
   before_filter :check_for_order_contents,   :except => [:thank_you]
-  before_filter :fetch_promotions,  :only   => [:basket, :details, :thank_you]
 
   def details
+
   end
 
   def update
@@ -54,16 +53,5 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     if order.empty?
       redirect_to path(:order_basket)
     end
-  end
-
-  def fetch_promotions
-    #Any promotions that can be qualified for at the checkout (code based)
-    @checkout_promotions = Promotion.active_code_based
-
-    #Any promotions ready to be applied to the order
-    if order and !order.pending_promotions.empty?
-      @promotions = order.pending_promotions
-    end
-
   end
 end

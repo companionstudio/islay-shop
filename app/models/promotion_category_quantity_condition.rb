@@ -8,11 +8,24 @@ class PromotionCategoryQuantityCondition < PromotionCondition
   end
 
   def check(order)
-    if qualifying_items(order).sum(&:paid_quantity) >= quantity
-      success
+    items = qualifying_items(order)
+
+    if items.empty?
+      message = "Does not contain products from the #{category.name}"
+      failure(:no_items, message)
+    elsif items.sum(&:paid_quantity) < quantity
+      message = "Doesn't have enough products from the #{category.name}; needs at least #{quantity}"
+      partial(:insufficient_quantity, message)
     else
-      failure
+      success
     end
+  end
+
+  # Finds the category related to this condition.
+  #
+  # @return ProductCategory
+  def category
+    @category ||= ProductCategory.find(product_category_id)
   end
 
   private

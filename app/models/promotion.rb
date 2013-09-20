@@ -15,6 +15,10 @@ class Promotion < ActiveRecord::Base
   validations_from_schema
   validate :validate_component_compatibility
 
+  # Conditions which are code based. Used in a bunch of predicates defined on
+  # Promotion.
+  CODE_CONDITIONS = [PromotionCodeCondition, PromotionUniqueCodeCondition].freeze
+
   # Returns a relation scoped to the promotions that have been published and 
   # have current start and end dates.
   #
@@ -30,8 +34,23 @@ class Promotion < ActiveRecord::Base
   # Finds all promotions which have a code-based condition.
   #
   # @return Array<Promotion>
-  def self.active_code_based
-    PromotionQuery.active_code_based
+  def self.code_based
+    where(%{
+      (promotions.start_at IS NULL OR promotions.start_at <= NOW())
+      AND (promotions.end_at IS NULL OR promotions.end_at >= NOW())
+      AND EXISTS (
+        SELECT 1 FROM promotion_conditions AS pcs
+        WHERE pcs.promotion_id = promotions.id AND pcs.type IN ('PromotionCodeCondition', 'PromotionUniqueCodeCondition')
+      )
+    })
+  end
+
+  # Predicate which checks to see if the promotion has a condition which relies
+  # on codes.
+  #
+  # @return [true, false]
+  def code_based?
+    @code_based ||= !(conditions.map(&:class) & CODE_CONDITIONS).empty?
   end
 
   # Returns a boolean indicating if the promotion is actually running. This 

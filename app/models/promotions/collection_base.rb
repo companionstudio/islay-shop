@@ -1,6 +1,6 @@
 module Promotions
   # Base collection which has predicates for checking success/failure and 
-  # filters for grabbing entries based on thier predicates e.g. successful
+  # filters for grabbing entries based on their predicates e.g. successful
   # entries.
   class CollectionBase < Array
     # Checks to see if all the results are successful.

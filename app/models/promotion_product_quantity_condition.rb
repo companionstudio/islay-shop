@@ -9,15 +9,27 @@ class PromotionProductQuantityCondition < PromotionCondition
   end
 
   def check(order)
-    check = order.candidate_items.select do |i|
-      i.sku.product_id == product_id and i.quantity >= quantity
-    end
+    matches = order.candidate_items.select {|i| i.sku.product_id == product_id}
+    quantities = matches.select {|i| i.quantity >= quantity}
 
-    if check.empty?
-      failure
+    if matches.empty?
+      message = "Does not contain the product #{product.name}; needs at least #{quantity}"
+      failure(:no_items, message)
+    elsif quantities.empty?
+      message = "Doesn't have enough of the product #{product.name}; needs at least #{quantity}"
+      partial(:insufficient_quantities, message)
     else
-      targets = check.reduce({}) {|h, c| h.merge(c => c.quantity)}
+      targets = quantities.reduce({}) {|h, c| h.merge(c => c.quantity)}
       success(targets)
     end
+  end
+
+  private
+
+  # Returns the product associated with this condition.
+  #
+  # @return Product
+  def product
+    @product ||= Product.find(product_id)
   end
 end

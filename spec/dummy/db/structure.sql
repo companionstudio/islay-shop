@@ -1483,7 +1483,8 @@ CREATE TABLE promotions (
     end_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    terms tsvector
+    terms tsvector,
+    publish_application_limit boolean DEFAULT true
 );
 
 
@@ -3801,3 +3802,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130904233848');
 INSERT INTO schema_migrations (version) VALUES ('20130910054748');
 
 INSERT INTO schema_migrations (version) VALUES ('20130911234809');
+
+INSERT INTO schema_migrations (version) VALUES ('20130919011654');

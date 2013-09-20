@@ -62,7 +62,7 @@ describe Order::Promotions do
   it "should give free sku to orders over $50" do
     promotion = create_promotion do |p|
       p.conditions << PromotionSpendCondition.new(:amount => 50)
-      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 2, :mode => 'once')
+      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 2)
     end
 
     order = build(:order)
@@ -80,7 +80,7 @@ describe Order::Promotions do
   it "should give a free product when a code is entered" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCodeCondition.new(:code => 'HERPDERP')
-      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 4, :mode => 'once')
+      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 4)
     end
 
     order = build(:order)
@@ -174,7 +174,7 @@ describe Order::Promotions do
   it "should give a free product when a code is entered" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCodeCondition.new(:code => 'GETFREE')
-      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 1, :mode => 'once')
+      p.effects << PromotionBonusEffect.new(:sku_id => @bonus_sku.id, :quantity => 1)
     end
 
     order = build(:order)

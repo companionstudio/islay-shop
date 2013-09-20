@@ -85,6 +85,13 @@ class Sku
       {}
     end
 
+    # Returns the price for a single item.
+    #
+    # @return SpookAndPuff::Money
+    def single_price
+      @single_price = current_price_points.where(:mode => 'single').first.price
+    end
+
     private
 
     # Checks to see if the hash of values is for an acceptable price point.

@@ -10,34 +10,12 @@ class PromotionCodeCondition < PromotionCondition
   validate          :unique_code
 
   def check(order)
-    if order.promo_code and order.promo_code.upcase == code
+    if order.promo_code.blank?
+      failure(:no_promo_code, "A promotion code has not been entered")
+    elsif order.promo_code.upcase != code
+      partial(:promo_code_mismatch, "The code '#{order.promo_code}' does not match")
+    else
       success
-    else
-      failure
-    end
-  end
-
-  def qualifications(order)
-    if qualifies?(order)
-      {:order => 1}
-    else
-      {:order => 0}
-    end
-  end
-
-  def qualifies?(order)
-    order.promo_code and order.promo_code.upcase == code
-  end
-
-  def check_qualification(order)
-    if order.promo_code.nil?
-      result(false, :no_code_provided)
-    else
-      if order.promo_code.upcase == code
-        result(true)
-      else
-        result(false, :invalid_code)
-      end
     end
   end
 
