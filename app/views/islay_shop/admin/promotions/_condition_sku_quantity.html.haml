@@ -1,0 +1,14 @@
+= f.fieldset("Buys a Specific SKU", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:sku_id, :collection => @skus, :inline => true)
+  = f.input(:quantity, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Orders which have a quantity or more of the specified SKU
+
+    %div.extra.islay-toggle
+      %p
+        This condition generates a single qualification.
+
+

@@ -76,10 +76,26 @@ class Sku < ActiveRecord::Base
   #
   # @return ActiveRecord::Relation
   def self.summarize_product
-    select(%{
-      skus.*,
-      (SELECT name FROM products WHERE products.id = product_id) AS product_name
-    })
+    select("skus.*, products.name AS product_name").joins(:product)
+  end
+
+  # Creates a scope which only returns published products. The rules dictating
+  # published are:
+  #
+  # - Sku is published
+  # - It's product is published
+  # - Product's category and all parent categories are published
+  #
+  # @return ActiveRecord::Relation
+  def self.published
+    where(%{
+      skus.published = true
+      AND products.published = true
+      AND NOT EXISTS (
+         SELECT 1 FROM product_categories AS pcs
+         WHERE pcs.path @> product_categories.path AND pcs.published = false
+      )
+    }).joins(:product => :category)
   end
 
   # Creates a relation which only has the short_desc and ID.

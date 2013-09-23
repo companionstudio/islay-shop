@@ -11,7 +11,7 @@ class Promotion < ActiveRecord::Base
   accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
-
+  before_validation :clean_components
   validations_from_schema
   validate :validate_component_compatibility
 
@@ -237,10 +237,6 @@ class Promotion < ActiveRecord::Base
   #
   # @return nil
   def validate_component_compatibility
-    # Remove any inactive components
-    conditions.delete(conditions.reject(&:active))
-    effects.delete(effects.reject(&:active))
-
     # Run validations against remaining components
     conditions.each(&:valid?)
     effects.each(&:valid?)
@@ -259,6 +255,15 @@ class Promotion < ActiveRecord::Base
       errors.add(:base, "The combination of conditions and effects are not compatible")
     end
 
+    nil
+  end
+
+  # Ensures any inactive components are deleted from the promotion.
+  #
+  # @return nil
+  def clean_components
+    conditions.delete(conditions.reject(&:active))
+    effects.delete(effects.reject(&:active))
     nil
   end
 

@@ -11,6 +11,21 @@ module IslayShop
 
       private
 
+      def dependencies
+        @skus = Sku.published.summarize_product.map do |e| 
+          ["#{e.product_name} - #{e.short_desc}", e.id]
+        end
+
+        @shipping_discount_modes = [
+          ["Set Total", "set"], 
+          ["Fixed", "fixed"], 
+          ["Percentage", "percentage"]
+        ]
+
+        @categories = ProductCategory.tree
+        @products = Product.published
+      end
+
       def invalid_record
         @promotion.prefill
       end

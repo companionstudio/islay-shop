@@ -1,0 +1,13 @@
+= f.fieldset("Buys a Specific Product", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:product_id, :collection => @products, :inline => true)
+  = f.input(:quantity, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Orders which have a quantity or more of the specified product
+
+    %div.extra.islay-toggle
+      %p
+        This condition generates a single qualification.
+

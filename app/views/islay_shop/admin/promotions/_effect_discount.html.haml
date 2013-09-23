@@ -1,0 +1,14 @@
+= f.fieldset("Discount on Order Total", :class => 'discount-effect', "data-scope" => effect.condition_scope) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:amount_and_kind, :class => 'tiny', :label => "Amount", :inline => true)
+  %div.help
+    %p.summary
+      Apply a discount to the order total.
+
+    %div.extra.islay-toggle
+      %p
+        Discounts can be either a fixed dollar amount or a percentage of the
+        order total. The order total used is the product charges. It does not
+        include shipping or other services.
+

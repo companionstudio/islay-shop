@@ -1,0 +1,14 @@
+= f.fieldset("Buy Products from a Category", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:product_category_id, :collection => @categories, :label => 'Category', :inline => true, :as => :tree_select)
+  = f.input(:quantity, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Orders which have a quantity or more from the specified category
+
+    %div.extra.islay-toggle
+      %p
+        This condition generates one qualification and is not compatible with
+        effects like 'Get Extra Free', since they require a specific Sku to be
+        specified in the conditions.

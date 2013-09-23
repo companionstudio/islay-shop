@@ -1,0 +1,14 @@
+= f.fieldset("Get Discounted Shipping", :class => 'shipping-effect', "data-scope" => effect.condition_scope) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:mode, :collection => @shipping_discount_modes, :as => :radio_buttons, :inline => true)
+  = f.input(:amount, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Apply a discount to the shipping.
+
+    %div.extra.islay-toggle
+      %p
+        Shipping discounts can either set the charge to a fixed amount — e.g. 
+        0 for free shipping — a percentage discount or a fixed discount.
+

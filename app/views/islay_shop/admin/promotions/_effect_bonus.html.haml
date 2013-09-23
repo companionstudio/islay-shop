@@ -1,0 +1,14 @@
+= f.fieldset("A Bonus SKU", :class => 'bonus-effect', "data-scope" => effect.condition_scope) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:sku_id, :collection => @skus, :label => 'Bonus SKU', :inline => true)
+  = f.input(:quantity, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Adds the specified quantity of a SKU to the order.
+
+    %div.extra.islay-toggle
+      %p
+        This is quantity is fixed irrespective of any other part of the 
+        promotion.
+

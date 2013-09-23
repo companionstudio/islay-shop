@@ -22,11 +22,13 @@ class PromotionCodeCondition < PromotionCondition
   private
 
   def unique_code
-    if !new_record?
-      conditions = "AND id != #{id}"
-    end
-    if self.class.where("'code=>#{code}'::hstore <@ config #{conditions}").exists?
-      errors.add(:code, 'has already been used')
+    unless code.blank?
+      if !new_record?
+        conditions = "AND id != #{id}"
+      end
+      if self.class.where("'code=>#{code}'::hstore <@ config #{conditions}").exists?
+        errors.add(:code, 'has already been used')
+      end
     end
   end
 

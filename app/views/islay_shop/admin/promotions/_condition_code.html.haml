@@ -1,0 +1,17 @@
+= f.fieldset("Enter a Code", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:code, :class => 'medium', :inline => true)
+  %div.help
+    %p.summary
+      Customers will be prompted to enter the code on checkout
+
+    %div.extra.islay-toggle
+      %p
+        The code used in this condition is private; it is not advertised in the
+        shop. The recommended use is to put the code in promotional materials
+        such as advertisements or mail-outs.
+
+      %p
+        There is no limit on the number of times the code can be used.
+

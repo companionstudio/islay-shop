@@ -1,0 +1,12 @@
+= f.fieldset("Spends a Minimum Amount", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:amount, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      Customers must spend the minimum or more
+
+    %div.extra.islay-toggle
+      %p
+        This condition generates a single qualification.
+
