@@ -1,6 +1,6 @@
 class Promotion < ActiveRecord::Base
-  has_many :conditions,               :class_name => 'PromotionCondition', :order => 'type ASC'
-  has_many :effects,                  :class_name => 'PromotionEffect',    :order => 'type ASC'
+  has_many :conditions,               :class_name => 'PromotionCondition', :order => 'type ASC', :dependent => :destroy
+  has_many :effects,                  :class_name => 'PromotionEffect',    :order => 'type ASC', :dependent => :destroy
   has_many :applications,             :class_name => 'AppliedPromotions'
   has_many :orders,                   :through => :applications
   has_many :qualifying_order_items,   :through => :applications
