@@ -1,6 +1,7 @@
 class PromotionUniqueCodeCondition < PromotionCondition
   desc "Order has unique code"
   condition_scope :order
+  exclusivity_scope :code
 
   metadata(:config) do
     integer :limit, :required => true

@@ -1,6 +1,7 @@
 class PromotionSpendCondition < PromotionCondition
   desc  "Minimum Spend"
   condition_scope :order
+  exclusivity_scope :none
   position 5
 
   metadata(:config) do

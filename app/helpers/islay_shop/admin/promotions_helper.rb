@@ -18,8 +18,9 @@ module IslayShop::Admin::PromotionsHelper
   # @return Hash
   def condition_opts(condition)
     {
-      "class"       => "#{condition.short_name}-condition", 
-      "data-scopes" => condition.compatible_effects.join(', ')
+      "class"                   => "#{condition.short_name}-condition", 
+      "data-compatible-effects" => condition.compatible_effects.join(', '),
+      "data-exclusivity"        => condition.exclusivity_scope
     }
   end
 

@@ -1,4 +1,4 @@
-= f.fieldset("Buys a Specific Product", condition_opts(condition)) do
+= f.fieldset("Buy a Specific Product", condition_opts(condition)) do
   = f.hidden_field(:type)
   = f.input(:active, :as => :boolean, :first_inline => true)
   = f.input(:product_id, :collection => @products, :inline => true)

@@ -4,6 +4,17 @@ class PromotionCondition < ActiveRecord::Base
 
   belongs_to :promotion
 
+  # Defines the exclusivity scope of the condition. The semantics of 
+  # exclusivity are pretty simple. Where the scope is :open, the condition may
+  # be configured with any other conditions. For any other scope, there may 
+  # only be condition within that scope.
+  #
+  # @param Symbol scope
+  # @return Symbol
+  def self.exclusivity_scope(scope)
+    self.promo_config[:exclusivity_scope] = scope
+  end
+
   # Loads effect subclasses by looking for files on disk and kicking off Rails'
   # constant_missing magic by extracting the class name from the file name.
   #
@@ -28,6 +39,14 @@ class PromotionCondition < ActiveRecord::Base
   # @return Array<Symbol>
   def compatible_effects
     self.class.compatible_effects
+  end
+
+  # An alias to the exclusivity scope defined on the condition class. For more
+  # info check the docs for ::exclusivity_scope.
+  #
+  # @return Symbol
+  def exclusivity_scope
+    self.class.promo_config[:exclusivity_scope]
   end
 
   # Used to check if the promotion condition succeeds for the provided order.

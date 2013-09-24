@@ -1,6 +1,7 @@
 class PromotionSkuQuantityCondition < PromotionCondition
   desc  "Quantity of SKU"
   condition_scope :sku_items
+  exclusivity_scope :sku_items
   position 3
 
   metadata(:config) do

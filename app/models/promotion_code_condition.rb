@@ -1,6 +1,7 @@
 class PromotionCodeCondition < PromotionCondition
   desc "Order has Code"
   condition_scope :order
+  exclusivity_scope :code
 
   metadata(:config) do
     string :code, :required => true

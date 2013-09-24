@@ -18,6 +18,113 @@ $SP.u = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* PROMOTION EDITING
+/* A widget which wraps around the condition and effect fields in promotion
+/* editing form and provides a few conveniences e.g. disabling options when
+/* they are incompatible.
+/* -------------------------------------------------------------------------- */
+(function($) {
+  var Component = function(el) {
+    this.name = el.attr('class').match(/^(.+)\-(condition|effect)/)[1];
+    this.$el = el;
+    this.$active = el.find('[name*="active"]:not(:hidden)');
+    this.$inputs = el.find(':not([name*="active"])');
+
+    this.$active.on('change', $.proxy(this, 'activeChange'));
+    this.activeChange();
+  };
+
+  Component.prototype = {
+    activeChange: function() {
+      if (this.$active.is(':checked')) {
+        this.$inputs.prop('disabled', false);
+      }
+      else {
+        this.$inputs.prop('disabled', true);
+      }
+    },
+
+    disable: function() {
+      this.$el.addClass('disabled');
+      this.$active.attr('disabled', true);
+      this.$active.trigger('change');
+      this.$inputs.prop('disabled', true);
+    },
+
+    enable: function() {
+      this.$el.removeClass('disabled');
+      this.$active.attr('disabled', false);
+      this.$active.trigger('change');
+    }
+  };
+
+  var Promotions = function(form) {
+    this.$form = form;
+    this.selected = [];
+
+    var self = this,
+        conditions = this.$form.find('.promotion-conditions fieldset'),
+        effects = this.$form.find('.promotion-effects fieldset');
+
+    this.conditions = _.map(conditions, function(el) {
+      var cond = new Component($(el))
+      cond.scope = cond.$el.attr('data-exclusivity-scope');
+      return cond;
+    });
+
+    this.effects = _.map(effects, function(el) {
+      return new Component($(el));
+    });
+
+    this.compatibilities = {};
+    _.each(this.conditions, function(condition) {
+      var compatible = condition.$el.attr('data-compatible-effects').split(', ');
+      this.compatibilities[condition.name] = compatible;
+
+      if (condition.$active.is(':checked')) {
+        this.selected.push(condition.name);
+      }
+
+      condition.$active.on('change', {condition: condition}, $.proxy(this, 'change'));
+    }, this);
+
+    this.update();
+  };
+
+  Promotions.prototype = {
+    change: function(e) {
+      var cond = e.data.condition;
+      if (cond.$active.is(':disabled') || !cond.$active.is(':checked')) {
+        this.selected = _.reject(this.selected, function(s) {return s === cond.name;});
+      }
+      else {
+        this.selected.push(cond.name);
+      }
+      this.update();
+    },
+
+    update: function() {
+      var comp = _.chain(this.compatibilities).pick(this.selected).values()
+                  .flatten().uniq().value();
+
+      _.each(this.effects, function(e) {
+        _.contains(comp, e.name) ? e.enable() : e.disable();
+      });
+    }
+  };
+
+  $.fn.islayPromotions = function() {
+    this.each(function() {
+      var $this = $(this);
+      if (!$this.data('islayPromotions')) {
+        $this.data('islayPromotions', new Promotions($this));
+      }
+    });
+    return this;
+  };
+})(jQuery);
+
+/* -------------------------------------------------------------------------- */
 /* DATE SELECTION
 /* A date picker that allows multiple modes; month-by-month, range and
 /* comparison (using two ranges)
@@ -736,4 +843,8 @@ $SP.where('#islay-shop-admin-reports.sku').run(function() {
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   $('#sub-header').append(dates.render().el);
+});
+
+$SP.where('#islay-shop-admin-promotions.[edit, new, update, create]').run(function() {
+  $('#islay-form').islayPromotions();
 });
