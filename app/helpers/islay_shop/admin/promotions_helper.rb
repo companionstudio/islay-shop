@@ -20,7 +20,7 @@ module IslayShop::Admin::PromotionsHelper
     {
       "class"                   => "#{condition.short_name}-condition", 
       "data-compatible-effects" => condition.compatible_effects.join(', '),
-      "data-exclusivity"        => condition.exclusivity_scope
+      "data-exclusivity-scope"  => condition.exclusivity_scope
     }
   end
 

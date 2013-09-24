@@ -61,6 +61,7 @@ $SP.u = {
   var Promotions = function(form) {
     this.$form = form;
     this.selected = [];
+    this.updating = false;
 
     var self = this,
         conditions = this.$form.find('.promotion-conditions fieldset'),
@@ -77,12 +78,19 @@ $SP.u = {
     });
 
     this.compatibilities = {};
+    this.exclusivity = {};
     _.each(this.conditions, function(condition) {
       var compatible = condition.$el.attr('data-compatible-effects').split(', ');
       this.compatibilities[condition.name] = compatible;
+      if (condition.$active.is(':checked')) {this.selected.push(condition);}
 
-      if (condition.$active.is(':checked')) {
-        this.selected.push(condition.name);
+      // Compute the exclusivity
+      if (condition.scope === 'full') {
+        this.exclusivity['full'] = _.pluck(this.conditions, 'name');
+      }
+      else if (condition.scope !== 'none') {
+        if (!this.exclusivity[condition.scope]) {this.exclusivity[condition.scope] = [];}
+        this.exclusivity[condition.scope].push(condition.name);
       }
 
       condition.$active.on('change', {condition: condition}, $.proxy(this, 'change'));
@@ -93,23 +101,45 @@ $SP.u = {
 
   Promotions.prototype = {
     change: function(e) {
-      var cond = e.data.condition;
-      if (cond.$active.is(':disabled') || !cond.$active.is(':checked')) {
-        this.selected = _.reject(this.selected, function(s) {return s === cond.name;});
+      if (!this.updating) {
+        var cond = e.data.condition;
+        if (cond.$active.is(':disabled') || !cond.$active.is(':checked')) {
+          this.selected = _.reject(this.selected, function(s) {return s.name === cond.name;});
+        }
+        else {
+          this.selected.push(cond);
+        }
+        this.update();
       }
-      else {
-        this.selected.push(cond.name);
-      }
-      this.update();
     },
 
     update: function() {
-      var comp = _.chain(this.compatibilities).pick(this.selected).values()
-                  .flatten().uniq().value();
+      this.updating = true;
+
+      var enableEffects = [];
+          disableConditions = [];
+
+      _.each(this.selected, function(condition) {
+        // Add to the list of valid effects
+        enableEffects = enableEffects.concat(this.compatibilities[condition.name]);
+
+        // If we have a scope, turn off the other conditions.
+        var scope = this.exclusivity[condition.scope];
+        if (scope) {
+          var update = _.filter(scope, function(o) {return o !== condition.name});
+          disableConditions = disableConditions.concat(update);
+        }
+      }, this);
 
       _.each(this.effects, function(e) {
-        _.contains(comp, e.name) ? e.enable() : e.disable();
+        _.contains(enableEffects, e.name) ? e.enable() : e.disable();
       });
+
+      _.each(this.conditions, function(c) {
+        _.contains(disableConditions, c.name) ? c.disable() : c.enable();
+      });
+
+      this.updating = false;
     }
   };
 
