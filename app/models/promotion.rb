@@ -1,8 +1,8 @@
 class Promotion < ActiveRecord::Base
   has_many :conditions,               :class_name => 'PromotionCondition', :order => 'type ASC', :dependent => :destroy
   has_many :effects,                  :class_name => 'PromotionEffect',    :order => 'type ASC', :dependent => :destroy
-  has_many :applications,             :class_name => 'AppliedPromotions'
-  has_many :orders,                   :through => :applications
+  has_many :applications,             :class_name => 'AppliedPromotion'
+  has_many :orders,                   :through => :applications, :order => 'orders.created_at DESC'
   has_many :qualifying_order_items,   :through => :applications
   has_many :bonus_order_items,        :through => :applications
 
@@ -94,15 +94,6 @@ class Promotion < ActiveRecord::Base
     @code_based ||= !(conditions.map(&:class) & CODE_CONDITIONS).empty?
   end
 
-  # Returns a boolean indicating if the promotion is actually running. This 
-  # means it has to be both published and have a current start/end date.
-  #
-  # @return [true, false]
-  def active?
-    now = Time.now
-    active  and start_at <= now and (end_at.nil? || end_at >= now)
-  end
-
   # Checks to see if the promotion has an application limit specified.
   #
   # @return [true, false]
@@ -110,21 +101,31 @@ class Promotion < ActiveRecord::Base
     !!application_limit
   end
 
+  # A predicate which checks to see if the status of the promotion is 
+  # 'running'.
+  #
+  # @return [true, false]
+  def running?
+    status == 'running'
+  end
+
   # Calculates the status of the promotion based on the combination of the
   # start date, end date and active option.
   #
   # @return String
   def status
-    now = Time.now
+    @status ||= begin
+      now = Time.now
 
-    if active
-      if    start_at > now  then 'pending'
-      elsif end_at > now    then 'running'
-      elsif end_at < now    then 'finished'
-      end
-    else
-      if date_range_is_current? then 'paused'
-      else 'inactive'
+      if active
+        if    start_at > now  then 'pending'
+        elsif end_at > now    then 'running'
+        elsif end_at < now    then 'finished'
+        end
+      else
+        if date_range_is_current? then 'paused'
+        else 'inactive'
+        end
       end
     end
   end  

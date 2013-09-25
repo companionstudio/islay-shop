@@ -1,14 +1,57 @@
 - sub_header(@promotion.name)
 
+- sub_header_status do
+  %ul#summary
+    %li
+      %span.key Status
+      - if @promotion.running?
+        %span.value.indicator.ok Running
+      - else
+        %span.value.indicator= @promotion.status
+
+    %li
+      %span.key Orders
+      %span.value.indicator.ok= @promotion.applications.count
+
 = content do
   = column(12) do
     %ul.key-value
+      %li
+        %span.key Status
+        %span.value= @promotion.status.capitalize
       %li
         %span.key Start at
         %span.value= @promotion.start_at
       %li
         %span.key End at
         %span.value= @promotion.end_at
+
+    %p= promotion_summary(@promotion)
+
+  %h3.inset Orders
+
+  %table.inset
+    %thead
+      %tr
+        %th Name
+        %th Total
+        %th Created At
+
+    %tbody
+      - if @promotion.orders.empty?
+        %tr
+          %td{:colspan => 3, :class => 'empty'} No orders yet
+      - else
+        - @promotion.orders.each do |order|
+          %tr
+            %td
+              = link_to(order.name, path(order), :class => 'title')
+              %span.reference.numeric= order.reference
+              %span.summary= order.items_summary
+            %td
+              %span.numeric= order.formatted_total
+            %td
+              %span.time= order.created_at
 
 = footer do
   = edit_button(@promotion)
