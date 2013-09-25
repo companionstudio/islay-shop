@@ -17,10 +17,33 @@ module IslayShop::Admin::PromotionsHelper
   # @param PromotionCondition condition
   # @return Hash
   def condition_opts(condition)
+    class_name = if condition.errors.empty?
+      "#{condition.short_name}-condition"
+    else
+      "#{condition.short_name}-condition errored"
+    end
+
     {
-      "class"                   => "#{condition.short_name}-condition", 
+      "class"                   => class_name,
       "data-compatible-effects" => condition.compatible_effects.join(', '),
       "data-exclusivity-scope"  => condition.exclusivity_scope
+    }
+  end
+  
+  # Generates the options for an effect fieldset.
+  #
+  # @param PromotionEffect
+  # @return Hash
+  def effect_opts(effect)
+    class_name = if effect.errors.empty?
+      "#{effect.short_name}-effect"
+    else
+      "#{effect.short_name}-effect errored"
+    end
+
+    {
+      "class"       => class_name,
+      "data-scope"  => effect.condition_scope
     }
   end
 

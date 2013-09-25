@@ -1,4 +1,4 @@
-= f.fieldset("Discounted Shipping", :class => 'shipping-effect', "data-scope" => effect.condition_scope) do
+= f.fieldset("Discounted Shipping", effect_opts(effect)) do
   = f.hidden_field(:type)
   = f.input(:active, :as => :boolean, :first_inline => true)
   = f.input(:mode, :collection => @shipping_discount_modes, :as => :radio_buttons, :inline => true)

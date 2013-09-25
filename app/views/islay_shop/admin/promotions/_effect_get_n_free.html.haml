@@ -1,4 +1,4 @@
-= f.fieldset("Extra SKUs Free", :class => 'get_n_free-effect', "data-scope" => effect.condition_scope) do
+= f.fieldset("Extra SKUs Free", effect_opts(effect)) do
   = f.hidden_field(:type)
   = f.input(:active, :as => :boolean, :first_inline => true)
   = f.input(:quantity, :class => 'tiny', :inline => true)
