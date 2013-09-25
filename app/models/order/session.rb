@@ -60,11 +60,11 @@ class Order
       end
 
       # Dumps the items in the order into a hash, flagging each as either a sku
-      # or service item.
+      # or service item. It only dumps items with a paid_quantity > 0.
       #
       # @return Hash
       def items_dump
-        (sku_items + service_items).map do |item|
+        (sku_items + service_items).reject {|i| i.paid_quantity == 0}.map do |item|
           {
             :type     => item.class.to_s, 
             :id       => item.sku_id || item.service_id, 
