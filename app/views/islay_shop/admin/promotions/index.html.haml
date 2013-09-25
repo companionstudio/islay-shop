@@ -2,9 +2,9 @@
 - filter_nav(:promotions, 'Finished', 'finished')
 - filter_nav(:promotions, 'All', 'all')
 
-- sort_nav(:orders, 'Updated')
-- sort_nav(:orders, 'Status', 'status')
-- sort_nav(:orders, 'Name', 'name')
+- sort_nav(:promotions, 'Updated')
+- sort_nav(:promotions, 'Orders', 'orders_count')
+- sort_nav(:promotions, 'Revenue', 'revenue')
 
 = content do
   %table{:cellpadding => 0, :cellspacing => 0}
@@ -12,6 +12,8 @@
       %tr
         %th Active
         %th Name
+        %th Orders
+        %th Revenue
         %th Start
         %th End
         %th Updated At
@@ -23,6 +25,10 @@
             %span= friendly_bool(promotion.active?)
           %td
             = link_to(promotion.name, path(promotion), :class => 'title')
+          %td
+            %span.indicator= promotion.orders_count
+          %td
+            %span.indicator= promotion.revenue
           %td
             %span.time= promotion.start_at
           %td

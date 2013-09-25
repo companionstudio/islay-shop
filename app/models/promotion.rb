@@ -46,12 +46,22 @@ class Promotion < ActiveRecord::Base
     })
   end
 
-  # Generates a relation with some calculated fields.
+  # Generates a relation with some calculated fields. It includes:
+  #
+  # - The name of who updated the promotion
+  # - Count of orders
+  # - Revenue
   #
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
       promotions.*,
+      (SELECT COUNT(orders.*) FROM orders 
+       JOIN applied_promotions AS aps ON aps.promotion_id = promotions.id AND aps.order_id = orders.id
+       WHERE orders.status IN ('billed', 'packed', 'complete')) AS orders_count,
+      (SELECT SUM(orders.total) FROM orders 
+       JOIN applied_promotions AS aps ON aps.promotion_id = promotions.id AND aps.order_id = orders.id
+       WHERE orders.status IN ('billed', 'packed', 'complete')) AS revenue,
       (SELECT name FROM users WHERE users.id = promotions.updater_id) AS updater_name
     })
   end
