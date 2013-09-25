@@ -86,6 +86,23 @@ class Promotion < ActiveRecord::Base
     end
   end
 
+  # The revenue is the total of all billed orders which qualified for the 
+  # promotion. Where this attribute doesn't exist, we'll calculate it 
+  # ourselves.
+  #
+  # @return SpookAndPuff::Money
+  def revenue
+    @revenue ||= begin
+      sum = if attributes[:revenue]
+        attributes[:revenue]
+      else
+        orders.where(:status => %w(billed packed complete)).sum(:total)
+      end
+
+      SpookAndPuff::Money.new(sum)
+    end
+  end
+
   # Predicate which checks to see if the promotion has a condition which relies
   # on codes.
   #

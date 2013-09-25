@@ -13,6 +13,10 @@
       %span.key Orders
       %span.value.indicator.ok= @promotion.applications.count
 
+    %li
+      %span.key Revenue
+      %span.value.indicator.ok= @promotion.revenue
+
 = content do
   = column(12) do
     %ul.key-value
@@ -33,6 +37,7 @@
   %table.inset
     %thead
       %tr
+        %th Status
         %th Name
         %th Total
         %th Created At
@@ -44,6 +49,8 @@
       - else
         - @promotion.orders.items_summary.each do |order|
           %tr
+            %td
+              %span.indicator= order.status
             %td
               = link_to(order.name, path(order), :class => 'title')
               %span.reference.numeric= order.reference
