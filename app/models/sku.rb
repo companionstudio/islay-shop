@@ -202,9 +202,16 @@ class Sku < ActiveRecord::Base
 
   # Indicates if the SKU is available for sale.
   #
-  # @return Boolean
+  # @return [true, false]
   def for_sale?
     status == 'for_sale'
+  end
+
+  # Checks to see if there is sufficient stock to make a sale.
+  #
+  # @return [true, false]
+  def in_stock?
+    stock_level > 0
   end
 
   class InsufficientStock < StandardError

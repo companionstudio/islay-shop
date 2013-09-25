@@ -83,6 +83,21 @@ class Order < ActiveRecord::Base
   # Generates the human readable order ID.
   before_create :store_reference
 
+  # Generates a scope which adds a summary of order items to each row. It is a 
+  # string consisting of the product name and quantity.
+  #
+  # @return ActiveRecord::Relation
+  def self.items_summary
+    select(%{
+      orders.*,
+      (SELECT ARRAY_TO_STRING(ARRAY_AGG(ps.name::text || ' - ' || skus.short_desc || ' (' || ois.quantity::text || ')'), ', ')
+       FROM order_items AS ois
+       JOIN skus ON skus.id = ois.sku_id
+       JOIN products AS ps ON ps.id = skus.product_id
+       GROUP BY order_id HAVING order_id = orders.id) AS items_summary
+    })
+  end
+
   # Used to track any items that have gone out of stock.
   #
   # @return Array<Sku>

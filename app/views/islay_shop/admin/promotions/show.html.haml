@@ -42,7 +42,7 @@
         %tr
           %td{:colspan => 3, :class => 'empty'} No orders yet
       - else
-        - @promotion.orders.each do |order|
+        - @promotion.orders.items_summary.each do |order|
           %tr
             %td
               = link_to(order.name, path(order), :class => 'title')
