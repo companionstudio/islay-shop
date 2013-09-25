@@ -18,12 +18,19 @@
 
     %tbody
       - @promotions.each do |promotion|
-        %tr
-          %td= promotion.active?
-          %td= link_to(promotion.name, path(promotion))
-          %td= promotion.start_at
-          %td= promotion.end_at
-          %td= promotion.updated_at
+        %td.boolean
+          %span(class="boolean #{promotion.active?}")
+            %span= friendly_bool(promotion.active?)
+          %td
+            = link_to(promotion.name, path(promotion), :class => 'title')
+          %td
+            %span.time= promotion.start_at
+          %td
+            %span.time= promotion.end_at
+          %td
+            %span.time= promotion.updated_at
+            by #{promotion.updater_name}
 
 = footer do
   = new_button('Promotion', :promotion)
+  = paginate(@promotions, :theme => 'admin')

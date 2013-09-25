@@ -5,6 +5,10 @@ module IslayShop
       header 'Promotions'
       nav 'islay_shop/admin/orders/nav'
 
+      def index
+        @promotions = Promotion.summary.page(params[:page]).filtered(params[:filter]).sorted(params[:sort])
+      end
+
       def show
         @promotion = Promotion.find(params[:id])
       end

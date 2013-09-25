@@ -56,6 +56,36 @@ class Promotion < ActiveRecord::Base
     })
   end
 
+  # Generates a scope where the promotions are filtered by the provided 
+  # argument. Defaults to promotions which are 'current' i.e. upcoming or 
+  # running.
+  #
+  # @param [nil, String] f
+  # @return ActiveRecord::Relation
+  def self.filtered(f)
+    case f
+    when 'finished'
+      where("promotions.end_at <= NOW()")
+    when 'all'
+      scoped
+    else
+      active
+    end
+  end
+
+  # Generates a scope where the promotions are sorted by the provided argument.
+  # It defaults to sorting by updated_at
+  #
+  # @param [nil, String] f
+  # @return ActiveRecord::Relation
+  def self.sorted(s)
+    if s
+      order(s)
+    else
+      order(:updated_at)
+    end
+  end
+
   # Predicate which checks to see if the promotion has a condition which relies
   # on codes.
   #
