@@ -11,6 +11,7 @@ class Promotion < ActiveRecord::Base
   accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
+  track_user_edits
   before_validation :clean_components
   validations_from_schema
   validate :validate_component_compatibility
@@ -42,6 +43,16 @@ class Promotion < ActiveRecord::Base
         SELECT 1 FROM promotion_conditions AS pcs
         WHERE pcs.promotion_id = promotions.id AND pcs.type IN ('PromotionCodeCondition', 'PromotionUniqueCodeCondition')
       )
+    })
+  end
+
+  # Generates a relation with some calculated fields.
+  #
+  # @return ActiveRecord::Relation
+  def self.summary
+    select(%{
+      promotions.*,
+      (SELECT name FROM users WHERE users.id = promotions.updater_id) AS updater_name
     })
   end
 
