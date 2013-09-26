@@ -128,12 +128,28 @@ class Promotion < ActiveRecord::Base
     !!application_limit
   end
 
+  # A predicate which checks to see if the promotion has had any orders placed
+  # against it, in which case it is 'locked' and only some parts of the 
+  # promotion can be edited e.g. conditions and effects are immutable.
+  #
+  # @return [true, false]
+  def locked?
+    orders_count > 0
+  end
+
   # A predicate which checks to see if the status of the promotion is 
   # 'running'.
   #
   # @return [true, false]
   def running?
     status == 'running'
+  end
+
+  # The number of orders that have qualified for the promotion.
+  #
+  # @return Integer
+  def orders_count
+    @orders_count ||= (attributes[:orders_count] || applications.count)
   end
 
   # Calculates the status of the promotion based on the combination of the

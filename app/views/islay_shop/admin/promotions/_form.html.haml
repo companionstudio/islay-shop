@@ -3,19 +3,31 @@
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
       = f.input(:active)
-      = f.input(:start_at, :as => :date_picker)
+      - unless @promotion.locked?
+        = f.input(:start_at, :as => :date_picker)
       = f.input(:end_at, :as => :date_picker)
 
     = f.fieldset do
       = f.input(:description, :as => 'text')
 
-    = f.fieldset('Customers who', :class => 'promotion-conditions') do
-      = f.fields_for(:conditions) do |c|
-        = promotion_condition(c)
+    - if @promotion.locked?
+      %div.islay-notice-locked
+        %p 
+          This promotion now has qualifying orders against it. The conditions
+          and effects can no longer be edited.
+        %p
+          This is so that reporting for a promotion is accurate. If you want a
+          promotion with different condtions or effects, you should deactivate
+          this promotion and create a new one.
 
-    = f.fieldset('Will receive', :class => 'promotion-effects') do
-      = f.fields_for(:effects) do |e|
-        = promotion_effect(e)
+    - else
+      = f.fieldset('Customers who', :class => 'promotion-conditions') do
+        = f.fields_for(:conditions) do |c|
+          = promotion_condition(c)
+
+      = f.fieldset('Will receive', :class => 'promotion-effects') do
+        = f.fields_for(:effects) do |e|
+          = promotion_effect(e)
 
   = footer do
     = save_button
