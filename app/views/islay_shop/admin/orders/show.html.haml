@@ -1,10 +1,11 @@
-- prefixed_sub_header('Order', "#{@order.name}")
+- breadcrumb('Orders', :orders)
+- breadcrumb("#{@order.name} - #{@order.reference}")
 
-#summary
-  = process_progression(@order)
-  %button.print Print
+= record_name("#{@order.name} - #{@order.reference}", 'shopping-cart')
 
-= content do
+= content(:class => 'inset') do
+  #summary
+    = process_progression(@order)
 
   %div.panel
     %div.order-overview
@@ -80,8 +81,8 @@
         %span.state #{@order.shipping_state} #{@order.shipping_postcode}  
 
   - unless @order.promotions.blank?
-    %h3.items.inset #{@order.promotions.count} #{@order.promotions.count > 1 ? 'promotions apply' : 'promotion applies'} to this order
-    %table.promotions.inset
+    %h3.items #{@order.promotions.count} #{@order.promotions.count > 1 ? 'promotions apply' : 'promotion applies'} to this order
+    %table.promotions
       %thead
         %tr
           %th Promotion
@@ -97,8 +98,8 @@
             %td
               = promo.status.capitalize
 
-  %h3.items.inset Order Items
-  %table.items.inset
+  %h3.items Order Items
+  %table.items
     %thead
       %tr
         %th Product/SKU
@@ -171,8 +172,8 @@
           - if @order.discounted?
             %span.numeric.discount #{@order.formatted_total}
 
-  %h3.inset Tracking
-  %div.tracking.inset.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
+  %h3Tracking
+  %div.tracking.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
     - if @order.trackable?
       - unless @order.tracking_reference.blank?
         %p#displayTrackingReference.summary
@@ -190,8 +191,8 @@
     - else
       %p#displayTrackingReference.note This order will be trackable once it has been packed.
 
-  %h3#order-activity-log.logs.inset Logs
-  %table.logs.inset
+  %h3#order-activity-log.logs Logs
+  %table.logs
     %thead
       %tr
         %th.boolean Succeeded?
@@ -217,6 +218,8 @@
             by #{log.updater_name}
 
 = footer do
+  %button.print Print
+
   - if @order.run?(:bill)
     = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button primary')
 

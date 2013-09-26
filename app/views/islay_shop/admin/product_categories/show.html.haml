@@ -1,6 +1,5 @@
-- sub_header(link_to('Catalogue', path(:product_categories)))
-- ancestor_category_links(@product_category)
-- sub_header(@product_category.name)
+- breadcrumb('Catalogue', :product_categories)
+- ancestor_breadcrumbs(@product_category)
 
 - if @product_category.empty?
   = content do

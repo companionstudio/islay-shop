@@ -1,4 +1,8 @@
-- prefixed_sub_header('Confirm Order Billing', @order.name)
+- breadcrumb('Orders', :orders)
+- breadcrumb("#{@order.name} - #{@order.reference}", :order, :id => @order.id)
+- breadcrumb("Confirm Billing")
+
+= record_name("#{@order.name} - #{@order.reference}", 'shopping-cart')
 
 = resource_form(@order, :url => path(:bill, @order)) do |f|
   = content do

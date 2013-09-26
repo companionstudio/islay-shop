@@ -1,4 +1,6 @@
 = resource_form(@product) do |f|
+  = record_name(@product.name, 'gift', :when_blank => 'New Product')
+    
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)

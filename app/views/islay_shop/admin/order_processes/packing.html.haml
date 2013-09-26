@@ -1,3 +1,6 @@
+- breadcrumb('Orders', :orders)
+- breadcrumb("Packing")
+
 - render :partial => 'filters'
 
 = form_tag(path(:pack_all, :order_processes), :method => :put) do
@@ -22,9 +25,9 @@
               = link_to(order.name, path(order), :class => 'title')
               %span.reference.numeric= order.reference
               %ul.items
-                - order.items.summary.each do |item|
+                - order.sku_items.each do |item|
                   %li
-                    = link_to(item.sku_name, path(:product, :id => item.product_id))
+                    = link_to(item.sku.short_desc, path(:product, :id => item.sku.product_id))
                     %span.numeric= item.quantity
             %td
               %p

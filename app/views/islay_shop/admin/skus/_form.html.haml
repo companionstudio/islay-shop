@@ -1,4 +1,6 @@
 = resource_form([:admin, @product, @sku]) do |f|
+  = record_name(@sku.name, 'gift', :when_blank => 'New SKU')
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:published, :col => 'first-inline')

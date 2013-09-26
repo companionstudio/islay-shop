@@ -1,3 +1,6 @@
-- sub_header('Product', @product.name)
+- breadcrumb('Catalogue', :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name, @product)
+- breadcrumb('Edit')
 
 = render :partial => 'form'

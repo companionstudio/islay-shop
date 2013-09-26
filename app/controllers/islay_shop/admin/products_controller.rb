@@ -4,7 +4,7 @@ module IslayShop
       helper CatalogueHelper
 
       resourceful :product
-      header 'Shop - Products'
+      header 'Catalogue - Products'
       nav 'islay_shop/admin/shop/nav'
 
       def index

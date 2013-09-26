@@ -1,4 +1,5 @@
-- sub_header('Manufacturers')
-- sub_header("Edit", @manufacturer.name)
+- breadcrumb('Manufacturers', :manufacturers)
+- breadcrumb(@manufacturer.name, @manufacturer)
+- breadcrumb('Edit')
 = render :partial => 'form'
 

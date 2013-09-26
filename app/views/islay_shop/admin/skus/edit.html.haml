@@ -1,5 +1,8 @@
-- sub_header(@product.category.name, path(@product.category))
-- sub_header(@product.name, path(@product))
-- prefixed_sub_header("Edit SKU", @sku.short_desc)
+- breadcrumb("Catalogue", :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name, @product)
+- breadcrumb(@sku.short_desc)
+- breadcrumb("Edit")
 
 = render :partial => 'form'
+

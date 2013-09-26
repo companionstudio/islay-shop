@@ -1,40 +1,30 @@
-- sub_header(@promotion.name)
+- breadcrumb('Promotions', :promotions)
+- breadcrumb(@promotion.name)
 
-- sub_header_status do
-  %ul#summary
+- if @promotion.running?
+  - status('Status', 'Running', :mode => :ok)
+- else
+  - status('Status', @promotion.status.capitalize, :mode => :ok)
+
+- status('Orders', @promotion.orders_count, :mode => :ok)
+- status('Revenue', @promotion.revenue, :mode => :ok)
+
+= record_name(@promotion.name, 'bullhorn')
+
+= content(:class => 'inset') do
+  %ul
     %li
-      %span.key Status
-      - if @promotion.running?
-        %span.value.indicator.ok Running
-      - else
-        %span.value.indicator= @promotion.status
-
+      %span.key Start at
+      %span.value= @promotion.start_at
     %li
-      %span.key Orders
-      %span.value.indicator.ok= @promotion.orders_count
+      %span.key End at
+      %span.value= @promotion.end_at
 
-    %li
-      %span.key Revenue
-      %span.value.indicator.ok= @promotion.revenue
+  %p= promotion_summary(@promotion)
 
-= content do
-  = column(12) do
-    %ul.key-value
-      %li
-        %span.key Status
-        %span.value= @promotion.status.capitalize
-      %li
-        %span.key Start at
-        %span.value= @promotion.start_at
-      %li
-        %span.key End at
-        %span.value= @promotion.end_at
+  %h3 Orders
 
-    %p= promotion_summary(@promotion)
-
-  %h3.inset Orders
-
-  %table.inset
+  %table
     %thead
       %tr
         %th Status

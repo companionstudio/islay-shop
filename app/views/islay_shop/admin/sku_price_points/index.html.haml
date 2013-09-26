@@ -1,6 +1,7 @@
-- sub_header(link_to('Catalogue', path(:product_categories)))
-- sub_header(link_to(@product.name, path(@product)))
-- sub_header('Price History')
+- breadcrumb("Catalogue", :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name, @product)
+- breadcrumb("Price Point History")
 
 = content do
   %table

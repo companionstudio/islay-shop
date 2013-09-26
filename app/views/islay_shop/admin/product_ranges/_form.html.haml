@@ -1,7 +1,12 @@
 = resource_form(@product_range) do |f|
+  = record_name(@product_range.name, 'th', :when_blank => 'New Range')
+
   = content do
-    = f.input(:name)
-    = f.input(:description, :as => 'text')
+    = f.fieldset(:class => 'primary') do
+      = f.input(:name)
+    = f.fieldset do
+      = f.input(:description, :as => 'text')
 
   = footer do
-    = f.submit('Save')
+    = save_button
+    = cancel_button(@product_range)

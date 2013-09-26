@@ -1,32 +1,27 @@
-- sub_header(link_to('Catalogue', path(:product_categories)))
-- ancestor_category_links(@product)
-- sub_header(@product.name)
+- breadcrumb('Catalogue', :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name)
 
-- sub_header_status do
+- if @product.published?
+  - status('Published', 'Published', :mode => :ok)
+- else
+  - status('Published', 'Unpublished')
 
-  %ul#summary
-    %li
-      %span.key Published
-      - if @product.published?
-        %span.value.indicator.ok Published
-      - else
-        %span.value.indicator unpublished
+- if @product.for_sale?
+  - status('Status', 'For Sale', :mode => :ok)
+- elsif @product.discontinued?
+  - status('Status', 'Discontinued')
+- else
+  - status('Status', 'Not for Sale')
 
-    %li
-      %span.key Status
-      - if @product.for_sale?
-        %span.value.indicator.ok For Sale
-      - elsif @product.discontinued?
-        %span.value.indicator Discontinued
-      - else
-        %span.value.indicator Not for Sale
+- status('Stock Level', @product.stock_level_status.capitalize, :mode => (@product.stock_warning? ? :warning : :ok))
 
-    %li
-      %span.key Stock Level
-      %span(class="value indicator #{@product.stock_warning? ? 'warning' : 'ok'}")
-        = "Stock #{@product.stock_level_status.capitalize}"
+- if @product.manufacturer
+  = record_name("#{@product.manufacturer.name} #{@product.name}", 'gift')
+- else
+  = record_name(@product.name, 'gift')
 
-= content do
+= content(:class => 'inset') do
   %div.overview
     = column(4, :class => 'asset-preview') do
       %div.frame
@@ -64,13 +59,13 @@
           %div.value= update_time(@product)
 
   = form_tag(path(:position, @product, :skus), :method => :put, :id => 'product-skus') do
-    %h3.inset SKUs
+    %h3 SKUs
 
     %ul
       %li= link_to('Stock Logs', path(@product, :stock_logs))
       %li= link_to('Price History', path(@product, :sku_price_points))
 
-    %table.inset.sortable
+    %table.sortable
       %thead
         %tr
           %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')

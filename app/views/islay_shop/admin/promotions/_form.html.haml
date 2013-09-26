@@ -1,14 +1,13 @@
 = resource_form(@promotion) do |f|
+  = record_name(@promotion.name, 'bullhorn', :when_blank => 'New Promotion')
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
-      = f.input(:active)
+      = f.input(:active, :first_inline => true)
       - unless @promotion.locked?
-        = f.input(:start_at, :as => :date_picker)
-      = f.input(:end_at, :as => :date_picker)
-
-    = f.fieldset do
-      = f.input(:description, :as => 'text')
+        = f.input(:start_at, :as => :date_picker, :inline => true)
+      = f.input(:end_at, :as => :date_picker, :inline => true)
 
     - if @promotion.locked?
       %div.islay-notice-locked

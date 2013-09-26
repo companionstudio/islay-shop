@@ -1,3 +1,4 @@
-- ancestor_category_links(@product_category)
-- prefixed_sub_header('Edit Category:', @product_category.name)
+- breadcrumb("Catalogue", :product_categories)
+- ancestor_breadcrumbs(@product_category)
+- breadcrumb("Edit")
 = render :partial => 'form'

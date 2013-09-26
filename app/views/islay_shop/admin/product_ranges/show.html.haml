@@ -1,4 +1,8 @@
-- prefixed_sub_header('Product Range:', @product_range.name)
+- breadcrumb('Ranges', :product_ranges)
+- breadcrumb(@product_range.name)
+
+= content do
+  = record_name(@product_range.name, 'th')
 
 = footer do
   = edit_button(@product_range)

@@ -1,4 +1,6 @@
 = resource_form(@manufacturer) do |f|
+  = record_name(@manufacturer.name, 'building', :when_blank => 'New Manufacturer')
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)

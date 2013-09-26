@@ -1,2 +1,4 @@
-- prefixed_sub_header('Edit Product Range', @product_range.name)
+- breadcrumb('Ranges', :product_ranges)
+- breadcrumb(@product_range.name, @product_range)
+- breadcrumb('Edit')
 = render :partial => 'form'

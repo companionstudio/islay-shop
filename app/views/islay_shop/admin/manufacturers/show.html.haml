@@ -1,8 +1,10 @@
-- sub_header('Manufacturers')
-- sub_header(@manufacturer.name)
+- breadcrumb('Manufacturers', :manufacturers)
+- breadcrumb(@manufacturer.name, @manufacturer)
 
-= content do
-  %p Derp!
+= record_name(@manufacturer.name, 'building')
+
+= content(:class => 'inset') do
+  %p TODO
 
 = footer do
   = edit_button(@manufacturer)

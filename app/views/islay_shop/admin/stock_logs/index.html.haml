@@ -1,6 +1,7 @@
-- sub_header(link_to('Catalogue', path(:product_categories)))
-- sub_header(link_to(@product.name, path(@product)))
-- sub_header('Stock Logs')
+- breadcrumb("Catalogue", :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name, @product)
+- breadcrumb("Stock Logs")
 
 = content do
   %table
@@ -15,7 +16,7 @@
       - @stock_logs.each do |log|
         %tr
           %td
-            %span.title= link_to(log.short_desc, path(@product, :sku, :id => log.sku_id))
+            %span.title= link_to(log.short_desc, path(:edit, @product, :sku, :id => log.sku_id))
           %td
             = log.action.humanize
           %td

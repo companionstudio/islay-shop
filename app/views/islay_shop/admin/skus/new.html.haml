@@ -1,4 +1,6 @@
-- sub_header(@product.category.name, path(@product.category))
-- sub_header(@product.name, path(@product))
-- sub_header("New SKU")
+- breadcrumb("Catalogue", :product_categories)
+- ancestor_breadcrumbs(@product.category)
+- breadcrumb(@product.name, @product)
+- breadcrumb("Add SKU")
+
 = render :partial => 'form'
