@@ -503,45 +503,6 @@ table
     font-family: $alternate-font-family
 
 /* -------------------------------------------------------------------------- */
-/* INDICATOR
-/* For statuses and counts.
-/* -------------------------------------------------------------------------- */
-span.indicator
-  +border-radius(0.2em)
-  +islay-text-shadow
-  text-transform: uppercase
-  background-color: $mid-grey
-  color: white
-  text-align: center
-  font-size: 1.1em
-  font-family: $alternate-font-family
-  letter-spacing: 0.1em
-  padding: 0.3em 0.6em
-  float: left
-
-  &.neutral
-    background-color: $neutral-color
-
-  &.ok
-    background-color: $positive-color
-
-  &.warning
-    background-color: $negative-color
-
-  &.for_sale
-    background-color: $positive-color
-
-  &.discontinued
-    background-color: $neutral-color
-
-  &.not_for_sale
-    background-color: $negative-color
-
-.indicator.status
-  font-size: 0.9em
-  white-space: nowrap
-
-/* -------------------------------------------------------------------------- */
 /* REPORTS/GRAPHS
 /* -------------------------------------------------------------------------- */
 .series-graph
