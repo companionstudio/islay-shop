@@ -40,12 +40,14 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
 
     # Generate shipping items + components
     execute(%{
-      INSERT INTO order_items (order_id, quantity, type, original_price, total, created_at, updated_at, service_id)
+      INSERT INTO order_items (order_id, quantity, type, original_price, original_total, adjusted_price, total, created_at, updated_at, service_id)
       SELECT 
         id AS order_id,
         1 AS quantity,
         'ServiceOrderItem' AS type,
         shipping_total AS original_price,
+        shipping_total AS original_total,
+        shipping_total AS adjusted_price,
         shipping_total AS total,
         orders.created_at AS created_at,
         orders.created_at AS updated_at,

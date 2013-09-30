@@ -115,7 +115,7 @@ FROM (
           UNION
 
           SELECT sku_id, batch_size AS volume, batch_price / batch_size AS price, 'boxed' AS mode
-          FROM order_items WHERE batch_price IS NOT NULL
+          FROM order_items WHERE batch_price IS NOT NULL AND batch_size IS NOT NULL AND batch_size > 0
 
           UNION
 
@@ -125,7 +125,7 @@ FROM (
           UNION
 
           SELECT id AS sku_id, batch_size AS volume, batch_price / batch_size AS price, 'boxed' AS mode
-          FROM skus WHERE batch_price IS NOT NULL
+          FROM skus WHERE batch_price IS NOT NULL AND batch_size IS NOT NULL AND batch_size > 0
         ) AS prices
         JOIN skus ON skus.id = prices.sku_id
       )

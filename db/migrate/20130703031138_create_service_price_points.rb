@@ -18,8 +18,8 @@ class CreateServicePricePoints < ActiveRecord::Migration
         15,
         true,
         (SELECT created_at FROM services WHERE key = 'shipping' LIMIT 1),
-        (SELECT id FROM users WHERE email = 'system@spookandpuff.com'),
-        (SELECT id FROM users WHERE email = 'system@spookandpuff.com')
+        (SELECT id FROM users WHERE email = 'system@spookandpuff.com' OR email = 'lukeandben@spookandpuff.com' LIMIT 1),
+        (SELECT id FROM users WHERE email = 'system@spookandpuff.com' OR email = 'lukeandben@spookandpuff.com' LIMIT 1)
       )
     })
   end

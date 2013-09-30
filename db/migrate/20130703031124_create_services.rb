@@ -17,8 +17,8 @@ class CreateServices < ActiveRecord::Migration
         false,
         COALESCE((SELECT created_at FROM orders ORDER BY created_at ASC LIMIT 1), NOW()),
         NOW(),
-        (SELECT id FROM users WHERE email = 'system@spookandpuff.com'),
-        (SELECT id FROM users WHERE email = 'system@spookandpuff.com')
+        (SELECT id FROM users WHERE email = 'system@spookandpuff.com' OR email = 'lukeandben@spookandpuff.com' LIMIT 1),
+        (SELECT id FROM users WHERE email = 'system@spookandpuff.com' OR email = 'lukeandben@spookandpuff.com' LIMIT 1)
       )
     })
   end
