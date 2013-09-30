@@ -8,6 +8,10 @@ class PromotionSpendCondition < PromotionCondition
     float :amount, :required => true, :greater_than => 0, :default => 0
   end
 
+  def amount_and_kind
+    SpookAndPuff::Money.new(amount.to_s)
+  end
+
   def check(order)
     spend = SpookAndPuff::Money.new(amount.to_s)
 
