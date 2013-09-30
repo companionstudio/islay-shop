@@ -2,8 +2,8 @@ module IslayShop
   module Admin
     class PromotionsController < IslayShop::Admin::ApplicationController
       resourceful :promotion
-      header 'Promotions'
-      nav 'islay_shop/admin/orders/nav'
+      header 'Orders - Promotions'
+      nav_scope :orders
 
       def index
         @promotions = Promotion.summary.page(params[:page]).filtered(params[:filter]).sorted(params[:sort])

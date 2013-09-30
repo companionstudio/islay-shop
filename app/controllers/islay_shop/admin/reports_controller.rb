@@ -1,5 +1,6 @@
 class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationController
   before_filter :parse_dates, :only => [:index, :orders, :product, :sku]
+  nav 'islay/admin/reports/nav'
 
   def index
     @top_ten  = OrderOverviewReport.top_ten(@report_range)

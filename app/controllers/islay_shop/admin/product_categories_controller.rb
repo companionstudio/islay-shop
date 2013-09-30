@@ -4,8 +4,8 @@ module IslayShop
       helper CatalogueHelper
 
       resourceful :product_category
-      header 'Shop'
-      nav 'islay_shop/admin/shop/nav'
+      header 'Catalogue - Categories'
+      nav_scope :catalogue
 
       def index
         @product_categories = case params[:filter]

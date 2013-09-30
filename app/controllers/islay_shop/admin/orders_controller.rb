@@ -1,7 +1,7 @@
 class IslayShop::Admin::OrdersController < IslayShop::Admin::ApplicationController
   resourceful :order
   header 'Orders'
-  nav 'nav'
+  nav_scope :orders
 
   def index
     @orders = OrderSummary.summary.processing.page(params[:page]).sorted(params[:sort])

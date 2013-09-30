@@ -5,7 +5,7 @@ module IslayShop
 
       resourceful :product
       header 'Catalogue - Products'
-      nav 'islay_shop/admin/shop/nav'
+      nav_scope :catalogue
 
       def index
         @products = Product.summary.page(params[:page]).filtered(params[:filter]).sorted(params[:sort])

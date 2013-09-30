@@ -1,7 +1,7 @@
 class IslayShop::Admin::StockLevelsController < IslayShop::Admin::ApplicationController
   helper IslayShop::Admin::CatalogueHelper
-  header 'Shop - Stock Levels'
-  nav 'islay_shop/admin/shop/nav'
+  header 'Catalogue - Stock Levels'
+  nav_scope :catalogue
 
   def index
     @skus = Sku.full_summary.filter(params[:filter]).sorted(params[:sort])

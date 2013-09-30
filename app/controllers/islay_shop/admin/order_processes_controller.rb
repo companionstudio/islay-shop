@@ -1,6 +1,6 @@
 class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::ApplicationController
-  header 'Shop - Order Processing'
-  nav 'islay_shop/admin/orders/nav'
+  header 'Orders - Processing'
+  nav_scope :orders
   helper 'islay_shop/admin/orders'
 
   before_filter :status_counts

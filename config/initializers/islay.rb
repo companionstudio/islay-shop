@@ -4,11 +4,6 @@ Islay::Engine.extensions.register do |e|
   e.admin_styles true
   e.admin_scripts true
 
-  e.navigation do |n|
-    n.section('Catalogue', :catalogue, 'gift')
-    n.section('Orders', :orders, 'shopping-cart')
-  end
-
   e.reports('Shop', :shop_reports, :class => 'basket')
 
   e.dashboard(:primary, :top, :order_overview)
@@ -19,4 +14,25 @@ Islay::Engine.extensions.register do |e|
   e.add_item_entry('Product Range', :product_range, 'folder-close')
   e.add_item_entry('Manufacturer', :manufacturer, 'building')
   e.add_item_entry('Promotion', :promotion, 'bullhorn')
+
+  e.nav_section(:catalogue) do |s|
+    s.root('Catalogue', :catalogue, 'gift')
+    s.sub_nav('Categories', :product_categories)
+    s.sub_nav('Products', :products)
+    s.sub_nav('Ranges', :product_ranges)
+    s.sub_nav('Manufacturers', :manufacturers)
+    s.sub_nav('Stock', :stock_levels)
+  end
+
+  e.nav_section(:orders) do |s|
+    s.root('Orders', :orders, 'shopping-cart')
+    s.sub_nav('Overview', :orders, :root => true)
+    s.sub_nav('Processing', :order_processes)
+    s.sub_nav('Archive', :order_archives)
+    s.sub_nav('Promotions', :promotions)
+  end
+
+  e.nav_section(:reports) do |s|
+    s.sub_nav('Shop', :shop_reports)
+  end
 end
