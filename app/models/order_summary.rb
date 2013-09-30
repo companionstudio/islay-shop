@@ -1,8 +1,13 @@
 class OrderSummary < Order
+  # Generates a scope with a bunch of fields calculated for efficiently 
+  # reporting on a bunch of orders. It is intended for listing pages and the 
+  # like.
+  #
+  # @return ActiveRecord::Relation
   def self.summary
     select(%{
       id, status, name, updated_at, reference,
-      '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
+      total,
       CASE
         WHEN orders.updater_id IS NOT NULL THEN (SELECT name FROM users WHERE id = updater_id)
         ELSE 'Customer'
@@ -36,7 +41,6 @@ class OrderSummary < Order
   def self.billing
     where(:status => 'pending')
   end
-
 
   def self.alt_summary
     select(%{
