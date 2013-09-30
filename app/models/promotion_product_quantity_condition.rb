@@ -25,8 +25,6 @@ class PromotionProductQuantityCondition < PromotionCondition
     end
   end
 
-  private
-
   # Returns the product associated with this condition.
   #
   # @return Product
