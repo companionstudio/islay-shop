@@ -317,7 +317,7 @@ module Promotions
     end
 
     effect(:competition_entry) do |c|
-      c.part.name
+      "entry into #{c.part.name}"
     end
 
     effect(:get_n_free) do |c|

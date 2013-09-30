@@ -1,0 +1,16 @@
+= f.fieldset("Entry into a competition", effect_opts(effect)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:name, :class => 'medium', :inline => true)
+  %div.help
+    %p.summary
+      Customers are entered into the specified competition
+
+    %div.extra.islay-toggle
+      %p
+        Entries are once per order. A customer making multiple orders may
+        qualify multiple times.
+
+      %p
+        This effect does not directly modify the order, instead it acts as a 
+        flag, specifying that it's 'qualified'.
