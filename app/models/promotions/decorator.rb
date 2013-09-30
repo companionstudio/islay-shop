@@ -231,6 +231,10 @@ module Promotions
       "enter the code #{code} at checkout"
     end
 
+    condition(:order_item_quantity) do |c|
+      "buy at least #{h.pluralize(c.part.quantity, "item")}"
+    end
+
     condition(:category_quantity) do |c|
       if c.html?
         quantity = h.content_tag(:span, c.part.quantity, :class => 'condition-quantity')

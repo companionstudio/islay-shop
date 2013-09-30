@@ -1,0 +1,12 @@
+= f.fieldset("Have a minimum number of items", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  = f.input(:quantity, :class => 'tiny', :inline => true)
+  %div.help
+    %p.summary
+      To qualify, customers need to purchase the minimum of specified items.
+
+    %div.extra.islay-toggle
+      %p
+        This is not the quantity of a single item in an order, but the sum of
+        all items.
