@@ -1,8 +1,8 @@
-- render :partial => 'islay/admin/reports/nav'
-- sub_header('Shop', path(:shop_reports))
-- sub_header('Products', path(:product_reports))
-- sub_header(@product.name, path(:product_report, :id => @product))
-- sub_header(@sku.short_desc)
+- breadcrumb('Reports', :reports)
+- breadcrumb('Shop', :shop_reports)
+- breadcrumb('Products', :product_reports)
+- breadcrumb(@product.name, @product)
+- breadcrumb(@sku.short_desc)
 
 = content(:class => 'inset') do
   %div.report-cell

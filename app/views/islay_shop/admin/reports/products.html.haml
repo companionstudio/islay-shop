@@ -1,6 +1,6 @@
-- render :partial => 'islay/admin/reports/nav'
-- sub_header('Shop', path(:shop_reports))
-- sub_header('Products')
+- breadcrumb('Reports', :reports)
+- breadcrumb('Shop', :shop_reports)
+- breadcrumb('Products')
 
 = content(:class => 'inset') do
   = column(8) do

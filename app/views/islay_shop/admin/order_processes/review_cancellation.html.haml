@@ -1,4 +1,4 @@
-- prefixed_sub_header('Confirm Order Cancellation', @order.name)
+- breadcrumb('Confirm Order Cancellation', @order.name)
 
 = resource_form(@order, :url => path(:cancel, @order)) do |f|
   = content do
