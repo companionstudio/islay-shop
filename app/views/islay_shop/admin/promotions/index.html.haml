@@ -9,7 +9,7 @@
 - sort_nav(:promotions, 'Revenue', 'revenue')
 
 = content do
-  %table{:cellpadding => 0, :cellspacing => 0}
+  %table.fixed-header{:cellpadding => 0, :cellspacing => 0}
     %thead
       %tr
         %th Active
@@ -22,9 +22,10 @@
 
     %tbody
       - @promotions.each do |promotion|
-        %td.boolean
-          %span(class="boolean #{promotion.active?}")
-            %span= friendly_bool(promotion.active?)
+        %tr
+          %td.boolean
+            %span(class="boolean #{promotion.active?}")
+              %span= friendly_bool(promotion.active?)
           %td
             = link_to(promotion.name, path(promotion), :class => 'title')
           %td

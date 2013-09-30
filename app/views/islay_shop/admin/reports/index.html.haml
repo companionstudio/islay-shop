@@ -1,8 +1,10 @@
 - render :partial => 'islay/admin/reports/nav'
-- sub_header('Shop')
+- breadcrumb('Reports', :reports)
+- breadcrumb('Shop')
+
+= record_name('Shop', 'shopping-cart')
 
 = content(:class => 'inset') do
-
   = column(8) do
     %div#order-graphs.report-cell
       %h3 Orders Over Time

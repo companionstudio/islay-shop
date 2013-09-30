@@ -35,7 +35,7 @@
     %tbody
       - if @promotion.orders.empty?
         %tr
-          %td{:colspan => 3, :class => 'empty'} No orders yet
+          %td{:colspan => 4, :class => 'empty'} No orders yet
       - else
         - @promotion.orders.items_summary.each do |order|
           %tr

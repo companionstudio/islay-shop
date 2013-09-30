@@ -8,7 +8,7 @@
 
 - else
   = content do
-    %table(cellpadding=0 cellspacing=0)
+    %table.fixed-header(cellpadding=0 cellspacing=0)
       %thead
         %tr
           %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
