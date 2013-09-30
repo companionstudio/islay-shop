@@ -91,8 +91,8 @@ class OrderItem
     # @param Integer n
     # @param SpookAndPuff::Money price
     # @param ActiveRecord::Base entry
-    #
     # @return ActiveRecord::Base
+    # @todo Check and respect stock levels
     def set_quantity_and_price(purchase, n, price, entry = find_or_create_item(purchase))
       entry.components.clear
       update_entry(entry) do |i|

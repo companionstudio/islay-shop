@@ -27,7 +27,7 @@ class Order
     # 
     # @param ActiveRecord::Base purchase
     # @param Integer n
-    # @param [String, Numeric] price
+    # @param SpookAndPuff::Money price
     # @param Hash opts
     # @option opts [true, false] :retotal
     #

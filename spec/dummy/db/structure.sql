@@ -1405,6 +1405,40 @@ ALTER SEQUENCE products_id_seq OWNED BY products.id;
 
 
 --
+-- Name: promotion_codes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE promotion_codes (
+    id integer NOT NULL,
+    promotion_condition_id integer NOT NULL,
+    code character varying(200) NOT NULL,
+    redeemed_at timestamp without time zone,
+    order_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: promotion_codes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE promotion_codes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: promotion_codes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE promotion_codes_id_seq OWNED BY promotion_codes.id;
+
+
+--
 -- Name: promotion_conditions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1484,7 +1518,9 @@ CREATE TABLE promotions (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     terms tsvector,
-    publish_application_limit boolean DEFAULT true
+    publish_application_limit boolean DEFAULT true,
+    creator_id integer NOT NULL,
+    updater_id integer NOT NULL
 );
 
 
@@ -2000,6 +2036,13 @@ ALTER TABLE ONLY products ALTER COLUMN id SET DEFAULT nextval('products_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY promotion_codes ALTER COLUMN id SET DEFAULT nextval('promotion_codes_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY promotion_conditions ALTER COLUMN id SET DEFAULT nextval('promotion_conditions_id_seq'::regclass);
 
 
@@ -2303,6 +2346,14 @@ ALTER TABLE ONLY product_variants
 
 ALTER TABLE ONLY products
     ADD CONSTRAINT products_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: promotion_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY promotion_codes
+    ADD CONSTRAINT promotion_codes_pkey PRIMARY KEY (id);
 
 
 --
@@ -2787,6 +2838,20 @@ CREATE INDEX fk__products_updater_id ON products USING btree (updater_id);
 
 
 --
+-- Name: fk__promotion_codes_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX fk__promotion_codes_order_id ON promotion_codes USING btree (order_id);
+
+
+--
+-- Name: fk__promotion_codes_promotion_condition_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX fk__promotion_codes_promotion_condition_id ON promotion_codes USING btree (promotion_condition_id);
+
+
+--
 -- Name: fk__promotion_conditions_promotion_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2798,6 +2863,20 @@ CREATE INDEX fk__promotion_conditions_promotion_id ON promotion_conditions USING
 --
 
 CREATE INDEX fk__promotion_effects_promotion_id ON promotion_effects USING btree (promotion_id);
+
+
+--
+-- Name: fk__promotions_creator_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX fk__promotions_creator_id ON promotions USING btree (creator_id);
+
+
+--
+-- Name: fk__promotions_updater_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX fk__promotions_updater_id ON promotions USING btree (updater_id);
 
 
 --
@@ -3522,6 +3601,22 @@ ALTER TABLE ONLY products
 
 
 --
+-- Name: fk_promotion_codes_order_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY promotion_codes
+    ADD CONSTRAINT fk_promotion_codes_order_id FOREIGN KEY (order_id) REFERENCES orders(id);
+
+
+--
+-- Name: fk_promotion_codes_promotion_condition_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY promotion_codes
+    ADD CONSTRAINT fk_promotion_codes_promotion_condition_id FOREIGN KEY (promotion_condition_id) REFERENCES promotion_conditions(id) ON DELETE CASCADE;
+
+
+--
 -- Name: fk_promotion_conditions_promotion_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3535,6 +3630,22 @@ ALTER TABLE ONLY promotion_conditions
 
 ALTER TABLE ONLY promotion_effects
     ADD CONSTRAINT fk_promotion_effects_promotion_id FOREIGN KEY (promotion_id) REFERENCES promotions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: fk_promotions_creator_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY promotions
+    ADD CONSTRAINT fk_promotions_creator_id FOREIGN KEY (creator_id) REFERENCES users(id);
+
+
+--
+-- Name: fk_promotions_updater_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY promotions
+    ADD CONSTRAINT fk_promotions_updater_id FOREIGN KEY (updater_id) REFERENCES users(id);
 
 
 --
@@ -3804,3 +3915,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130910054748');
 INSERT INTO schema_migrations (version) VALUES ('20130911234809');
 
 INSERT INTO schema_migrations (version) VALUES ('20130919011654');
+
+INSERT INTO schema_migrations (version) VALUES ('20130924064801');
+
+INSERT INTO schema_migrations (version) VALUES ('20130925005540');
