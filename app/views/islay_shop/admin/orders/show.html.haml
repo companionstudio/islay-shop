@@ -124,7 +124,10 @@
           %td.currency
             %span.numeric= item.price_summary
           %td.currency
-            %span.numeric= item.total
+            - if @order.discounted?
+              %span.numeric= item.pre_discount_total
+            - else
+              %span.numeric= item.total
           %td.currency
             - if item.discounted?
               %span.numeric.discount #{item.discount} discount
