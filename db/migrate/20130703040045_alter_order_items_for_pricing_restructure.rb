@@ -59,19 +59,6 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
       FROM order_items WHERE type = 'OrderServiceItem'
     })
 
-    # Generate Adjustments
-    execute(%{
-      INSERT INTO order_item_adjustments (order_item_id, kind, source, quantity, adjustment)
-      SELECT 
-        ois.id AS order_item_id,
-        'order_level' AS kind,
-        'promotion' AS source,
-        ois.quantity,
-        ois.total * (os.percentage / 100) AS adjustment
-      FROM (SELECT id, (discount / original_product_total * 100) AS percentage FROM orders WHERE discount > 0) AS os
-      JOIN order_items AS ois ON ois.order_id = os.id
-    })
-
     # Remove old columns
     remove_column(:order_items, :batch_size)
     remove_column(:order_items, :batch_price)
