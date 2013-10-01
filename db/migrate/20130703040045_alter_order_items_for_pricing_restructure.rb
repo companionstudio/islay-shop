@@ -44,7 +44,7 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
       SELECT 
         id AS order_id,
         1 AS quantity,
-        'ServiceOrderItem' AS type,
+        'OrderServiceItem' AS type,
         shipping_total AS original_price,
         shipping_total AS original_total,
         shipping_total AS adjusted_price,
@@ -56,7 +56,7 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
 
       INSERT INTO order_item_components (order_item_id, kind, quantity, price, total)
       SELECT id, 'calculated', 1, original_price, total
-      FROM order_items WHERE type = 'ServiceOrderItem'
+      FROM order_items WHERE type = 'OrderServiceItem'
     })
 
     # Generate Adjustments
