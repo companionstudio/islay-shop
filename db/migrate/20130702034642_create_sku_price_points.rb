@@ -42,7 +42,7 @@ class CreateSkuPricePoints < ActiveRecord::Migration
           creator_id AS updater_id
         FROM skus
         WHERE batch_price > 0 AND batch_size > 0
-      )
+      ) AS points
     })
   end
 
