@@ -61,8 +61,8 @@ class SkuPricePoint < ActiveRecord::Base
   def mode_desc 
     case mode
     when 'single'     then 'each'
-    when 'bracketed'  then "for #{point.volume} or more"
-    when 'boxed'      then "for every #{point.volume}"
+    when 'bracketed'  then "for #{volume} or more"
+    when 'boxed'      then "for every #{volume}"
     end
   end
 
