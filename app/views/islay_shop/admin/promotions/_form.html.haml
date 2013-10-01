@@ -8,6 +8,8 @@
       - unless @promotion.locked?
         = f.input(:start_at, :as => :date_picker, :inline => true)
       = f.input(:end_at, :as => :date_picker, :inline => true)
+      = f.input(:application_limit, :class => 'small', :first_inline => true)
+      = f.input(:publish_application_limit, :inline => true, :label => 'Publish limit')
 
     - if @promotion.locked?
       %div.islay-notice-locked
