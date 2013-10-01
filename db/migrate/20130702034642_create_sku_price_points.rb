@@ -15,65 +15,6 @@ class CreateSkuPricePoints < ActiveRecord::Migration
       t.user_tracking
     end
 
-    query = %{
--- Might never have changed,
--- have changed, construct inital value
--- Calculate valid from/to and current status
--- batch price is cleared; not current
-
--- Drive it from the SKUs table
-
-WITH initial AS (
-  SELECT 
-    id AS sku_id, 
-    price, 
-    batch_size, 
-    batch_price, 
-    creator_id, 
-    creator_id AS updater_id, 
-    created_at AS valid_from, 
-    NULL::timestamp AS valid_to, 
-    false AS current
-  FROM skus
-  WHERE NOT EXISTS (SELECT 1 FROM sku_price_logs WHERE sku_id = id)
-),
-single_logs AS (
-  SELECT 
-    *, 
-    1 AS volume, 
-    'single' AS mode,
-  FROM sku_price_logs
-  WHERE price_before != price_after
-),
-batch_logs AS (
-  SELECT
-    *,
-    batch_size AS volume,
-    'boxed' AS mode,
-  FROM sku_price_logs
-  WHERE 
-    (batch_price IS NULL and batch_size IS NULL) OR 
-    -- Where there was a batch price, but it was nulled out
-    EXISTS (SELECT 1 FROM sku_price_logs AS ls
-            WHERE ls.id != id AND ls.sku_id = sku_id AND ls.created_at < created_at)
-)
-
-SELECT * 
-FROM (
-  SELECT sku_id, price, 1 AS volume, 'single' AS mode, current, valid_from, valid_to, creator_id, updater_id
-  FROM initial
-
-  UNION
-
-  SELECT sku_id, (batch_price / batch_size) AS price, batch_size AS volume, 'boxed' AS mode, current, valid_from, valid_to, creator_id, updater_id
-  FROM initial WHERE batch_size IS NOT NULL AND batch_price IS NOT NULL AND batch_size != 0 AND batch_price != 0
-
-  -- Can trivally check current on price log if there is no older ones
-) AS results
-
-
-    }
-
     # This scary query does the following
     # * Figures out the unique price points (price+volume) and their first and 
     #   last date of sale based on order_items

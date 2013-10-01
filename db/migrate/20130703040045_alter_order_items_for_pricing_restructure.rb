@@ -6,8 +6,8 @@ class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
       INSERT INTO legacy_order_items SELECT * FROM order_items
     })
 
-    # Update type on order_items to be 'SkuOrderItem'
-    execute("UPDATE order_items SET type = 'SkuOrderItem'")
+    # Update type on order_items to be 'OrderSkuItem'
+    execute("UPDATE order_items SET type = 'OrderSkuItem'")
 
     # Generate components
     execute(%{
