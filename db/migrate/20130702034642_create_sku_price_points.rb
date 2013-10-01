@@ -16,7 +16,7 @@ class CreateSkuPricePoints < ActiveRecord::Migration
     end
 
     execute(%{
-      INSERT INTO sku_price_points (sku_id, volume, price, mode, current, valid_from, valid_to, creator_id, updater_id)
+      INSERT INTO sku_price_points (sku_id, volume, price, mode, current, valid_from, creator_id, updater_id)
       SELECT * FROM (
         SELECT
           id AS sku_id, 
