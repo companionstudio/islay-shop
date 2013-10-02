@@ -2,12 +2,11 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
   helper IslayShop::Admin::CatalogueHelper
   resourceful :sku, :parent => :product
   header 'Shop'
-  nav 'islay_shop/admin/shop/nav'
+  nav_scope :catalogue
 
   private
 
   def dependencies
-    @sku.price_points.build(:current => true, :valid_from => Time.now, :price => '0')
     @assets = Asset.order('name')
     if integrate_blog?
       @blog_entries = BlogEntry.order('published_at DESC')

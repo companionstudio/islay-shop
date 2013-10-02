@@ -54,6 +54,13 @@ class SkuPricePoint < ActiveRecord::Base
     where("volume >= ?", quantity).order('volume ASC').first
   end
 
+  # A predicate which checks to see if the price point is in 'single' mode.
+  #
+  # @return [true, false]
+  def single?
+    mode == 'single'
+  end
+
   # Returns a human-readable fragment describing the mode of the price point
   # e.g. for single volume is says 'each'.
   #

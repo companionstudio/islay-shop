@@ -9,4 +9,5 @@
 = content do
   = render :partial => 'islay_shop/admin/orders/table'
 
-= paginate(@orders, :theme => 'admin')
+= footer do 
+  = paginate(@orders, :theme => 'admin')

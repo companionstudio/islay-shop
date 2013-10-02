@@ -14,7 +14,7 @@ class Sku
 
         # All editing of price points is done via the SKU
         accepts_nested_attributes_for :price_points
-        attr_accessible :price_points_attributes
+        attr_accessible :price_points_attributes, :new_price_point
 
         # Use an alias chain to swap in our own attributes= method
         alias_method :original_price_points_attributes=, :price_points_attributes=
@@ -92,6 +92,23 @@ class Sku
       @single_price = current_price_points.where(:mode => 'single').first.price
     end
 
+    # Returns a stubbed out price point which serves as a 'template' for 
+    # generating new price points.
+    #
+    # @return SkuPricePoint
+    def new_price_point
+      SkuPricePoint.new(:mode => 'boxed', :volume => 0, :price => '0')
+    end
+
+    # This is a no-op. It just allows us to use the #template_price_point in 
+    # forms.
+    #
+    # @return nil
+    def new_price_point=(vals)
+
+      nil
+    end
+
     private
 
     # Checks to see if the hash of values is for an acceptable price point.
@@ -100,7 +117,7 @@ class Sku
     # @param Hash point
     # @return [true, false]
     def acceptable_price_point?(point)
-      !(point['id'].blank? and point['volume'].blank? and point['display_price'].to_i == 0)
+      !point['id'].blank? and !point['volume'].blank? and !point['display_price'].to_i == 0
     end
 
     # Price points with a mode of either 'boxed' or 'bracketed' must not overlap.

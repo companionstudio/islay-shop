@@ -13,53 +13,87 @@
       = f.input(:purchase_limiting, :label => 'Limiting', :col => 'first-inline')
       = f.input(:purchase_limit, :label => 'Limit', :class => 'small', :col => 'inline')
 
-    = f.fieldset('Pricing') do
-      - if f.object.errors.has_key?(:price_points)
-        %p.association-error
-          = f.object.errors.get(:price_points).join(', ')
-      %table{:cellspacing => 0, :cellpadding => 0}
-        %thead
-          %tr
-            %th.date Dates
-            %th.kind Kind
-            %th.number Volume
-            %th.number Price
-            %th.controls Expire
-
-        %tbody
-          = f.fields_for(:price_points, @sku.price_points, {:include_id => false}) do |point|
-            - if point.object.current?
-              %tr
-                %td
-                  %span.time= point.object.valid_from
-                  = point.hidden_field(:id)
-                %td
-                  = point.select(:mode, %w(single boxed bracketed))
-                %td
-                  = point.text_field(:volume, :field_class => 'number tiny')
-                %td
-                  = point.text_field(:display_price, :field_class => 'tiny currency', :autocomplete => 'off')
-                %td
-                  - unless point.object.new_record? or point.object.mode == 'single'
-                    = point.check_box(:expire)
-            - else
-              %tr.historical
-                %td
-                  %span.time
-                    = point.object.valid_from
-                  \-
-                  %span.time
-                    = point.object.valid_to
-                %td= point.object.mode
-                %td= point.object.volume
-                %td= point.object.display_price
-                %td &nbsp;
-
     = f.fieldset('Size & Weight', :class => 'size-and-weight') do
       = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
       = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
       = f.input(:size, :class => 'small', :col => 'inline')
 
+    = f.fieldset('Pricing', :class => 'islay-shop-sku-pricing') do
+      - if f.object.errors.has_key?(:price_points)
+        %p.association-error
+          = f.object.errors.get(:price_points).join(', ')
+      %table
+        %thead
+          %tr
+            %th.current Current
+            %th.dates Dates
+            %th.mode Mode
+            %th.volume Volume
+            %th.price Price
+            %th.expire Expire
+
+        %tbody
+          = f.fields_for(:price_points, @sku.price_points, :include_id => false) do |p|
+            - if p.object.current?
+              %tr.current
+                %td.current
+                  %span.boolean.true
+                    %span Yes
+                %td.dates
+                  %span.indicator.time= p.object.valid_from
+                  = p.hidden_field(:id)
+                %td.mode
+                  %span.indicator.pricing-mode= p.object.mode.capitalize
+                %td.volume
+                  %span.indicator.numeric= p.object.volume
+                %td.price
+                  = p.text_field(:display_price, :autocomplete => 'off')
+                %td.expire
+                  - if p.object.single?
+                    &nbsp;
+                  - else
+                    %label 
+                      Expire
+                      = p.check_box(:expire)
+
+            - else
+              %tr.historical
+                %td.current
+                  %span.boolean.false
+                    %span No
+                %td.dates
+                  %span.indicator.time= p.object.valid_from
+                  %span.to to
+                  %span.indicator.time= p.object.valid_to
+                %td.mode
+                  %span.indicator.pricing-mode= p.object.mode.capitalize
+                %td.volume
+                  %span.indicator.numeric= p.object.volume
+                %td.price
+                  %span.indicator.currency= p.object.price
+                %td.expire
+                  &nbsp;
+
+          = f.fields_for(:new_price_point, @sku.new_price_point, :include_id => false) do |p|
+            %tr.template
+              %td.current 
+                &nbsp;
+              %td.dates 
+                &nbsp;
+              %td.mode
+                %div.pricing-mode
+                  %label
+                    Boxed
+                    = p.radio_button(:mode, 'boxed')
+                  %label
+                    Bracketed
+                    = p.radio_button(:mode, 'bracketed')
+              %td.volume
+                = p.text_field(:volume)
+              %td.price
+                = p.text_field(:display_price, :autocomplete => 'off')
+              %td.expire 
+                &nbsp;
 
     - f.metadata do |attrs|
       = f.fieldset('Attributes', :class => 'attributes') do

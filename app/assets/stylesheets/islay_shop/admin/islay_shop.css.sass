@@ -280,6 +280,87 @@
       margin-left: 1em
 
 /* -------------------------------------------------------------------------- */
+/* SKU EDITING
+/* -------------------------------------------------------------------------- */
+.islay-shop-sku-pricing
+  position: relative
+
+  table
+    border: 0.1em solid $header-border-color
+    margin-bottom: 1.5em
+
+  td
+    background-color: white !important
+    border-bottom: 0.1em solid $light-grey + 15
+
+  th.current,
+  th.volume,
+  th.price,
+  th.expire
+    width: 4em
+
+  td.volume input
+    width: 3em
+
+  td.price input
+    width: 5em
+
+  .dates .time
+    display: inline-block
+
+  tr.disabled 
+    td
+      background: $light-grey + 25 !important
+
+    .indicator
+      color: $mid-grey
+      background: $light-grey
+
+  // Reposition the booleans slightly
+  .boolean
+    margin-top: 0.5em
+
+  // Tweak the indicators so they look better next to inputs
+  .indicator
+    padding: 0.65em 0.8em
+
+  // make the time indicators a bit nicer
+  .to
+    padding: 0.65em 0.4em
+    display: inline-block
+
+  .time
+    border: 0.1em solid $light-grey
+    color: inherit
+    background: transparent
+    padding: 0.63em 0.8em
+    display: inline-block
+    float: none
+
+  .controls
+    position: absolute
+    top: 0.6em
+    right: 0
+
+    button
+      margin: 0
+
+    .button
+      margin-right: 0.5em
+
+  // When folded, hide the dates
+  table.folded
+    .mode
+      border-left-color: $header-border-color
+
+    .historical,
+    .dates,
+    th.current,
+    td.current
+      display: none
+
+
+/* -------------------------------------------------------------------------- */
 /* PROMOTIONS
 /* -------------------------------------------------------------------------- */
 .promotion-effects,
