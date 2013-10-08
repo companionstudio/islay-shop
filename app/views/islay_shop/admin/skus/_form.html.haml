@@ -2,23 +2,25 @@
   = record_name(@sku.name, 'gift', :when_blank => 'New SKU')
 
   = content do
-    = f.fieldset(:class => 'primary') do
+    = f.fieldset('Details', :class => 'form-tab', :id => 'sku-details') do
       = f.input(:published, :col => 'first-inline')
       = f.input(:status, :col => 'inline', :collection => f.object.statuses, :as => 'radio_buttons')
       = f.input(:name)
       = f.input(:stock_level)
+
+      = f.fieldset do
+        = f.input(:purchase_limiting, :label => 'Limit purchases', :col => 'first-inline')
+        = f.input(:purchase_limit, :label => 'to', :class => 'small', :col => 'inline')
+
+      = f.fieldset do
+        = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
+        = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
+        = f.input(:size, :class => 'small', :col => 'inline')
+
+    = f.fieldset('Images & Docs', :class => 'form-tab', :id => 'sku-assets') do
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
 
-    = f.fieldset('Purchase Limit') do
-      = f.input(:purchase_limiting, :label => 'Limiting', :col => 'first-inline')
-      = f.input(:purchase_limit, :label => 'Limit', :class => 'small', :col => 'inline')
-
-    = f.fieldset('Size & Weight', :class => 'size-and-weight') do
-      = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
-      = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
-      = f.input(:size, :class => 'small', :col => 'inline')
-
-    = f.fieldset('Pricing', :class => 'islay-shop-sku-pricing') do
+    = f.fieldset('Pricing', :class => 'islay-shop-sku-pricing form-tab', :id => 'sku-pricing') do
       - if f.object.errors.has_key?(:price_points)
         %p.association-error
           = f.object.errors.get(:price_points).join(', ')
@@ -96,12 +98,12 @@
                 &nbsp;
 
     - f.metadata do |attrs|
-      = f.fieldset('Attributes', :class => 'attributes') do
+      = f.fieldset('Extra', :class => 'attributes form-tab', :id => 'sku-extra') do
         - attrs.each do |name, opts|
           = f.metadata_input(name, opts)
 
     - if integrate_blog?
-      = f.fieldset('Blog Entries') do
+      = f.fieldset('Blog Entries', :class => 'form-tab', :id => 'sku-blog') do
         = f.association(:blog_entries, :collection => @blog_entries, :as => 'multi_select', :label => 'Entries')
 
     = f.hidden_field(:product_id, :value => @product.id)

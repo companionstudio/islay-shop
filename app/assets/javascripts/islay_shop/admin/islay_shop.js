@@ -167,7 +167,7 @@ $SP.u = {
     this.pricesCount = this.$table.find('tr.current').length;
 
     this.$controls = $('<div class="controls"></div>');
-    this.$table.after(this.$controls);
+    this.$table.before(this.$controls);
 
     // Add button
     this.$add = $('<button>New Price</button>');
