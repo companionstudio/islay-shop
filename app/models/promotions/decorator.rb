@@ -9,9 +9,14 @@ module Promotions
     # @return String
     # @todo Order conditions/effects before mapping.
     def summary(mode, format)
-      what = generate_summary(condition_configs, model.conditions, mode, format)
-      to = generate_summary(effect_configs, model.effects, mode, format)
-      output = "#{preamble} #{what} #{join_text(mode, format)} #{to}"
+      what  = generate_summary(condition_configs, model.conditions, mode, format)
+      to    = generate_summary(effect_configs, model.effects, mode, format)
+      start = preamble(mode, format, what, to)
+      join  = join_text(mode, format, what, to)
+
+      # When interpolating, any of these calls might return an empty string, so
+      # we squeeze successive spaces within the resulting string.
+      output = "#{start} #{what} #{join} #{to}".squeeze(" ")
 
       case format
       when :html then output.html_safe
@@ -133,9 +138,11 @@ module Promotions
       summaries = parts.map do |part|
         context.part = part
         instance_exec(context, &configs[part.short_name])
-      end
+      end.compact
 
       case summaries.length
+      when 0
+        ""
       when 1 
         summaries.first
       when 2 
@@ -149,23 +156,42 @@ module Promotions
     # Generates a preamble/statement to be appended to the front of the 
     # summary. 
     #
+    # @param Symbol mode
+    # @param [:text, :html] mode
+    # @param String condition_summary
+    # @param String effect_summary
     # @return String
     # @todo Actually implement this
     # @todo Handle limited applications
-    def preamble
-      "Customers who"
+    def preamble(mode, format, condition_summary, effect_summary)
+      if condition_summary.blank?
+        "Customers"
+      else
+        "Customers who"
+      end
     end
 
     # Determines the text to be interpolated between the condition and effect
     # summaries by enumerating over the join rules and choosing the first one
     # that succeeds.
     #
+    # Where the condition summary is black, it will skip evaluating the join 
+    # rules and return "receive".
+    #
+    # @param Symbol mode
+    # @param [:text, :html] mode
+    # @param String condition_summary
+    # @param String effect_summary
     # @return String
-    def join_text(mode, format)
-      context = Context.new(model, mode, format)
-      join_rules.each do |r|
-        result = r.call(context)
-        return result unless result.nil?
+    def join_text(mode, format, condition_summary, effect_summary)
+      if condition_summary.blank?
+        "receive"
+      else
+        context = Context.new(model, mode, format)
+        join_rules.each do |r|
+          result = r.call(context)
+          return result unless result.nil?
+        end
       end
     end
 
@@ -191,14 +217,23 @@ module Promotions
     self.effect_configs = {}
     self.join_rules = []
 
+    # If a condition is configured to be skipped, then this is the
+    # lambda used in place of one otherwise provided. See ::condition
+    NOOP = lambda {|c| nil}
+
     # Defines the configuration for turning a condition into a textual
-    # description.
+    # description. To skip the inclusion of a condition in a summary, 
+    # pass :skip as the second argument rather than the a block.
     #
     # @param Symbol name
+    # @param [:include, :skip] mode
     # @param Proc blk
     # @return Proc
-    def self.condition(name, &blk)
-      condition_configs[name] = blk
+    def self.condition(name, mode = :include, &blk)
+      condition_configs[name] = case mode
+      when :include then blk
+      when :skip then NOOP
+      end
     end
 
     # Defines the configuration for turning an effect into a textual
@@ -230,6 +265,8 @@ module Promotions
 
       "enter the code #{code} at checkout"
     end
+
+    condition(:shipping, :skip)
 
     condition(:order_item_quantity) do |c|
       "buy at least #{h.pluralize(c.part.quantity, "item")}"
@@ -331,7 +368,7 @@ module Promotions
     end
 
     effect(:shipping) do |c|
-      if c.part.amount == 0
+      if c.part.amount.zero?
         "free shipping"
       else
         case c.part.mode

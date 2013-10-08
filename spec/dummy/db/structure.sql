@@ -1446,7 +1446,7 @@ CREATE TABLE promotion_conditions (
     id integer NOT NULL,
     promotion_id integer NOT NULL,
     type character varying(50) NOT NULL,
-    config hstore NOT NULL,
+    config hstore,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -1479,7 +1479,7 @@ CREATE TABLE promotion_effects (
     id integer NOT NULL,
     promotion_id integer NOT NULL,
     type character varying(50) NOT NULL,
-    config hstore NOT NULL,
+    config hstore,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -1520,7 +1520,8 @@ CREATE TABLE promotions (
     terms tsvector,
     publish_application_limit boolean DEFAULT true,
     creator_id integer NOT NULL,
-    updater_id integer NOT NULL
+    updater_id integer NOT NULL,
+    application_limit integer
 );
 
 
@@ -3919,3 +3920,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130919011654');
 INSERT INTO schema_migrations (version) VALUES ('20130924064801');
 
 INSERT INTO schema_migrations (version) VALUES ('20130925005540');
+
+INSERT INTO schema_migrations (version) VALUES ('20131001020107');
+
+INSERT INTO schema_migrations (version) VALUES ('20131008225654');
