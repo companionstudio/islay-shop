@@ -89,7 +89,7 @@ class Sku
     #
     # @return SpookAndPuff::Money
     def single_price
-      @single_price = current_price_points.where(:mode => 'single').first.price
+      @single_price ||= current_price_points.where(:mode => 'single').first.price
     end
 
     # Returns a stubbed out price point which serves as a 'template' for 
