@@ -16,9 +16,9 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
         :result   => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
         :sku      => params[:sku_id],
         :added    => params[:quantity],
-        :quantity => unpromoted_order.total_sku_quantity,
-        :shipping => unpromoted_order.formatted_shipping_total,
-        :total    => unpromoted_order.formatted_total,
+        :quantity => unpromoted_order.sku_items.quantity,
+        :shipping => unpromoted_order.shipping_total.to_s,
+        :total    => unpromoted_order.total.to_s,
         :errors   => unpromoted_order.errors
       }
     else

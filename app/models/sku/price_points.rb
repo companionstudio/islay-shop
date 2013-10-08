@@ -92,6 +92,21 @@ class Sku
       @single_price ||= current_price_points.where(:mode => 'single').first.price
     end
 
+    # Returns all the current prices which have a mode of 'boxed', ordered by 
+    # volume.
+    #
+    # @return Array<SkuPricePoint>
+    def boxed_price_points
+      @boxed_prices ||= current_price_points.where(:mode => 'boxed').order('volume ASC')
+    end
+
+    # A predicate which checks to see if there are any current boxed prices.
+    #
+    # @return [true, false]
+    def boxed_price_points?
+      !boxed_price_points.empty?
+    end
+
     # Returns a stubbed out price point which serves as a 'template' for 
     # generating new price points.
     #

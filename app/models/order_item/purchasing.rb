@@ -84,6 +84,28 @@ class OrderItem
       entry
     end
 
+    # A predicate which checks to see if there is an order item for the 
+    # provided purchase.
+    #
+    # @param Class purchase
+    # @return [true, false]
+    def has?(purchase) 
+      !find_item(purchase).nil?
+    end
+
+    # Returns the quantity for the specified purchase item.
+    #
+    # @param Class purchase
+    # @return Integer
+    def quantity_of(purchase)
+      item = find_item(purchase)
+      if item.nil?
+        0
+      else
+        item.quantity
+      end
+    end
+
     # Sets the quantity and price for an item. This bypasses the bracketed 
     # pricing entirely i.e. the item will not have any volume discounts.
     # 

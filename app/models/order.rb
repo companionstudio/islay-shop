@@ -348,7 +348,7 @@ class Order < ActiveRecord::Base
   #
   # @return SpookAndPuff::Money
   def shipping_total
-    shipping_service.total
+    shipping_service ? shipping_service.total : SpookAndPuff::Money.zero
   end
 
   # @todo: Deprecate and remove this later.

@@ -4,9 +4,9 @@ class PromotionShippingEffect < PromotionEffect
   effect_scope :service_items
 
   metadata(:config) do
-    float :money
+    money :money
     float :percentage
-    enum  :mode,  :required => true, :values => %(set fixed percentage)
+    enum  :mode,  :required => true, :values => %(set fixed percentage), :default => 'fixed'
   end
 
   attr_accessible :amount
