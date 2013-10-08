@@ -2,7 +2,9 @@
 - breadcrumb('Shop', :shop_reports)
 - breadcrumb('Products')
 
-= content(:class => 'inset') do
+= record_name('Products', 'gift')
+
+= content(:class => 'inset inset-vertical') do
   = column(8) do
     %div.report-cell
       %h3 Products
@@ -11,7 +13,6 @@
     %div.report-cell.total
       %h3 Total Volume
       %p.total= @total_volume
-      %p.since Since Derp
 
   %div#product-listing.report-cell
     %h3 Products

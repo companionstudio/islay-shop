@@ -2,7 +2,9 @@
 - breadcrumb('Shop', :shop_reports)
 - breadcrumb('Orders')
 
-= content(:class => 'inset') do
+= record_name('Orders', 'money')
+
+= content(:class => 'inset inset-vertical') do
   %div.report-cell
     %h3 Orders Over Time
 
