@@ -58,8 +58,8 @@ class PromotionShippingEffect < PromotionEffect
   #
   # @return nil
   def check_amount
-    if amount.blank?
-      errors.add(:amount, 'cannot be blank')
+    if (mode == 'percentage' and percentage == 0) or (mode == 'fixed' and money.zero?)
+      errors.add(:amount, 'a discount cannot be zero')
     end
   end
 end
