@@ -1,21 +1,6 @@
 @import ../../vendor/kalendae.css
 
 /* -------------------------------------------------------------------------- */
-/* NAV ENTRIES
-/* -------------------------------------------------------------------------- */
-#products-nav
-  +icon-barcode
-
-#orders-nav
-  +icon-shopping-cart
-
-#promotions-nav
-  +icon-star
-
-#header ul .manufacturers
-  +icon-wrench
-
-/* -------------------------------------------------------------------------- */
 /* SEARCH RESULTS
 /* -------------------------------------------------------------------------- */
 #islay-admin-search .search-results
@@ -365,22 +350,23 @@
 /* -------------------------------------------------------------------------- */
 .promotion-effects,
 .promotion-conditions
-  fieldset
-    +border-radius(0.5em)
-    background: #FCFCFC
-    border: 0.15em solid $light-grey
-    margin: 0 2% 1em 2% !important
-    width: 96% !important
+  legend.large
+    text-transform: none !important
+    font-size: 1.6em
+    margin-top: 0.4em
+
+  fieldset legend
+    margin-bottom: 0.7em !important
 
   .first-inline label
-    margin-left: 1em
-    width: auto !important
+    position: absolute
+    left: -1000em
 
   .select2-container
     width: 18em
 
   .help
-    margin-left: 1em
+    margin-top: -0.5em
     max-width: 35em
     clear: both
     float: left
@@ -418,6 +404,10 @@
 
   ul.errors
     margin: 0 1em
+
+#promotion-config
+  border-top-width: 0 !important
+  padding-top: 0 !important
 
 /* -------------------------------------------------------------------------- */
 /* SUMMARY

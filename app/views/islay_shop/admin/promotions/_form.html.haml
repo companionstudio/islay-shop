@@ -2,7 +2,7 @@
   = record_name(@promotion.name, 'bullhorn', :when_blank => 'New Promotion')
 
   = content do
-    = f.fieldset(:class => 'primary') do
+    = f.fieldset('Details', :class => 'form-tab', :id => 'promotion-details') do
       = f.input(:name)
       = f.input(:active, :first_inline => true)
       - unless @promotion.locked?
@@ -22,13 +22,16 @@
           this promotion and create a new one.
 
     - else
-      = f.fieldset('Customers who', :class => 'promotion-conditions') do
-        = f.fields_for(:conditions) do |c|
-          = promotion_condition(c)
+      = f.fieldset('Conditions and Effects', :class => 'form-tab', :id => 'promotion-config') do
+        = f.fieldset(:class => 'promotion-conditions') do
+          %legend.large Customers who
+          = f.fields_for(:conditions) do |c|
+            = promotion_condition(c)
 
-      = f.fieldset('Will receive', :class => 'promotion-effects') do
-        = f.fields_for(:effects) do |e|
-          = promotion_effect(e)
+        = f.fieldset(:class => 'promotion-effects') do
+          %legend.large Will receive
+          = f.fields_for(:effects) do |e|
+            = promotion_effect(e)
 
   = footer do
     = save_button
