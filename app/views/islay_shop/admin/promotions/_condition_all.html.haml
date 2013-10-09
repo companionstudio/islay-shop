@@ -1,0 +1,12 @@
+= f.fieldset("Place an order", condition_opts(condition)) do
+  = f.hidden_field(:type)
+  = f.input(:active, :as => :boolean, :first_inline => true)
+  %div.help
+    %p.summary
+      All customers placing orders qualify.
+
+    %div.extra.islay-toggle
+      %p
+        While a promotion with this condition is active, all orders will 
+        qualify. This condition is exclusive, it cannot be used with any other
+        conditions.

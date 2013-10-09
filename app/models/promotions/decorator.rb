@@ -256,6 +256,9 @@ module Promotions
       join_rules << blk
     end
 
+    condition(:shipping, :skip)
+    condition(:all, :skip)
+
     condition(:code) do |c|
       code = if c.html? 
         h.content_tag(:span, c.part.code, :class => 'condition-code')
@@ -265,8 +268,6 @@ module Promotions
 
       "enter the code #{code} at checkout"
     end
-
-    condition(:shipping, :skip)
 
     condition(:order_item_quantity) do |c|
       "buy at least #{h.pluralize(c.part.quantity, "item")}"

@@ -77,6 +77,9 @@ $SP.u = {
       return new Component($(el));
     });
 
+    // All conditions with a 'full' exclusivity
+    var full = _.pluck(_.select(this.conditions, function(c) {return c.scope === 'full';}), 'name');
+
     this.compatibilities = {};
     this.exclusivity = {};
     _.each(this.conditions, function(condition) {
@@ -89,12 +92,16 @@ $SP.u = {
         this.exclusivity['full'] = _.pluck(this.conditions, 'name');
       }
       else if (condition.scope !== 'none') {
-        if (!this.exclusivity[condition.scope]) {this.exclusivity[condition.scope] = [];}
+        // The default set of names should be the 'full'
+        if (!this.exclusivity[condition.scope]) {this.exclusivity[condition.scope] = _.clone(full);}
         this.exclusivity[condition.scope].push(condition.name);
       }
 
       condition.$active.on('change', {condition: condition}, $.proxy(this, 'change'));
     }, this);
+
+    // All non 'full' exclusivity scopes should implicitly exclude 'full'
+    this.exclusivity['none'] = full;
 
     this.update();
   };

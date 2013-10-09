@@ -9,7 +9,7 @@ class PromotionCondition < ActiveRecord::Base
   # be configured with any other conditions. For any other scope, there may 
   # only be condition within that scope.
   #
-  # @param Symbol scope
+  # @param [:full, :none, Symbol] scope
   # @return Symbol
   def self.exclusivity_scope(scope)
     self.promo_config[:exclusivity_scope] = scope
