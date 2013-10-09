@@ -28,7 +28,7 @@ $SP.u = {
     this.name = el.attr('class').match(/^(.+)\-(condition|effect)/)[1];
     this.$el = el;
     this.$active = el.find('[name*="active"]:not(:hidden)');
-    this.$inputs = el.find(':not([name*="active"])');
+    this.$inputs = el.find(':input:not([name*="active"])');
 
     this.$active.on('change', $.proxy(this, 'activeChange'));
     this.activeChange();
@@ -42,6 +42,7 @@ $SP.u = {
       else {
         this.$inputs.prop('disabled', true);
       }
+      this.$inputs.trigger('change');
     },
 
     disable: function() {
