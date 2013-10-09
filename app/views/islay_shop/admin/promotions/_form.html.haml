@@ -8,21 +8,23 @@
       - unless @promotion.locked?
         = f.input(:start_at, :as => :date_picker, :inline => true)
       = f.input(:end_at, :as => :date_picker, :inline => true)
-      = f.input(:application_limit, :class => 'small', :first_inline => true)
-      = f.input(:publish_application_limit, :inline => true, :label => 'Publish limit')
 
-    - if @promotion.locked?
-      %div.islay-notice-locked
-        %p 
-          This promotion now has qualifying orders against it. The conditions
-          and effects can no longer be edited.
-        %p
-          This is so that reporting for a promotion is accurate. If you want a
-          promotion with different condtions or effects, you should deactivate
-          this promotion and create a new one.
+      = f.fieldset do 
+        = f.input(:application_limit, :class => 'small', :first_inline => true)
+        = f.input(:publish_application_limit, :inline => true, :label => 'Publish limit')
 
-    - else
-      = f.fieldset('Conditions and Effects', :class => 'form-tab', :id => 'promotion-config') do
+    = f.fieldset('Conditions and Effects', :class => 'form-tab', :id => 'promotion-config') do
+      - if @promotion.locked?
+        %div.islay-notice-locked
+          %p 
+            This promotion now has qualifying orders against it. The conditions
+            and effects can no longer be edited.
+          %p
+            This is so that reporting for a promotion is accurate. If you want a
+            promotion with different condtions or effects, you should deactivate
+            this promotion and create a new one.
+
+      - else
         = f.fieldset(:class => 'promotion-conditions') do
           %legend.large Customers who
           = f.fields_for(:conditions) do |c|
