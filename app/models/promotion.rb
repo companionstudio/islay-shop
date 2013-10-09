@@ -332,10 +332,15 @@ class Promotion < ActiveRecord::Base
     # Check compatibility
     incompatible = false
 
-    conditions.product(effects).each do |c, e|
-      if Promotions::Scopes.not_acceptable?(c.condition_scope, e.condition_scope)
+    # For each effect, there must be at least one condition which is compatible.
+    effects.each do |e|
+      results = conditions.map do |c| 
+        Promotions::Scopes.acceptable?(c.condition_scope, e.condition_scope)
+      end
+      
+      if results.none?
         incompatible = true
-        e.errors.add(:base, "Not compatible with the '#{c.desc}' condition")
+        e.errors.add(:base, "This effect is not compatible with any of the specified conditions")
       end
     end
 

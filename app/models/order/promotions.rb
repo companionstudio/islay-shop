@@ -115,7 +115,7 @@ class Order
     # is nil, then code promotions are pending i.e. haven't been checked yet.
     #
     # @return [true, false]
-    def code_promotion_pending?
+    def code_promotion_unchecked?
       promo_code.blank?
     end
 

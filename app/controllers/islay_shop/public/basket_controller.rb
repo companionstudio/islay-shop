@@ -40,6 +40,10 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
       unpromoted_order.promo_code = params[:promo_code]
     end
 
+    unless params[:billing_postcode].blank?
+      unpromoted_order.billing_postcode = params[:billing_postcode]
+    end
+
     store_and_redirect(:order_updated, {:message => "Your order has been updated"})
   end
 

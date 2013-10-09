@@ -2,7 +2,11 @@ module IslayShop
   module ControllerExtensions
     module Public
       def self.included(klass)
-        klass.send :helper_method, :retrieve_order, :create_order, :order
+        klass.send(
+          :helper_method, 
+          :retrieve_order, :create_order, :order, :checkout_promotions, 
+          :checkout_promotions?, :promotion_summary
+        )
       end
 
       # An accessor which lazily constructs them memoizes the order. The order
@@ -30,6 +34,30 @@ module IslayShop
         else
           OrderBasket.new
         end
+      end
+
+      # Uses the Promotions::Decorator to generate a summary for a promotion.
+      #
+      # @param Promotion promotion
+      # @return String
+      def promotion_summary(promotion)
+        Promotions::Decorator.new(promotion).summary_text
+      end
+
+      # A predicate which checks to see if there are any checkout promotions 
+      # available.
+      #
+      # @return [true, false]
+      def checkout_promotions?
+        !checkout_promotions.empty?
+      end
+
+      # A simple accessor which looks up and caches promotions that should be 
+      # displayed at checkout.
+      #
+      # @return Array<Promotion>
+      def checkout_promotions
+        @checkout_promotions ||= Promotion.active.code_based
       end
       
       def retrieve_order

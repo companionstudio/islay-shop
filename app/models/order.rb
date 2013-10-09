@@ -296,11 +296,13 @@ class Order < ActiveRecord::Base
 
   alias :formatted_total_discount :total_discount
 
-  # Indicates if the order has free shipping.
+  # Indicates if the order has free shipping. This is true if there is no 
+  # shipping service — e.g. no possible charge — or the pre-discount total is
+  # zero.
   #
   # @return [true, false]
   def free_shipping?
-    shipping_total.zero?
+    shipping_service.nil? or shipping_service.pre_discount_total.zero?
   end
 
   # This bit of meta-programming generates accessors with a deprecation warning.
@@ -355,6 +357,36 @@ class Order < ActiveRecord::Base
   alias :formatted_shipping_total :shipping_total
   alias :formatted_original_shipping_total :original_shipping_total
 
+  # Calculate the shipping, product and order totals. This includes both the
+  # original and potentially discounted totals.
+  #
+  # @return nil
+  def calculate_totals
+    # Calculate shipping and add it to the order, without retriggering a
+    # recalculation of the total.
+    shipping = self.class.shipping_calculator_class.new.calculate(self)
+    set_quantity_and_price(Service.shipping_service, 1, shipping, :retotal => false)
+
+    # Calculate the totals
+    self.product_total          = sku_items.total
+    self.original_product_total = sku_items.pre_discount_total
+    self.total                  = (product_total + service_items.total).round
+    self.original_total         = (original_product_total + service_items.pre_discount_total).round
+
+    # Determine if there has been an increase or a discount on the order and
+    # set the appropriate attributes.
+    adjustment = self.original_total - self.total
+    zero = SpookAndPuff::Money.new("0")
+    
+    if adjustment.negative?
+      self.increase = adjustment.abs
+      self.discount = zero
+    else
+      self.increase = zero
+      self.discount = adjustment
+    end
+  end
+
   private
 
   # Attempts to generate a reference for the order. Since the reference needs to
@@ -390,36 +422,6 @@ class Order < ActiveRecord::Base
   # @return Object
   def self.shipment_tracker_class
     @@shipment_tracker ||= self.shipment_tracker.to_s.classify.constantize
-  end
-
-  # Calculate the shipping, product and order totals. This includes both the
-  # original and potentially discounted totals.
-  #
-  # @return nil
-  def calculate_totals
-    # Calculate shipping and add it to the order, without retriggering a
-    # recalculation of the total.
-    shipping = self.class.shipping_calculator_class.new.calculate(self)
-    set_quantity_and_price(Service.shipping_service, 1, shipping, :retotal => false)
-
-    # Calculate the totals
-    self.product_total          = sku_items.total
-    self.original_product_total = sku_items.pre_discount_total
-    self.total                  = (product_total + service_items.total).round
-    self.original_total         = (original_product_total + service_items.pre_discount_total).round
-
-    # Determine if there has been an increase or a discount on the order and
-    # set the appropriate attributes.
-    adjustment = self.original_total - self.total
-    zero = SpookAndPuff::Money.new("0")
-    
-    if adjustment.negative?
-      self.increase = adjustment.abs
-      self.discount = zero
-    else
-      self.increase = zero
-      self.discount = adjustment
-    end
   end
 
   check_for_extensions

@@ -4,7 +4,7 @@ class OrderProcess < Order
   private
 
   def process_add!
-    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    skus = Hash[sku_items.map {|i| [i.sku_id, i.quantity]}]
     Sku.purchase_stock!(skus)
     next!
   end
@@ -51,7 +51,7 @@ class OrderProcess < Order
   #
   # @return Hash
   def return_stock
-    skus = Hash[items.map {|i| [i.sku_id, i.quantity]}]
+    skus = Hash[sku_items.map {|i| [i.sku_id, i.quantity]}]
     Sku.return_stock!(skus)
   end
 
