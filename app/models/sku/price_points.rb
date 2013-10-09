@@ -89,7 +89,14 @@ class Sku
     #
     # @return SpookAndPuff::Money
     def single_price
-      @single_price ||= current_price_points.where(:mode => 'single').first.price
+      single_price_point.price
+    end
+
+    # Returns the current single price point for the SKU.
+    #
+    # @return SkuPricePoint
+    def single_price_point
+      @single_price_point ||= current_price_points.where(:mode => 'single').first
     end
 
     # Returns all the current prices which have a mode of 'boxed', ordered by 
