@@ -14,11 +14,11 @@
 = content(:class => 'inset') do
   %ul
     %li
-      %span.key Start at
-      %span.value= @promotion.start_at
+      %span.key Starts at
+      %span.value.time= @promotion.start_at
     %li
-      %span.key End at
-      %span.value= @promotion.end_at
+      %span.key Ends at
+      %span.value.time= @promotion.end_at
 
   %p= promotion_summary(@promotion)
 
