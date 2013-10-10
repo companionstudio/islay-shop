@@ -28,7 +28,7 @@
         - if @product.images.empty?
           %span(class='no-preview image') &nbsp;
         - else
-          = image_tag(@product.images.first.previews.url(:thumb))
+          = image_tag(@product.images.first.previews.url(:thumb), :class => @product.images.first.orientation)
 
     = column(8, :class => 'product-description') do
       %ul.key-value
