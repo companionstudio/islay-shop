@@ -1,6 +1,8 @@
 = resource_form(@product_range) do |f|
   = record_name(@product_range.name, 'th', :when_blank => 'New Range')
 
+  = form_errors(@product_range)
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)

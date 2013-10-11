@@ -1,6 +1,8 @@
 = resource_form(@promotion) do |f|
   = record_name(@promotion.name, 'bullhorn', :when_blank => 'New Promotion')
 
+  = form_errors(@promotion)
+
   = content do
     = f.fieldset('Details', :class => 'form-tab', :id => 'promotion-details') do
       = f.input(:name)

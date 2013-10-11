@@ -1,6 +1,8 @@
 = resource_form(@product_category) do |f|
   = record_name(@product_category.name, 'folder-close', :when_blank => 'New Category')
 
+  = form_errors(@product_category)
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
