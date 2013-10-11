@@ -2,9 +2,9 @@ class SkuPricePoint < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :price
   belongs_to  :sku
-  validate :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
-  validate :price,  :presence   => true
-  validate :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
+  validates :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
+  validates :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
+  validate :validates_price
   attr_accessible(:current, :valid_from, :valid_to, :price, :volume, :mode, :display_price)
   track_user_edits
 
@@ -165,5 +165,21 @@ class SkuPricePoint < ActiveRecord::Base
   # @return String
   def unit_saving_percentage(point)
     "#{100 - point.price.proportion(price).round(1)}%"
+  end
+
+  private
+
+  # This validates the price. Since the price will actually be a Money 
+  # instance, we need a custom validator. The build in validators are for
+  # floats and integers. Additionlly, the errors are associated with a custom
+  # attribute.
+  #
+  # @return nil
+  def validates_price
+    if price.zero?
+      errors.add(:display_price, "cannot be zero")
+    end
+
+    nil
   end
 end

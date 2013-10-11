@@ -23,9 +23,6 @@
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
 
     = f.fieldset('Pricing', :class => 'islay-shop-sku-pricing form-tab', :id => 'sku-pricing') do
-      - if f.object.errors.has_key?(:price_points)
-        %p.association-error
-          = f.object.errors.get(:price_points).join(', ')
       %table
         %thead
           %tr
@@ -38,7 +35,28 @@
 
         %tbody
           = f.fields_for(:price_points, @sku.price_points, :include_id => false) do |p|
-            - if p.object.current?
+            - if p.object.new_record?
+              %tr.new
+                %td.current 
+                  &nbsp;
+                %td.dates 
+                  &nbsp;
+                %td.mode
+                  %div.pricing-mode
+                    %label
+                      Boxed
+                      = p.radio_button(:mode, 'boxed')
+                    %label
+                      Bracketed
+                      = p.radio_button(:mode, 'bracketed')
+                %td.volume
+                  = p.input(:volume, :label => false)
+                %td.price
+                  = p.input(:display_price, :label => false, :autocomplete => 'off')
+                %td.expire
+                  &nbsp;
+
+            - elsif p.object.current?
               %tr.current
                 %td.current
                   %span.boolean.true
@@ -51,7 +69,7 @@
                 %td.volume
                   %span.indicator.numeric= p.object.volume
                 %td.price
-                  = p.text_field(:display_price, :autocomplete => 'off')
+                  = p.input(:display_price, :label => false, :autocomplete => 'off')
                 %td.expire
                   - if p.object.single?
                     &nbsp;

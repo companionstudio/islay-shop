@@ -14,7 +14,7 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
   end
 
   def redirect_for(record)
-    path(@product)
+    path(:edit, @product, @sku)
   end
 
   def destroy_redirect_for(record)

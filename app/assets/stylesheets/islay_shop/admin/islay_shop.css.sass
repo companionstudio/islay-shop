@@ -333,6 +333,27 @@
     .button
       margin-right: 0.5em
 
+  // Default field margins are not needed
+  .field
+    margin-bottom: 0 !important
+
+  // Only show errors on hover
+  .errored
+    position: relative
+
+    span.error
+      position: absolute
+      top: 2.3em
+      margin-left: 0
+      background: $error-color
+      +border-radius(0.2em)
+      min-width: 8em
+      padding-left: 0.6em
+      display: none
+
+    &:hover span.error
+      display: block
+
   // When folded, hide the dates
   table.folded
     .mode

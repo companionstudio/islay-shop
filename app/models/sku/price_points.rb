@@ -134,12 +134,12 @@ class Sku
     private
 
     # Checks to see if the hash of values is for an acceptable price point.
-    # That is, it should not be rejected
+    # That is, it should not be rejected.
     #
     # @param Hash point
     # @return [true, false]
     def acceptable_price_point?(point)
-      !point['id'].blank? and !point['volume'].blank? and !point['display_price'].to_i == 0
+      !point['volume'].blank? or !point['display_price'].blank?
     end
 
     # Price points with a mode of either 'boxed' or 'bracketed' must not overlap.
