@@ -110,7 +110,7 @@ module Promotions
     # A simple class that is used by #generate_summary to encapsulate the
     # context required by the condition and effect helpers.
     class SummaryContext < Context
-      # The current condition/effect being addresses while generating the
+      # The current condition/effect being addressed while generating the
       # summary.
       attr_accessor :part
 
@@ -335,9 +335,9 @@ module Promotions
 
     effect(:bonus) do |c|
       name = if c.html?
-        h.content_tag(:span, c.part.sku.short_desc, :class => 'effect-bonus')
+        h.content_tag(:span, c.part.sku.long_desc, :class => 'effect-bonus')
       else
-        c.part.sku.short_desc
+        c.part.sku.long_desc
       end
 
       # Should go looking for an image to inline in for html
@@ -393,7 +393,7 @@ module Promotions
         if c.promotion.has_effect? :competition_entry
           'and'
         else
-          'and receive' 
+          'receive' 
         end
       end
     end
