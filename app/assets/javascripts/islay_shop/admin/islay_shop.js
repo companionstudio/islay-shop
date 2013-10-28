@@ -2,7 +2,6 @@
 //= require ../../vendor/g.raphael-min
 //= require ../../vendor/g.pie-min
 //= require ../../vendor/g.line-min
-//= require ../../vendor/kalendae
 //= require ../../vendor/moment
 //= require_tree .
 
