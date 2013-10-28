@@ -25,7 +25,7 @@ Islay::Engine.extensions.register do |e|
   end
 
   e.nav_section(:orders) do |s|
-    s.root('Orders', :orders, 'shopping-cart')
+    s.root('Shop', :orders, 'shopping-cart')
     s.sub_nav('Overview', :orders, :root => true)
     s.sub_nav('Processing', :order_processes)
     s.sub_nav('Archive', :order_archives)
