@@ -17,7 +17,7 @@
 
     = f.fieldset('Conditions and Effects', :class => 'form-tab', :id => 'promotion-config') do
       - if @promotion.locked?
-        %div.islay-notice-locked
+        = form_notice(:locked) do
           %p 
             This promotion now has qualifying orders against it. The conditions
             and effects can no longer be edited.
