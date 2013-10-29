@@ -62,6 +62,7 @@
     %h3 SKUs
 
     %ul
+      %li= link_to('New SKU', path(:new, @product, :sku))
       %li= link_to('Stock Logs', path(@product, :stock_logs))
       %li= link_to('Price History', path(@product, :sku_price_points))
 

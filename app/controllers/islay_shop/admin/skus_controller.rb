@@ -4,6 +4,13 @@ class IslayShop::Admin::SkusController < IslayShop::Admin::ApplicationController
   header 'Shop'
   nav_scope :catalogue
 
+  def new
+    @sku = Sku.new({:product_id => @product.id})
+    @sku.default_single_price_point
+    dependencies
+    render :layout => !request.xhr?
+  end
+
   private
 
   def dependencies

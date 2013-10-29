@@ -78,10 +78,9 @@ class Sku
             attrs.except('id', 'expire')
           end
         elsif acceptable_price_point?(attrs)
-          price_points.build(attrs.merge(:valid_from => Time.now, :current => true))
+          new_point = price_points.build(attrs.merge(:valid_from => Time.now, :current => true))
         end
       end
-
       {}
     end
 
@@ -114,20 +113,27 @@ class Sku
       !boxed_price_points.empty?
     end
 
+    # Stub out a default single price and add it to the price points collection
+    # Used on new records to ensure there's always a single price
+    #
+    # @return SkuPricePoint
+    def default_single_price_point
+      price_points << price_point_template('single', 1) unless single_price_point
+    end
+
     # Returns a stubbed out price point which serves as a 'template' for 
     # generating new price points.
     #
     # @return SkuPricePoint
-    def new_price_point
-      SkuPricePoint.new(:mode => 'boxed', :volume => 0, :price => '0')
+    def price_point_template(mode = 'boxed', volume = 0)
+      SkuPricePoint.new(:mode => mode, :volume => volume, :price => '0')
     end
 
-    # This is a no-op. It just allows us to use the #template_price_point in 
+    # This is a no-op. It just allows us to use the price_point_template in 
     # forms.
     #
     # @return nil
     def new_price_point=(vals)
-
       nil
     end
 
@@ -139,7 +145,15 @@ class Sku
     # @param Hash point
     # @return [true, false]
     def acceptable_price_point?(point)
-      !point['volume'].blank? or !point['display_price'].blank?
+      if self.new_record? and point['mode'] == 'single'
+        true #Always keep the initial single point to validate it
+      elsif !(point['volume'].blank? or point['volume'] == '0')
+        true #A sensible volume was provided
+      elsif !(point['display_price'].blank? or point['display_price'] == '0' or point['display_price'] == '$0.00')
+        true #A sensible price was provided
+      else
+        false #Looks like we can ditch this price point
+      end
     end
 
     # Price points with a mode of either 'boxed' or 'bracketed' must not overlap.
@@ -183,9 +197,9 @@ class Sku
       single = price_points.select {|p| p.current == true and p.mode == 'single'}
 
       if single.length > 1
-        errors.add(:price_points, "There must be a only one 'single' price")
+        errors.add(:price_points, "There can only be one 'single' price")
       elsif single.length == 0
-        errors.add(:price_points, "There must be at least one 'single' price")
+        errors.add(:price_points, "SKUs need one 'single' price")
       end
 
       nil

@@ -23,7 +23,7 @@
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
 
     = f.fieldset('Pricing', :class => 'islay-shop-sku-pricing form-tab', :id => 'sku-pricing') do
-      %table
+      %table.folded
         %thead
           %tr
             %th.current Current
@@ -35,22 +35,31 @@
 
         %tbody
           = f.fields_for(:price_points, @sku.price_points, :include_id => false) do |p|
-            - if p.object.new_record?
+            - if @sku.new_record?
               %tr.new
                 %td.current 
-                  &nbsp;
+                  %span.boolean.true
+                    %span Yes
                 %td.dates 
-                  &nbsp;
+                  %span.indicator New
                 %td.mode
-                  %div.pricing-mode
-                    %label
-                      Boxed
-                      = p.radio_button(:mode, 'boxed')
-                    %label
-                      Bracketed
-                      = p.radio_button(:mode, 'bracketed')
+                  - if p.object['mode'] == 'single'
+                    = p.hidden_field(:mode, :value => 'single')
+                    %span.indicator.pricing-mode= p.object.mode.capitalize
+                  - else
+                    %div.pricing-mode
+                      %label
+                        Boxed
+                        = p.radio_button(:mode, 'boxed')
+                      %label
+                        Bracketed
+                        = p.radio_button(:mode, 'bracketed')
                 %td.volume
-                  = p.input(:volume, :label => false)
+                  - if p.object['mode'] == 'single'
+                    %span.indicator.numeric 1
+                    = p.hidden_field(:volume, :value => 1, :label => false)
+                  - else
+                    = p.input(:volume, :label => false)
                 %td.price
                   = p.input(:display_price, :label => false, :autocomplete => 'off')
                 %td.expire
@@ -96,12 +105,13 @@
                 %td.expire
                   &nbsp;
 
-          = f.fields_for(:new_price_point, @sku.new_price_point, :include_id => false) do |p|
+          = f.fields_for(:new_price_point, @sku.price_point_template, :include_id => false) do |p|
             %tr.template
               %td.current 
-                &nbsp;
+                %span.boolean.true
+                  %span Yes
               %td.dates 
-                &nbsp;
+                %span.indicator New
               %td.mode
                 %div.pricing-mode
                   %label
