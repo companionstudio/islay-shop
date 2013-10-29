@@ -16,7 +16,7 @@ module IslayShop
       private
 
       def dependencies
-        @skus = Sku.published.summarize_product.map do |e| 
+        @skus = Sku.published.summarize_product.order(:product_name).map do |e| 
           ["#{e.product_name} - #{e.short_desc}", e.id]
         end
 
