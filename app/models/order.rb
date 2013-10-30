@@ -8,6 +8,12 @@ class Order < ActiveRecord::Base
   include Order::Adjustments
   include Order::Promotions
 
+  include PgSearch
+  multisearchable :against => [
+    :name, :shipping_name, :reference, :email, :billing_city, :billing_postcode, 
+    :shipping_city, :shipping_postcode
+  ]
+
   # Turn off single table inheritance
   self.inheritance_column = :_type_disabled
   self.table_name = 'orders'

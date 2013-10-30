@@ -5,6 +5,9 @@ class Manufacturer < ActiveRecord::Base
   extend FriendlyId
   friendly_id :name, :use => :slugged
 
+  include PgSearch
+  multisearchable :against => [:name, :description, :metadata]
+
   attr_accessible :name, :description, :published, :asset_ids
   track_user_edits
   validations_from_schema

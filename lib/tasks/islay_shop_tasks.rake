@@ -1,5 +1,15 @@
 namespace :islay_shop do
   namespace :db do
+    desc "Rebuilds the search term index for each record in the DB."
+    task :rebuild_search_index => :environment do
+      PgSearch::Multisearch.rebuild(Product)
+      PgSearch::Multisearch.rebuild(ProductCategory)
+      PgSearch::Multisearch.rebuild(ProductRange)
+      PgSearch::Multisearch.rebuild(Manufacturer)
+      PgSearch::Multisearch.rebuild(Sku)
+      PgSearch::Multisearch.rebuild(Order)
+    end
+
     desc "Fixes ordering of product categories and products"
     task :order_fix => :environment do
       Product.all.group_by {|p| p.product_category_id}.each do |g, a|

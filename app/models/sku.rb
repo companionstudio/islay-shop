@@ -6,6 +6,9 @@ class Sku < ActiveRecord::Base
   include Sku::PricePoints
   include Sku::StockManagement
 
+  include PgSearch
+  multisearchable :against => [:name, :metadata]
+
   belongs_to :product
 
   has_many :order_items
@@ -145,6 +148,21 @@ class Sku < ActiveRecord::Base
     else
       order('product_name ASC, skus.name ASC')
     end
+  end
+
+  # Returns the options required for generating a URL to this model. This is
+  # currently used with searches.
+  #
+  # @return Hash
+  def searchable_url_opts
+    [:edit, product, self]
+  end
+
+  # A more readble name to be used when displaying search results.
+  #
+  # @return String
+  def searchable_name
+    "#{product.name} - #{short_desc}"
   end
 
   # Returns a collection of promotions that are related to the Sku. It 

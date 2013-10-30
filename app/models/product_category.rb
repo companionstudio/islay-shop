@@ -5,6 +5,9 @@ class ProductCategory < ActiveRecord::Base
   extend FriendlyId
   friendly_id :name, :use => :slugged
 
+  include PgSearch
+  multisearchable :against => [:name, :description]
+
   positioned :path
 
   has_many    :products, :order => 'products.position'
