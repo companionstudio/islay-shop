@@ -6,12 +6,16 @@ module Promotions
     #
     # @param [:general, :specific] mode
     # @param [:text, :html] format
+    # @param Hash opts
+    # @option opts Array<Symbol> :exclude_conditions
+    # @option opts Array<Symbol> :exclude_effects
+    # @option opts [true, false] :preamble
     # @return String
     # @todo Order conditions/effects before mapping.
-    def summary(mode, format)
-      what  = generate_summary(condition_configs, model.conditions, mode, format)
-      to    = generate_summary(effect_configs, model.effects, mode, format)
-      start = preamble(mode, format, what, to)
+    def summary(mode = :general, format = :html, opts = {})
+      what  = generate_summary(condition_configs, model.conditions, mode, format, opts[:exclude_conditions])
+      to    = generate_summary(effect_configs, model.effects, mode, format, opts[:exclude_effects])
+      start = preamble(mode, format, what, to, opts)
       join  = join_text(mode, format, what, to)
 
       # When interpolating, any of these calls might return an empty string, so
@@ -27,17 +31,19 @@ module Promotions
     # Generate a text summary for the encapsulated Promotion.
     #
     # @param Symbol mode
+    # @param Hash opts
     # @return String
-    def summary_text(mode = :general)
-      summary(mode, :text)
+    def summary_text(mode = :general, opts = {})
+      summary(mode, :text, opts)
     end
 
     # Generate a HTML summary for the encapsulated Promotion.
     #
     # @param Symbol mode
+    # @param Hash opts
     # @return String
-    def summary_html(mode = :general)
-      summary(mode, :html)
+    def summary_html(mode = :general, opts = {})
+      summary(mode, :html, opts)
     end
 
     private
@@ -130,14 +136,16 @@ module Promotions
     # @param Array<[PromotionCondition, PromotionEffect] parts
     # @param Symbol mode
     # @param Symbol format
+    # @param [Array<Symbol>, nil] exclude
     # @return String
     # @todo Sort the parts using the order within the configs.
     # @todo Account for suffixes
-    def generate_summary(configs, parts, mode, format)
+    def generate_summary(configs, parts, mode, format, exclude = nil)
+      _parts = exclude.nil? ? parts : parts.reject {|p| exclude.include?(p.short_name)}
       context = SummaryContext.new(model, mode, format)
-      summaries = parts.map do |part|
+      summaries = _parts.map do |part|
         context.part = part
-        instance_exec(context, &configs[part.short_name])
+        instance_exec(context, &configs[part.short_name][:logic])
       end.compact
 
       case summaries.length
@@ -160,11 +168,15 @@ module Promotions
     # @param [:text, :html] mode
     # @param String condition_summary
     # @param String effect_summary
+    # @param Hash opts
+    # @option opts [true, false] :preamble
     # @return String
     # @todo Actually implement this
     # @todo Handle limited applications
-    def preamble(mode, format, condition_summary, effect_summary)
-      if condition_summary.blank?
+    def preamble(mode, format, condition_summary, effect_summary, opts = {})
+      if opts[:preamble] == false
+        ""
+      elsif condition_summary.blank?
         "Customers"
       else
         "Customers who"
@@ -222,28 +234,33 @@ module Promotions
     NOOP = lambda {|c| nil}
 
     # Defines the configuration for turning a condition into a textual
-    # description. To skip the inclusion of a condition in a summary, 
-    # pass :skip as the second argument rather than the a block.
+    # description.
     #
     # @param Symbol name
-    # @param [:include, :skip] mode
+    # @param Hash opts
+    # @option opts [true, false] :skip
     # @param Proc blk
-    # @return Proc
-    def self.condition(name, mode = :include, &blk)
-      condition_configs[name] = case mode
-      when :include then blk
-      when :skip then NOOP
-      end
+    # @return Hash
+    def self.condition(name, opts = {}, &blk)
+      condition_configs[name] = {
+        :opts => opts,
+        :logic => opts[:skip] ? NOOP : blk
+      }
     end
 
     # Defines the configuration for turning an effect into a textual
     # description.
     #
     # @param Symbol name
+    # @param Hash opts
+    # @option opts [true, false] :skip
     # @param Proc blk
-    # @return Proc
-    def self.effect(name, &blk)
-      effect_configs[name] = blk
+    # @return Hash
+    def self.effect(name, opts = {}, &blk)
+      effect_configs[name] = {
+        :opts => opts,
+        :logic => opts[:skip] ? NOOP : blk
+      }
     end
 
     # Defines a rule used to determine how conditions and effect summaries 
@@ -256,8 +273,8 @@ module Promotions
       join_rules << blk
     end
 
-    condition(:shipping, :skip)
-    condition(:all, :skip)
+    condition(:shipping, :skip => true)
+    condition(:all, :skip => true)
 
     condition(:code) do |c|
       code = if c.html? 
@@ -388,13 +405,9 @@ module Promotions
       'receive' if c.promotion.limited?
     end
     
-    join_rule :and_receive do |c|
-      if c.promotion.conditions.length == 1 and c.promotion.effects.length == 1
-        if c.promotion.has_effect? :competition_entry
-          'and'
-        else
-          'receive' 
-        end
+    join_rule :competition_entry do |c|
+      if c.promotion.effects.length == 1 and c.promotion.has_effect?(:competition_entry)
+        "will"
       end
     end
     
