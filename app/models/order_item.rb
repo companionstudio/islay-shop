@@ -24,6 +24,13 @@ class OrderItem < ActiveRecord::Base
     def manual
       select {|c| c.kind == 'manual'}.first
     end
+
+    # Any components that are not bonuses.
+    #
+    # @return Array<OrderItemComponent>
+    def non_bonus
+      select {|c| c.kind != 'bonus'}
+    end
   end
 
   has_many :adjustments, :class_name => 'OrderItemAdjustment', :dependent => :destroy, :autosave => true do
@@ -137,14 +144,17 @@ class OrderItem < ActiveRecord::Base
   def price_summary
     if only_bonus?
       "Free!"
+    elsif components.length == 1
+      components.first.price
     else
-      if components.length == 1
-        components.first.price
+      non_bonus = components.non_bonus.sort {|x, y| x.quantity <=> y.quantity}
+      bonus     = components.bonus
+      summaries = non_bonus.map {|c| "#{c.quantity} at #{c.price}"}
+
+      if bonus
+        (summaries << "#{bonus.quantity} free").join(', ')
       else
-        components.sort {|x, y| x.quantity <=> y.quantity}.map do |c|
-          price = c.price.zero? ? "Free" : "at #{c.price}"
-          "#{c.quantity} #{price}"
-        end.join(', ')
+        summaries.join(', ')
       end
     end
   end
