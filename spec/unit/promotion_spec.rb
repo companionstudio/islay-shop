@@ -227,6 +227,54 @@ describe Order::Promotions do
     expect_no_misapplication
   end
 
+  it "should give 1 extra item when order contains skus from category" do
+    promotion = create_promotion do |p|
+      p.conditions << PromotionCategoryQuantityCondition.new(:product_category_id => @purchase.product_category_id, :quantity => 4)
+      p.effects << PromotionGetNFreeEffect.new(:quantity => 1)
+    end
+
+    order = build(:order)
+    item = order.set_quantity(@purchase_sku, 6)
+    order.apply_promotions!
+
+    expect(order.applied_promotions.map(&:promotion)).to include(promotion)
+    expect(item.quantity).to eq(7)
+
+    expect_no_misapplication
+  end
+
+  it "should give 3 extra items when order contains skus from product" do
+    promotion = create_promotion do |p|
+      p.conditions << PromotionProductQuantityCondition.new(:product_id => @purchase.id, :quantity => 6)
+      p.effects << PromotionGetNFreeEffect.new(:quantity => 3)
+    end
+
+    order = build(:order)
+    item = order.set_quantity(@purchase_sku, 6)
+    order.apply_promotions!
+
+    expect(order.applied_promotions.map(&:promotion)).to include(promotion)
+    expect(item.quantity).to eq(9)
+
+    expect_no_misapplication
+  end
+
+  it "should give 6 extra items when order contains specific sku" do
+    promotion = create_promotion do |p|
+      p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 24)
+      p.effects << PromotionGetNFreeEffect.new(:quantity => 6)
+    end
+
+    order = build(:order)
+    item = order.set_quantity(@purchase_sku, 25)
+    order.apply_promotions!
+
+    expect(order.applied_promotions.map(&:promotion)).to include(promotion)
+    expect(item.quantity).to eq(31)
+
+    expect_no_misapplication
+  end
+
   it "should give a $10 discount when order contains sku" do
     promotion = create_promotion do |p|
       p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 2)

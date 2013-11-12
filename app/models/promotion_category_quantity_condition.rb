@@ -18,7 +18,8 @@ class PromotionCategoryQuantityCondition < PromotionCondition
       message = "Doesn't have enough products from the #{category.name}; needs at least #{quantity}"
       partial(:insufficient_quantity, message)
     else
-      success
+      targets = items.reduce({}) {|h, c| h.merge(c => 1)}
+      success(targets)
     end
   end
 
@@ -37,7 +38,6 @@ class PromotionCategoryQuantityCondition < PromotionCondition
   #
   # @return Array<OrderItem>
   def qualifying_items(order)
-    category = ProductCategory.find(product_category_id)
     order.candidate_items.select do |item| 
       item.sku.product.product_category_id == product_category_id or
       item.product.category.path < category.path
