@@ -29,6 +29,7 @@ PATH
       mime-types (~> 1.18)
       mime-types (~> 1.19)
       pg (~> 0.14.1)
+      pg_search (~> 0.7.0)
       premailer (~> 1.7.3)
       rails (~> 3.2.13)
       rmagick (~> 2.13.1)
@@ -174,6 +175,10 @@ GEM
       mini_portile (~> 0.5.0)
     orm_adapter (0.4.0)
     pg (0.14.1)
+    pg_search (0.7.0)
+      activerecord (>= 3.1)
+      activesupport (>= 3.1)
+      arel
     polyglot (0.3.3)
     premailer (1.7.9)
       css_parser (>= 1.1.9)

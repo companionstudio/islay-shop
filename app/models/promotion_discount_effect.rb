@@ -4,53 +4,105 @@ class PromotionDiscountEffect < PromotionEffect
   effect_scope :order
 
   metadata(:config) do
-    enum    :kind,    :required => true, :values => %w(fixed percentage)
-    string  :amount,  :required => true, :greater_than => 0
+    enum    :mode,        :required => true, :values => %w(dollar percentage), :default => 'dollar'
+    float   :percentage
+    money   :dollar
   end
 
-  attr_accessible :amount_and_kind
+  # Custom accessor for setting percentage or dollar amount.
+  attr_accessible :amount
 
-  # A setter which sets the kind/mode and amount based on the input string.
+  # Custom validator.
+  validate :validate_amount
+
+  # Conditionally returns either a float or a money instance depending on the
+  # value of the kind attribute.
   #
-  # @param String input
-  # @return string
-  # @raises ArgumentError
-  def amount_and_kind=(input)
-    extract = /(\$*)([\d\.]+)(\%*)/.match(input)
-
-    if extract
-      if extract[1] == '$'
-        self.kind = 'fixed'
-        self.amount = extract[2]
-      elsif extract[3] == '%'
-        self.kind = 'percentage'
-        self.amount = extract[2]
-      else
-        raise ArgumentError, 'Your discount must be either a dollar amount, or a percentage.'
-      end
-    else
-      raise ArgumentError, 'Your discount must be either a dollar amount, or a percentage.'
+  # @return [Float, String]
+  def amount
+    case mode
+    when 'percentage' then percentage
+    when 'dollar' then dollar.to_s(:prefix => false, :drop_cents => true)
     end
   end
 
-  # Returns a formatted string
+  # Accessor for amount which calls the #reassign helper for toggling between
+  # dollar or percentage modes.
+  #
+  # @param [String, Numeric] n
+  # @return [String, Numeric]
+  def amount=(n)
+    @amount = n
+    reassign
+    n
+  end
+
+  # Alais the original mode so we can inject our own logic.
+  alias :original_mode= :mode=
+
+  # Custom accessor for writing the mode which coerces input and calls the 
+  # #reassign helper.
+  #
+  # @param String k
+  # @return String
+  def mode=(k)
+    self.original_mode = k
+    reassign
+    k
+  end
+
+  # Shortcut which returns a formatted string representing either the 
+  # percentage or dollar amount.
   #
   # @return String
-  def amount_and_kind
-    case kind
-    when 'percentage' then "#{amount}%"
-    when 'fixed'      then "$#{amount}"
+  def amount_and_mode
+    case mode
+    when 'percentage' 
+      if percentage.to_i == percentage
+        "#{percentage.to_i}%"
+      else
+        "#{percentage}%"
+      end
+    when 'dollar'
+      dollar.to_s(:drop_cents => true)
     end
+  end
+
+  # Reassigns values based on the value of the mode attribute.
+  #
+  # @return nil
+  def reassign
+    case mode
+    when 'percentage'
+      self.dollar = nil
+      self.percentage = @amount || self.percentage
+    when 'dollar'
+      self.percentage = nil
+      self.dollar = @amount || self.dollar
+    end
+
+    nil
+  end
+
+  # Either the percent or dollar attributes must have a value in them.
+  #
+  # @return nil
+  def validate_amount
+    if (mode == 'percentage' and percentage.nil?) or (mode == 'dollar' and (dollar.nil? or dollar.zero?))
+      errors.add(:amount, "required")
+    end
+
+    nil
   end
 
   def apply!(order, qualifications)
-    case kind
+    case mode
     when 'percentage' 
-      order.enqueue_adjustment(:percentage_discount, BigDecimal.new(amount), 'promotion')
-    when 'fixed'
-      order.enqueue_adjustment(:fixed_discount, SpookAndPuff::Money.new(amount), 'promotion')
+      order.enqueue_adjustment(:percentage_discount, BigDecimal.new(percentage.to_s), 'promotion')
+      result("Applied a #{percentage}% discount")
+    when 'dollar'
+      order.enqueue_adjustment(:fixed_discount, dollar, 'promotion')
+      result("Applied a #{dollar} discount")
     end
-
-    result("Applied a #{amount_and_kind} discount")
   end
 end

@@ -4,46 +4,58 @@ module Promotions
   class Decorator < Draper::Base
     # Generates a summary for the encapsulated Promotion.
     #
-    # @param [:general, :specific] mode
-    # @param [:text, :html] format
     # @param Hash opts
     # @option opts Array<Symbol> :exclude_conditions
     # @option opts Array<Symbol> :exclude_effects
+    # @option opts [:their, :your] :possessive
     # @option opts [true, false] :preamble
     # @return String
     # @todo Order conditions/effects before mapping.
-    def summary(mode = :general, format = :html, opts = {})
-      what  = generate_summary(condition_configs, model.conditions, mode, format, opts[:exclude_conditions])
-      to    = generate_summary(effect_configs, model.effects, mode, format, opts[:exclude_effects])
-      start = preamble(mode, format, what, to, opts)
-      join  = join_text(mode, format, what, to)
+    def summary(opts = {})
+      _opts = {
+        :mode       => :general,
+        :format     => :html,
+        :possessive => :their
+      }.merge(opts)
+
+      what  = generate_summary(condition_configs, model.conditions, _opts, opts[:exclude_conditions])
+      to    = generate_summary(effect_configs, model.effects, _opts, opts[:exclude_effects])
+      start = preamble(what, to, _opts)
+      join  = join_text(what, to, _opts)
 
       # When interpolating, any of these calls might return an empty string, so
       # we squeeze successive spaces within the resulting string.
       output = "#{start} #{what} #{join} #{to}".squeeze(" ")
 
-      case format
-      when :html then output.html_safe
-      when :text then output
+      case _opts[:format]
+      when :html 
+        nf = Nokogiri::HTML.fragment(output)
+        nf.traverse do |c|
+          if c.text? and !c.text.blank?
+            c.replace(c.text.sub(/\w/, &:capitalize))
+            break 
+          end
+        end
+        nf.to_xhtml.gsub(%r{\s+}, ' ').html_safe 
+      when :text 
+        output.sub(/\w/, &:capitalize)
       end
     end
 
     # Generate a text summary for the encapsulated Promotion.
     #
-    # @param Symbol mode
     # @param Hash opts
     # @return String
-    def summary_text(mode = :general, opts = {})
-      summary(mode, :text, opts)
+    def summary_text(opts = {})
+      summary(opts.merge(:format => :text))
     end
 
     # Generate a HTML summary for the encapsulated Promotion.
     #
-    # @param Symbol mode
     # @param Hash opts
     # @return String
-    def summary_html(mode = :general, opts = {})
-      summary(mode, :html, opts)
+    def summary_html(opts = {})
+      summary(opts.merge(:format => :html))
     end
 
     private
@@ -65,15 +77,20 @@ module Promotions
       # @attr_reader [:general, :specific]
       attr_reader :mode
 
+      # The possessive to be used in generated fragments.
+      #
+      # @attr_reader [:your, :their]
+      attr_reader :possessive
+
       # Constructs a new context.
       #
       # @param Promotion promotion
-      # @param [:general, :specific] mode
-      # @param [:html, :text] format
-      def initialize(promotion, mode, format)
+      # @param Hash opts
+      def initialize(promotion, opts)
         @promotion = promotion
-        @mode = mode
-        @format = format
+        @mode = opts[:mode]
+        @format = opts[:format]
+        @possessive = opts[:possessive]
       end
 
       # A concatenation of mode and format. Intended to be used in case 
@@ -119,14 +136,6 @@ module Promotions
       # The current condition/effect being addressed while generating the
       # summary.
       attr_accessor :part
-
-      # Returns the correct possessive depending on if the promotion has an
-      # application limit applied to it.
-      #
-      # @return String
-      def possessive
-        promotion.publish_application_limit? ? 'their' : 'your'
-      end
     end
 
     # Generates a string from the provided configuration and collection of
@@ -134,15 +143,14 @@ module Promotions
     #
     # @param Hash<Symbol, SummaryConfig> configs
     # @param Array<[PromotionCondition, PromotionEffect] parts
-    # @param Symbol mode
-    # @param Symbol format
+    # @param Hash opts
     # @param [Array<Symbol>, nil] exclude
     # @return String
     # @todo Sort the parts using the order within the configs.
     # @todo Account for suffixes
-    def generate_summary(configs, parts, mode, format, exclude = nil)
+    def generate_summary(configs, parts, opts, exclude = nil)
       _parts = exclude.nil? ? parts : parts.reject {|p| exclude.include?(p.short_name)}
-      context = SummaryContext.new(model, mode, format)
+      context = SummaryContext.new(model, opts)
       summaries = _parts.map do |part|
         context.part = part
         instance_exec(context, &configs[part.short_name][:logic])
@@ -164,8 +172,6 @@ module Promotions
     # Generates a preamble/statement to be appended to the front of the 
     # summary. 
     #
-    # @param Symbol mode
-    # @param [:text, :html] mode
     # @param String condition_summary
     # @param String effect_summary
     # @param Hash opts
@@ -173,7 +179,7 @@ module Promotions
     # @return String
     # @todo Actually implement this
     # @todo Handle limited applications
-    def preamble(mode, format, condition_summary, effect_summary, opts = {})
+    def preamble(condition_summary, effect_summary, opts = {})
       if opts[:preamble] == false
         ""
       elsif condition_summary.blank?
@@ -190,16 +196,15 @@ module Promotions
     # Where the condition summary is black, it will skip evaluating the join 
     # rules and return "receive".
     #
-    # @param Symbol mode
-    # @param [:text, :html] mode
     # @param String condition_summary
     # @param String effect_summary
+    # @param Hash opts
     # @return String
-    def join_text(mode, format, condition_summary, effect_summary)
+    def join_text(condition_summary, effect_summary, opts)
       if condition_summary.blank?
         "receive"
       else
-        context = Context.new(model, mode, format)
+        context = Context.new(model, opts)
         join_rules.each do |r|
           result = r.call(context)
           return result unless result.nil?
@@ -363,9 +368,9 @@ module Promotions
 
     effect(:discount) do |c|
       amount = if c.html?
-        h.content_tag(:span, c.part.amount_and_kind, :class => 'effect-amount')
+        h.content_tag(:span, c.part.amount_and_mode, :class => 'effect-amount')
       else
-        c.part.amount_and_kind
+        c.part.amount_and_mode
       end
 
       "a #{amount} discount on #{c.possessive} order"

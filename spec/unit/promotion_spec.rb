@@ -45,6 +45,7 @@ describe Order::Promotions do
   it "should give fixed shipping discount to orders with code" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCodeCondition.new(:code => 'DERP')
+      p.conditions << PromotionShippingCondition.new
       p.effects    << PromotionShippingEffect.new(:amount => 0, :mode => 'set')
     end
 
@@ -99,7 +100,7 @@ describe Order::Promotions do
   it "should give a $10 discount when a code is entered" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCodeCondition.new(:code => 'WHATWHAT')
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$10')
+      p.effects << PromotionDiscountEffect.new(:amount => '10', :mode => 'dollar')
     end
 
     order = build(:order)
@@ -117,7 +118,7 @@ describe Order::Promotions do
   it "should give a $15 discount to orders over $70" do
     promotion = create_promotion do |p|
       p.conditions << PromotionSpendCondition.new(:amount => 70)
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$15')
+      p.effects << PromotionDiscountEffect.new(:amount => '15', :mode => 'dollar')
     end
 
     order = build(:order)
@@ -134,7 +135,8 @@ describe Order::Promotions do
   it "should give free shipping and 15% discount when a code is entered" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCodeCondition.new(:code => 'GETINLINE')
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '15%')
+      p.conditions << PromotionShippingCondition.new
+      p.effects << PromotionDiscountEffect.new(:amount => '15', :mode => 'percentage')
       p.effects << PromotionShippingEffect.new(:amount => 0, :mode => 'set')
     end
 
@@ -156,7 +158,8 @@ describe Order::Promotions do
   it "should give 15% and free shipping to members who spend over $100" do
     promotion = create_promotion do |p|
       p.conditions << PromotionSpendCondition.new(:amount => 100)
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '15%')
+      p.conditions << PromotionShippingCondition.new
+      p.effects << PromotionDiscountEffect.new(:amount => '15', :mode => 'percentage')
       p.effects << PromotionShippingEffect.new(:amount => 0, :mode => 'set')
     end
 
@@ -193,7 +196,7 @@ describe Order::Promotions do
   it "should give a $5 discount when order contains product" do
     promotion = create_promotion do |p|
       p.conditions << PromotionProductQuantityCondition.new(:product_id => @purchase.id, :quantity => 2)
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$5')
+      p.effects << PromotionDiscountEffect.new(:amount => '5', :mode => 'dollar')
     end
 
     order = build(:order)
@@ -210,7 +213,7 @@ describe Order::Promotions do
   it "should give a $7 discount when order contains products from category" do
     promotion = create_promotion do |p|
       p.conditions << PromotionCategoryQuantityCondition.new(:product_category_id => @purchase.product_category_id, :quantity => 4)
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$7')
+      p.effects << PromotionDiscountEffect.new(:amount => '7', :mode => 'dollar')
     end
 
     order = build(:order)
@@ -227,7 +230,7 @@ describe Order::Promotions do
   it "should give a $10 discount when order contains sku" do
     promotion = create_promotion do |p|
       p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 2)
-      p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$10')
+      p.effects << PromotionDiscountEffect.new(:amount => '10', :mode => 'dollar')
     end
 
     order = build(:order)
@@ -281,7 +284,7 @@ describe Order::Promotions do
     it "should allow compatible sub-scopes" do
       promotion = create_promotion do |p|
         p.conditions << PromotionSkuQuantityCondition.new(:sku_id => @purchase_sku.id, :quantity => 2)
-        p.effects << PromotionDiscountEffect.new(:amount_and_kind => '$10')
+        p.effects << PromotionDiscountEffect.new(:amount => '10', :mode => 'dollar')
       end
 
       expect(promotion.valid?).to eq(true)
