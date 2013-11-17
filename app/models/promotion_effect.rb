@@ -2,12 +2,7 @@ class PromotionEffect < ActiveRecord::Base
   include Islay::MetaData
   include Promotions::Config
 
-  has_many    :applications,            :class_name => 'AppliedPromotion'
-  has_many    :orders,                  :through => :applications
-  has_many    :qualifying_order_items,  :through => :applications
-  has_many    :bonus_order_items,       :through => :applications
-
-  belongs_to  :promotion
+  belongs_to :promotion
 
   # Applies the effect to the provided order. It may also optionally use the
   # condition results passed in as the second arg.
