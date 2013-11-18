@@ -1,6 +1,6 @@
 class PromotionGetNFreeEffect < PromotionEffect
   desc "Buy One, Get One (or more) Free"
-  condition_scope :sku_items
+  condition_scope :sku
   effect_scope :sku_items
 
   metadata(:config) do

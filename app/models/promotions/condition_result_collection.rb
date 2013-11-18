@@ -21,16 +21,8 @@ module Promotions
     # @param Symbol name
     # @return Hash<OrderItem, Numeric>
     def merged_targets(name = nil)
-      @targets ||= (name ? scope(name) : self).reduce({}) do |h, result|
-        result.targets.each do |target, q|
-          if h.has_key?(target)
-            h[target] + q
-          else
-            h[target] = q
-          end
-        end
-
-        h
+      (name ? scope(name) : self).reduce({}) do |h, result|
+        h.merge(result.targets)
       end
     end
 
