@@ -20,18 +20,32 @@ module Promotions
     #
     # @param Symbol name
     # @return Hash<OrderItem, Numeric>
-    def merged_targets(name = nil)
+    def targets(name = nil)
       (name ? scope(name) : self).reduce({}) do |h, result|
         h.merge(result.targets)
       end
     end
 
-    # A sum of all the qualifications e.g. across 'target' OrderItem, sum up 
-    # the number of qualifications.
+    # Similar semantics to #targets, but the value is only the item 
+    # count.
     #
-    # @return Numeric
-    def targets_sum
-      merged_targets.values.sum
+    # @param Symbol name
+    # @return Hash<OrderItem, Integer>
+    def target_counts(name = nil)
+      (name ? scope(name) : self).reduce({}) do |h, result|
+        h.merge(result.target_counts)
+      end
+    end
+
+    # Similar semantics to #targets, but the value is only the item 
+    # qualifications.
+    #
+    # @param Symbol name
+    # @return Hash<OrderItem, Integer>
+    def target_qualifications(name = nil)
+      (name ? scope(name) : self).reduce({}) do |h, result|
+        h.merge(result.target_qualifications)
+      end
     end
   end
 end

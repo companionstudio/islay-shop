@@ -33,6 +33,8 @@ class Order
       :manual_to_zero,
       :bonus_quantity,
       :discount_quantity,
+      :fixed_item_discount,
+      :percentage_item_discount,
       :fixed_discount,
       :fixed_increase,
       :percentage_discount,
@@ -120,6 +122,28 @@ class Order
     # @return OrderItem
     def set_bonus_quantity(purchase, quantity, source)
       for_purchase(purchase, :add_bonus_quantity, false, quantity, source)
+    end
+
+    # Discounts a purchase by the fixed amount.
+    #
+    # @param ActivRecord::Base purchase
+    # @param Integer quantity
+    # @param SpookAndPuff::Money discount
+    # @param String source
+    # @return OrderItem
+    def set_fixed_item_discount(purchase, quantity, discount, source)
+      for_purchase(purchase, :fixed_discount, false, quantity, discount, source)
+    end
+
+    # Discounts a purchase by the percentage amount.
+    #
+    # @param ActivRecord::Base purchase
+    # @param Integer quantity
+    # @param Numeric discount
+    # @param String source
+    # @return OrderItem
+    def set_percentage_item_discount(purchase, quantity, discount, source)
+      for_purchase(purchase, :percentage_discount, false, quantity, discount, source)
     end
 
     # Modifys the total on an order and distributes the discount across the items

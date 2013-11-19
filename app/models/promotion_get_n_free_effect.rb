@@ -8,7 +8,7 @@ class PromotionGetNFreeEffect < PromotionEffect
   end
 
   def apply!(order, results)
-    messages = results.merged_targets.map do |item, count|
+    messages = results.target_qualifications.map do |item, count|
       free = count * quantity
       order.enqueue_adjustment(:bonus_quantity, item.sku, free, 'promotion')
       "Added #{free} of #{item.sku.product.name} - #{item.sku.short_desc} free"

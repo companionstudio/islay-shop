@@ -18,6 +18,33 @@ class OrderItem
       adjust_item('line_level', item, quantity, -(discount.abs) * quantity, source)
     end
 
+    # Adds a percentage discount for a purchase.
+    #
+    # @param ActiveRecord::Base purchase
+    # @param Integer quantity
+    # @param Numeric discount
+    # @param String source
+    # @return OrderItem
+    # @raises OrderItemMissingError
+    def percentage_discount(purchase, quantity, discount, source = 'manual')
+      item = find_item_or_error(purchase)
+      _discount = item.total.percent(discount)
+      adjust_item('line_level', item, quantity, -_discount, source)
+    end
+
+    # Adds a fixed discount for a purchase.
+    #
+    # @param ActiveRecord::Base purchase
+    # @param Integer quantity
+    # @param SpookAndPuff::Money discount
+    # @param String source
+    # @return OrderItem
+    # @raises OrderItemMissingError
+    def fixed_discount(purchase, quantity, discount, source = 'manual')
+      item = find_item_or_error(purchase)
+      adjust_item('line_level', item, quantity, -(discount.abs) * quantity, source)
+    end
+
     # Promote the specified quantity for a purchase.
     #
     # @param ActiveRecord::Base purchase

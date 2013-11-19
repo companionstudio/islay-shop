@@ -376,6 +376,18 @@ module Promotions
       "a #{amount} discount on #{c.possessive} order"
     end
 
+    effect(:product_discount) do |c|
+      amount = if c.html?
+        h.content_tag(:span, c.part.amount_and_mode, :class => 'effect-amount')
+      else
+        c.part.amount_and_mode
+      end
+
+      postfix = c.specific? ? "on each" : "on qualifying items"
+
+      "a #{amount} discount #{postfix}"
+    end
+
     effect(:competition_entry) do |c|
       "entry into #{c.part.name}"
     end

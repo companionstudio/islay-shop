@@ -1,6 +1,6 @@
 class PromotionSkuQuantityCondition < PromotionCondition
   desc  "Quantity of SKU"
-  condition_scope :sku_items
+  condition_scope :sku
   exclusivity_scope :sku_items
   position 3
 
@@ -16,10 +16,10 @@ class PromotionSkuQuantityCondition < PromotionCondition
       message = "Does not contain the product #{sku.product.name} - #{sku.short_desc}; needs at least #{quantity}"
       failure(:no_items, message)
     elsif item.paid_quantity < quantity
-      message = "Doesn't have enough of the product #{product.name} - #{sku.short_desc}; needs at least #{quantity}"
+      message = "Doesn't have enough of the product #{sku.product.name} - #{sku.short_desc}; needs at least #{quantity}"
       failure(:insufficient_quantity, message)
     else
-      success(item => 1)
+      success(item => {:qualifications => 1, :count => item.quantity})
     end
   end
 

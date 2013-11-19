@@ -115,8 +115,10 @@ class PromotionCondition < ActiveRecord::Base
     # @param Symbol condition
     # @param [:full, :partial, :none] qualification
     # @param [:order, :items, :sku_items, :service_items] scope
-    # @param Symbol reason
-    # @param Hash<OrderItem, Numeric> targets
+    # @param Hash opts
+    # @option opts Symbol :reason
+    # @option opts Symbol :explanation
+    # @option opts Hash<OrderItem, Hash<[:count, :qualifications], Integer>> :targets
     # @todo Validate the enums against the constants
     def initialize(condition, qualification, scope, opts = {})
       @condition      = condition
@@ -125,6 +127,21 @@ class PromotionCondition < ActiveRecord::Base
       @reason         = opts[:reason]
       @explanation    = opts[:explanation]
       @targets        = opts[:targets] || {}
+    end
+
+    # Hash of counts keyed by OrderItem. Count is the number of items a 
+    # condition considers to be 'included' when assessing an order.
+    #
+    # @return Hash<OrderItem, Integer>
+    def target_counts
+      @target_counts ||= Hash[targets.map {|k, v| [k, v[:count] || 0]}]
+    end
+
+    # Hash of qualifications keyed by OrderItem.
+    #
+    # @return Hash<OrderItem, Integer>
+    def target_qualifications
+      @target_qualifications ||= Hash[targets.map {|k, v| [k, v[:qualifications] || 0]}]
     end
 
     # Indicates the success or failure of the qualification.

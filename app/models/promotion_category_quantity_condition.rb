@@ -18,7 +18,7 @@ class PromotionCategoryQuantityCondition < PromotionCondition
       message = "Doesn't have enough products from the #{category.name}; needs at least #{quantity}"
       partial(:insufficient_quantity, message)
     else
-      targets = items.reduce({}) {|h, c| h.merge(c => 1)}
+      targets = items.reduce({}) {|h, c| h.merge(c => {:qualifications => 1, :count => c.quantity})}
       success(targets)
     end
   end
