@@ -23,12 +23,17 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     @payment = PaymentSubmission.new
   end
 
+  # @todo Do a better job of handling errors that come from authorizing
   def payment_process
-    result = payment_provider.confirm_payment_submission(request.env["QUERY_STRING"])
+    result = payment_provider.confirm_payment_submission(
+      request.env["QUERY_STRING"], 
+      :execute => :authorize, 
+      :amount => order.total.raw
+    )
+
     @payment = PaymentSubmission.new(result)
 
-    if result.successful?
-      order.run!(:add, result)
+    if result.successful? and order.run!(:add, result)
       flash['order'] = session['order'] #keep the order around for the next request only
       session.delete('order')
       redirect_to path(:order_checkout_thank_you, :reference => order.reference)

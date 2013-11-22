@@ -33,9 +33,9 @@ class CheckoutCell < Cell::Rails
     @payment = payment
 
     @config = payment_provider.prepare_payment_submission(
-      :authorize,
       public_order_checkout_payment_process_url(:host => request.host),
-      @order.total.raw
+      :type => :authorize,
+      :amount => @order.total.raw
     )
 
     current = Date.today.year

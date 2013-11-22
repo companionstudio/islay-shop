@@ -3,7 +3,7 @@ PATH
   specs:
     islay_shop (0.5.0)
       islay (~> 0.5.0)
-      spook_and_pay (= 0.2.0.alpha)
+      spook_and_pay (= 0.2.3.alpha)
       spook_and_puff_money (= 0.5.9)
 
 PATH
@@ -235,9 +235,13 @@ GEM
     simple_form (2.0.4)
       actionpack (~> 3.0)
       activemodel (~> 3.0)
-    spook_and_pay (0.2.0.alpha)
+    spook_and_pay (0.2.3.alpha)
       braintree (= 2.25.0)
+      rack (>= 1.4.0)
+      spreedly (= 2.0.6)
     spook_and_puff_money (0.5.9)
+    spreedly (2.0.6)
+      nokogiri
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
