@@ -308,7 +308,7 @@ class Order < ActiveRecord::Base
   #
   # @return [true, false]
   def free_shipping?
-    shipping_service.nil? or shipping_service.pre_discount_total.zero?
+    shipping_service.nil? or shipping_service.total.zero?
   end
 
   # This bit of meta-programming generates accessors with a deprecation warning.
