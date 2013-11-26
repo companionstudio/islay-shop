@@ -16,6 +16,8 @@
           - if order.expiring?
             %span.expiry-warning Expiring Soon!
           %span.reference.numeric= order.reference
+          - if order.is_gift?
+            %span.flag.gift-order Gift
           %span.summary= order.items_summary
         %td
           %span.numeric= order.total

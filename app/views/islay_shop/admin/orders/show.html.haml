@@ -80,6 +80,13 @@
         %br/
         %span.state #{@order.shipping_state} #{@order.shipping_postcode}  
 
+  - if @order.is_gift?
+    .gift-details
+      %h3 
+        %spn.flag.gift-order Gift
+      %p
+        %span.value= @order.gift_message
+
   - unless @order.promotions.blank?
     %h3.items #{@order.promotions.count} #{@order.promotions.count > 1 ? 'promotions apply' : 'promotion applies'} to this order
     %table.promotions

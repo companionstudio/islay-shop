@@ -6,7 +6,7 @@ class OrderSummary < Order
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      id, status, name, updated_at, reference,
+      id, status, name, updated_at, reference, is_gift,
       total,
       CASE
         WHEN orders.updater_id IS NOT NULL THEN (SELECT name FROM users WHERE id = updater_id)

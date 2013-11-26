@@ -69,6 +69,21 @@
     width: 12em
     font-size: 0.95em
 
+  .flag
+    +islay-text-shadow
+    +border-radius(0.2em)
+    background: rgba(0,0,0,0.1)
+    display: inline-block
+    padding: 0.2em 0.3em 0.1em
+    text-transform: uppercase
+    letter-spacing: 0.06em
+    font-weight: 600
+    margin-right: 0.33em
+
+    &.gift-order
+      background: #E78E68
+      color: #FFF
+
 /* -------------------------------------------------------------------------- */
 /* ORDER OVERVIEW
 /* -------------------------------------------------------------------------- */
@@ -81,6 +96,12 @@
 
     h3
       font-size: 1em
+      margin-top: 0
+
+  .order-overview
+    h3
+      margin-top: 1.5em
+    
 
   .billing,
     width: 20em
@@ -120,6 +141,16 @@
       text-align: right
       font-weight: bold
       padding-right: 1em
+
+  .gift-details
+    p
+      margin-bottom: 0
+    .key
+      color: $dark-grey
+      display: block
+    .value
+      font-size: 1.2em
+
 
   .order-progression
     +background-image($dimension-raised-subtle)
@@ -479,9 +510,11 @@
 table
   .reference
     +border-radius(0.2em)
-    border: 0.1em solid rgba(0,0,0,0.1)
     background: rgba(0,0,0,0.1)
-    padding: 0.1em 0.3em
+    padding: 0.2em 0.3em 0.1em
+    float: right
+
+  .flag
     float: right
 
   .summary
