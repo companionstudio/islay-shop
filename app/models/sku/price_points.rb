@@ -121,6 +121,13 @@ class Sku
       price_points << price_point_template('single', 1) unless single_price_point
     end
 
+    # Returns a money formatted string of default price.
+    #
+    # @return String
+    def formatted_price
+      format_money(single_price)
+    end
+
     # Returns a stubbed out price point which serves as a 'template' for 
     # generating new price points.
     #
