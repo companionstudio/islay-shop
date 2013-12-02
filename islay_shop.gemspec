@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'islay',                 '~> 0.5.0'
-  s.add_dependency 'spook_and_pay',         '0.2.4.alpha'
+  s.add_dependency 'spook_and_pay',         '0.2.5.alpha'
   s.add_dependency 'spook_and_puff_money',  '0.5.9'
 
   s.add_development_dependency 'rspec-rails',         '2.14.0'

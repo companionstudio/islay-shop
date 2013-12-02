@@ -16,7 +16,8 @@ module IslayShop::Payments
         Rails.env,
         :environment_key  => IslayShop::Engine.config.payments.environment_key,
         :access_secret    => IslayShop::Engine.config.payments.access_secret,
-        :gateway_token    => IslayShop::Engine.config.payments.gateway_token
+        :gateway_token    => IslayShop::Engine.config.payments.gateway_token,
+        :currency_code    => IslayShop::Engine.config.payments.currency_code
       )
     end
   end
