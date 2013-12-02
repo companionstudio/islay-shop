@@ -125,7 +125,7 @@ class Sku
     #
     # @return String
     def formatted_price
-      format_money(single_price)
+      single_price
     end
 
     # Returns a stubbed out price point which serves as a 'template' for 
