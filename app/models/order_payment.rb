@@ -101,7 +101,7 @@ class OrderPayment < ActiveRecord::Base
   # @return [true, false]
   def handle_result(action, result)
     @transaction = result.transaction
-    update_attributes(:status => result.transaction.status)
+    update_attributes(:status => transaction.status, :provider_token => transaction.id)
     result.successful?
   end
 
