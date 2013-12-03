@@ -35,14 +35,20 @@ class OrderProcess < Order
         fail!("Could not refund payment due to a problem with the payment provider")
       end
     else
-      # Otherwise it is authorized or submitted for settlement, in which case 
-      # it can be voided rather than refunded.
-      if payment.void!
+      # If the payment provider supports voiding, void
+      if payment.can_void?
+        if payment.void!
+          return_stock
+          IslayShop::OrderMailer.cancelled(self).deliver
+          next!("Payment has been voided")
+        else
+          fail!("Could not void payment due to a problem with the payment provider")
+        end
+      else
+        # Let the authorization expire:
         return_stock
         IslayShop::OrderMailer.cancelled(self).deliver
-        next!("Payment has been voided")
-      else
-        fail!("Could not void payment due to a problem with the payment provider")
+        next!("Payment can't be voided: the authorization will expire, usually within 7 days.")
       end
     end
   end
