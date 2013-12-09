@@ -1,12 +1,16 @@
-= f.fieldset("Have a minimum number of items", condition_opts(condition)) do
+= f.fieldset("Buy at least N items", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:quantity, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      To qualify, customers need to purchase the minimum of specified items.
+  
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+  
+  .condition-contents
+    %p.summary Orders which contain at least this many items.
 
-    %div.extra.islay-toggle
-      %p
-        This is not the quantity of a single item in an order, but the sum of
-        all items.
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p When the total quantity of product items in the order reaches the set quantity, the order will qualify. Service items (such as shipping, gift wrapping, etc) don't count towards the total.
+
+        %p This condition will only qualify once - if you set a quantity of 2, and a customer buys 4, they will have the promotion's effects applied once, not twice.

@@ -1,12 +1,17 @@
 = f.fieldset("Place an order", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  %div.help
-    %p.summary
-      All customers placing orders qualify.
 
-    %div.extra.islay-toggle
-      %p
-        While a promotion with this condition is active, all orders will 
-        qualify. This condition is exclusive, it cannot be used with any other
-        conditions.
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)  
+
+  .condition-contents
+    %p.summary
+      Any order qualifies
+
+    .help
+      %div.extra.islay-toggle
+        %p
+          Any order will qualify for this promotion. This condition is exclusive - if you set this condition, no other conditions can be used.
+
+        %p
+          Combine this condition with an application limit to create promotions like "The first XX customers to order will receive..."

@@ -1,14 +1,19 @@
 = f.fieldset("A Bonus SKU", effect_opts(effect)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:sku_id, :collection => @skus, :label => 'Bonus SKU', :inline => true)
-  = f.input(:quantity, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      Adds the specified quantity of a SKU to the order.
+  
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
 
-    %div.extra.islay-toggle
-      %p
-        This is quantity is fixed irrespective of any other part of the 
-        promotion.
+  .effect-contents
+    %p.summary
+      Adds the quantity of the SKU you choose to the order.
+
+    = f.input(:sku_id, :collection => @skus, :label => 'Bonus SKU', :inline => true)
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p The bonus SKU you choose must be published, but doesn't have to be for sale.
+
+        %p The bonus SKUs will be taken out of stock as they're added to orders, but they will over-sell to allow the promotion to continue. Make sure you have enough stock for the bonus, or set a limit on the promotion!
 

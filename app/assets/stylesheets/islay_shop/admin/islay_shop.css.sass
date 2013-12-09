@@ -400,13 +400,39 @@
 /* -------------------------------------------------------------------------- */
 .promotion-effects,
 .promotion-conditions
+  
+  .field
+    display: none
+
+  .condition-toggle .field,
+  .effect-toggle .field,
+  .active .field
+    display: inline-block
+
   legend.large
     text-transform: none !important
     font-size: 1.6em
     margin-top: 0.4em
 
-  fieldset legend
-    margin-bottom: 0.7em !important
+  fieldset
+    position: relative
+
+    legend
+      +text-shadow(none!important)
+      margin-left: 10em
+      margin-bottom: 0.2em!important
+
+    .condition-contents,
+    .effect-contents
+      margin-left: 10em
+
+  .condition-toggle,
+  .effect-toggle
+    position: absolute
+    left: 0
+    top: 0
+    width: 8em
+    padding: 1em
 
   .first-inline label
     position: absolute
@@ -415,26 +441,44 @@
   .select2-container
     width: 18em
 
+  .summary
+    padding-top: 0!important
+  
   .help
-    margin-top: -0.5em
-    max-width: 35em
     clear: both
-    float: left
+    color: $dark-grey
+    margin-top: -0.5em
 
-    .summary,
-    .toggle
-      float: left
+    p
+      max-width: 35em
+
+    .islay-toggle
+      border-top: 1px dotted #DDD
+      padding-top: 1em
+      margin-top: 0.5em
 
     .toggle
       margin-left: 1em
-
-      i
-        font-size: 1.2em
-
-      span
-        margin-top: -0.1em
-        margin-left: 0.3em
+      position: absolute
+      right: 1em
+      top: 1em
+      &:after
+        color: lighten(desaturate($link-color, 20), 30)
+        content: '\f059'
         display: inline-block
+        font-family: FontAwesome
+        font-size: 1.4em
+        text-indent: none!important
+
+      &:focus,
+      &:hover
+        text-decoration: none
+        &:after
+          color: lighten($link-color, 10)
+
+      i,
+      span
+        display: none
 
     .extra
       width: 100%
@@ -443,8 +487,26 @@
   fieldset.disabled
     legend,
     label,
-    .help
-      opacity: 0.6
+    .help,
+    .summary
+      +opacity(0.4)
+
+    .condition-contents,
+    .effect-contents
+      &:after
+        background: #FDFBCE
+        clear: both
+        display: inline-block
+        margin-bottom: 1em
+        padding: 0.3em 0.6em
+
+    .effect-contents
+      &:after
+        content: 'This effect requires a condition to be set first.'
+
+    .condition-contents
+      &:after
+        content: 'Another condition prevents this condition being set.'
 
   fieldset.errored
     border-color: $error-color !important
@@ -513,6 +575,15 @@ table
     background: rgba(0,0,0,0.1)
     padding: 0.2em 0.3em 0.1em
     float: right
+
+  // A counter column on table rows
+  .index
+    text-align: center
+    width: 0.75em
+
+  td.index
+    color: $mid-grey
+
 
   .flag
     float: right

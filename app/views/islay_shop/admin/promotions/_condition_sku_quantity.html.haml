@@ -1,14 +1,18 @@
-= f.fieldset("Buy a Specific SKU", condition_opts(condition)) do
+= f.fieldset("Buy at least N of a specific SKU", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:sku_id, :collection => @skus, :inline => true)
-  = f.input(:quantity, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      Orders which have a quantity or more of the specified SKU
+  
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
 
-    %div.extra.islay-toggle
-      %p
-        This condition generates a single qualification.
+  .condition-contents
+    %p.summary
+      Orders which have at least a certain number of the SKU you choose.
+    
+    = f.input(:sku_id, :collection => @skus, :inline => true)
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p This condition will only qualify once - if you set a quantity of 2, and a customer buys 4, they will have the promotion's effects applied once, not twice.
 
 

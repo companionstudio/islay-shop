@@ -1,5 +1,15 @@
 = f.fieldset("A discount on qualifying SKUs", effect_opts(effect)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:amount, :class => 'tiny', :label => "Amount", :inline => true)
-  = f.input(:mode, :collection => %w(dollar percentage), :as => :radio_buttons, :inline => true)
+
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .effect-contents
+    %p.summary Apply a discount to the qualifying SKUs.
+  
+    = f.input(:amount, :class => 'tiny', :label => "Amount", :inline => true)
+    = f.input(:mode, :collection => %w(dollar percentage), :as => :radio_buttons, :inline => true)
+  
+    .help
+      .extra.islay-toggle
+        %p Discounts can be set as either a percentage or a fixed amount off the unit price of each qualifying SKU.

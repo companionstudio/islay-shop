@@ -1,16 +1,17 @@
 = f.fieldset("Have shipping charges", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  %div.help
+
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+  
+  .condition-contents
     %p.summary
       Orders must have shipping charges to qualify.
+    
+    .help
+      .extra.islay-toggle
+        %p
+          Only orders with a paid amount of shipping qualify.
 
-    %div.extra.islay-toggle
-      %p
-        Orders which do not have shipping or where shipping charges are zero do
-        not qualify.
-
-      %p 
-        Generally this condition is intended to be used when offering a 
-        discount on shipping; discounted shipping on makes sense if the 
-        customer has been charged something for it.
+        %p 
+          This condition is useful when you want to provide discounted or free shipping - it just ensures there is some shipping charge to be discounted.

@@ -1,12 +1,16 @@
-= f.fieldset("Spend a Minimum Amount", condition_opts(condition)) do
+= f.fieldset("Spend a minimum amount", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:amount, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      Customers must spend the minimum or more
+  
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
 
-    %div.extra.islay-toggle
-      %p
-        This condition generates a single qualification.
+  .condition-contents
+    %p.summary Orders with a total of the amount you choose, or higher
+
+    = f.input(:amount, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p
+          This condition can only qualify once - if you set the minimum spend to $20, and a customer spends $40, the effects of the promotion will be applied once, not twice.
 

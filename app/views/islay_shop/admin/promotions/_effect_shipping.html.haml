@@ -1,14 +1,19 @@
 = f.fieldset("Discounted Shipping", effect_opts(effect)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:mode, :collection => @shipping_discount_modes, :as => :radio_buttons, :inline => true)
-  = f.input(:amount, :class => 'tiny', :inline => true)
-  %div.help
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+  .effect-contents
     %p.summary
-      Apply a discount to the shipping.
+      Apply a discount to shipping (or make it free)
 
-    %div.extra.islay-toggle
-      %p
-        Shipping discounts can either set the charge to a fixed amount — e.g. 
-        0 for free shipping — a percentage discount or a fixed discount.
+    = f.input(:mode, :collection => @shipping_discount_modes, :as => :radio_buttons, :inline => true)
+    = f.input(:amount, :class => 'tiny', :inline => true)
 
+    .help
+      .extra.islay-toggle
+        %p
+          Shipping discounts can either set the charge to a fixed amount — e.g. 
+          0 for free shipping — a percentage discount or a fixed discount.
+
+        %p
+          You'll need to set the 'Have shipping charges' condition, so this effect has something to discount.

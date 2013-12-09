@@ -1,15 +1,19 @@
 = f.fieldset("Extra SKUs Free", effect_opts(effect)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:quantity, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      For every qualifying SKU adds and extra amount.
 
-    %div.extra.islay-toggle
-      %p
-        Each time a SKU qualifies for a promotion an extra, free, fixed quantity 
-        is added to the order. The number of qualifications depends on the 
-        condition e.g. 'Buy at least 2' counts as one qualification, irrespective
-        of the actual quantity.
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+    
+  .effect-contents
+    %p.summary Adds an extra quantity of every qualifying SKU
+
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p
+          For every qualifying SKU, the chosen quantity of that SKU will be added to the order for free.
+
+        %p 
+          This effect requires a SKU specific condition to be set, to provide the qualifying SKUs.
 

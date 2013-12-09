@@ -1,14 +1,19 @@
-= f.fieldset("Buy Products from a Category", condition_opts(condition)) do
+= f.fieldset("Buy at least N products from a category", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:product_category_id, :collection => @categories, :label => 'Category', :inline => true, :as => :tree_select)
-  = f.input(:quantity, :class => 'tiny', :inline => true)
-  %div.help
-    %p.summary
-      Orders which have a quantity or more from the specified category
 
-    %div.extra.islay-toggle
-      %p
-        This condition generates one qualification and is not compatible with
-        effects like 'Get Extra Free', since they require a specific Sku to be
-        specified in the conditions.
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .condition-contents
+    %p.summary
+      Orders which have at least a certain number of products from the category you choose.
+
+    = f.input(:product_category_id, :collection => @categories, :label => 'Category', :inline => true, :as => :tree_select)
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+    
+    %div.help
+
+      %div.extra.islay-toggle
+        %p This condition will only qualify once - if you set a quantity of 2, and a customer buys 4, they will have the promotion's effects applied once, not twice.
+
+        %p This condition isn't compatible with effects like 'Get Extra Free', since they only work with a specific SKU from the conditions.
