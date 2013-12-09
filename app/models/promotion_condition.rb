@@ -204,7 +204,7 @@ class PromotionCondition < ActiveRecord::Base
   # @param Symbol reason
   # @param String explanation
   # @return Result
-  def failure(reason, explanation)
+  def failure(reason = :unknown, explanation = 'Not known')
     opts = {
       :reason       => reason,
       :explanation  => explanation
