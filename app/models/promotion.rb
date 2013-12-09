@@ -124,6 +124,13 @@ class Promotion < ActiveRecord::Base
     @code_based ||= !(conditions.map(&:class) & CODE_CONDITIONS).empty?
   end
 
+  # Return any codes (unique or shared) for this promotion
+  #
+  # @return Array<PromotionCode, String>
+  def codes
+    @codes ||= conditions.select{|c| c.class.in? CODE_CONDITIONS}.map(&:codes).flatten
+  end
+
   # Checks to see if the promotion has an application limit specified.
   #
   # @return [true, false]

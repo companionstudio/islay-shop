@@ -23,6 +23,27 @@
         %span.key Ends
         %span.value.time= @promotion.end_at
 
+  - if @promotion.code_based?
+    %h3 Codes
+
+    %table
+      %thead
+        %tr
+          %th.index #
+          %th Type
+          %th Code
+          %th Status
+      %tbody
+        - @promotion.codes.each_with_index do |code, i|
+          %tr
+            %td.index= i + 1
+            %td= code.is_a?(PromotionCode) ? 'Unique' : 'Shared'
+            %td
+              %span.numeric= code.is_a?(PromotionCode) ? code.code : code
+            %td
+              %span.time= code.is_a?(PromotionCode) ? code.redeemed_at : ''
+
+
   %h3 Orders
 
   %table
