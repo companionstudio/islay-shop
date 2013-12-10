@@ -19,9 +19,11 @@
     activeChange: function() {
       if (this.$active.is(':checked')) {
         this.$inputs.prop('disabled', false);
+        this.$el.addClass('active');
       }
       else {
         this.$inputs.prop('disabled', true);
+        this.$el.removeClass('active');
       }
       this.$inputs.trigger('change');
     },

@@ -24,7 +24,17 @@ class PromotionUniqueCodeCondition < PromotionCondition
     if order.promo_code and unredeemed_codes.exists?(:code => order.promo_code.upcase)
       successful
     else
-      failure
+      if order.promo_code.blank?
+        reason = :no_promo_code
+        explanation = 'No code was provided'
+      elsif redeemed_codes.exists?(:code => order.promo_code.upcase)
+        reason = :code_already_redeemed
+        explanation = "The code '#{order.promo_code.upcase}' has been redeemed already."
+      elsif !codes.exists?(:code => order.promo_code.upcase)
+        reason = :promo_code_mismatch
+        explanation = "The code '#{order.promo_code.upcase}' isn't valid for this promotion."
+      end  
+      failure(reason, explanation)
     end
   end
 

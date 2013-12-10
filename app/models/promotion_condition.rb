@@ -189,7 +189,7 @@ class PromotionCondition < ActiveRecord::Base
   # @param String explanation
   # @param Hash<OrderItem, Numeric> targets
   # @return Result
-  def partial(reason, explanation, targets = {})
+  def partial(reason = :unknown, explanation = 'Not known', targets = {})
     opts = {
       :reason       => reason,
       :explanation  => explanation,
@@ -204,7 +204,7 @@ class PromotionCondition < ActiveRecord::Base
   # @param Symbol reason
   # @param String explanation
   # @return Result
-  def failure(reason, explanation)
+  def failure(reason = :unknown, explanation = 'Not known')
     opts = {
       :reason       => reason,
       :explanation  => explanation

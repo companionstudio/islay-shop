@@ -1,21 +1,24 @@
 = f.fieldset("Enter a Unique Code", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:limit, :class => 'tiny', :inline => true)
-  = f.input(:code_prefix, :class => 'small', :inline => true)
-  = f.input(:code_suffix, :class => 'small', :inline => true)
-  %div.help
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .condition-contents
     %p.summary
       Customers will be prompted to enter code on checkout
+  
+    = f.input(:limit, :class => 'tiny', :inline => true)
+    = f.input(:code_prefix, :class => 'small', :inline => true)
+    = f.input(:code_suffix, :class => 'small', :inline => true)
+  
+    .help
+      .extra.islay-toggle
+        %p
+          Single-use codes are generated up to the specified limit e.g. a limit
+          of 50 will result in 50 unique codes. 
 
-    %div.extra.islay-toggle
-      %p
-        Individual codes are generated up to the specified limit e.g. a limit
-        of 50 will result in 50 unique codes. A prefix and/or suffix can be 
-        provided. This can help identify which promotion a code applies to.
-        A suffix like 'WAT' would generate a code like 'WATHG86D'.
+        %p 
+          You'll need to choose a prefix, a suffix, or both. These help identify which promotion the code is for, and make sure that the codes are unique across all promotions. For example, if you have a promotion called 'New Year Giveaway 2014', you could set the prefix to 'NY' and the suffix to '2014', which would produce codes like: 'NY7C8D2014'.
 
-        These codes are private; they are not advertised in the webshop. 
-        Instead the codes will be listed in the promotion summary, where you 
-        can then provide them to customers.
-
+        %p 
+          Setting a code condition stops the promotion being automatically advertised in the shop, so you can choose who sees the code and where.

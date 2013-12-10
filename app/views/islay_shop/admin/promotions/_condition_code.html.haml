@@ -1,17 +1,18 @@
 = f.fieldset("Enter a Code", condition_opts(condition)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:code, :class => 'medium', :inline => true)
-  %div.help
+
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+  
+  .condition-contents
     %p.summary
       Customers will be prompted to enter the code on checkout
 
-    %div.extra.islay-toggle
-      %p
-        The code used in this condition is private; it is not advertised in the
-        shop. The recommended use is to put the code in promotional materials
-        such as advertisements or mail-outs.
+    = f.input(:code, :class => 'medium', :inline => true)
 
-      %p
-        There is no limit on the number of times the code can be used.
+    .help
+      %div.extra.islay-toggle
+        %p Setting a code condition stops the promotion being automatically advertised in the shop, so you can choose who sees the code and where.
+
+        %p This type of code can be re-used until the promotion ends or the application limit is reached.
 

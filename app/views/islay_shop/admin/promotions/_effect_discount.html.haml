@@ -1,15 +1,18 @@
 = f.fieldset("A Discount on Their Order", effect_opts(effect)) do
   = f.hidden_field(:type)
-  = f.input(:active, :as => :boolean, :first_inline => true)
-  = f.input(:amount, :class => 'tiny', :label => "Amount", :inline => true)
-  = f.input(:mode, :collection => %w(dollar percentage), :as => :radio_buttons, :inline => true)
-  %div.help
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+    
+  .effect-contents
     %p.summary
-      Apply a discount to the order total.
+      Apply a discount to the order total
 
-    %div.extra.islay-toggle
-      %p
-        Discounts can be either a fixed dollar amount or a percentage of the
-        order total. The order total used is the product charges. It does not
-        include shipping or other services.
+    = f.input(:amount, :class => 'tiny', :label => "Amount", :inline => true)
+    = f.input(:mode, :collection => %w(dollar percentage), :as => :radio_buttons, :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p Discounts can be either a fixed dollar amount or a percentage of the order total.
+
+        %p The discount is applied to the order's grand total, including products, shipping and other services.
 
