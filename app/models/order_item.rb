@@ -4,7 +4,7 @@ class OrderItem < ActiveRecord::Base
 
   belongs_to :promotion
   belongs_to :order
-  
+
   has_many :components, :class_name => 'OrderItemComponent', :dependent => :destroy, :autosave => true do
     # Returns the component with the specified price.
     #
@@ -61,7 +61,7 @@ class OrderItem < ActiveRecord::Base
     # If it exists, returns the manual adjustment on this item.
     #
     # @return [nil, OrderItemAdjustment]
-    def manual 
+    def manual
       select {|a| a.source == 'manual'}.first
     end
 
@@ -112,7 +112,7 @@ class OrderItem < ActiveRecord::Base
     select(%{
       order_items.quantity, order_items.adjusted_price,
       order_items.total, order_items.discount, skus.product_id,
-      (SELECT name FROM products WHERE id = skus.product_id) || ' - ' || 
+      (SELECT name FROM products WHERE id = skus.product_id) || ' - ' ||
       (SELECT short_desc FROM products WHERE id = skus.product_id) AS sku_name
     }).joins(:sku)
   end
@@ -123,7 +123,7 @@ class OrderItem < ActiveRecord::Base
   def description
     raise NotImplementedError
   end
-  
+
   # Checks to see if any of the components have been flagged as bonuses.
   #
   # @return Boolean
@@ -136,6 +136,20 @@ class OrderItem < ActiveRecord::Base
   # @return Boolean
   def only_bonus?
     bonus? and components.length == 1
+  end
+
+  # Checks to see if this item has only non-bonus components.
+  #
+  # @return Boolean
+  def only_paid?
+    !bonus?
+  end
+
+  # Checks to see if this item has both bonus and non-bonus components.
+  #
+  # @return Boolean
+  def paid_and_bonus?
+    bonus? and !only_bonus?
   end
 
   # Summaries the price and quantity of each component.
@@ -176,7 +190,7 @@ class OrderItem < ActiveRecord::Base
   def discounted?
     !discount.zero?
   end
-  
+
   # Calculates the quantity of non-bonus components.
   #
   # @return [Float, Number]
