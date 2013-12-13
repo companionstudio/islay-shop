@@ -22,7 +22,7 @@ class PromotionUniqueCodeCondition < PromotionCondition
 
   def check(order)
     if order.promo_code and unredeemed_codes.exists?(:code => order.promo_code.upcase)
-      successful
+      success
     else
       if order.promo_code.blank?
         reason = :no_promo_code
@@ -33,7 +33,7 @@ class PromotionUniqueCodeCondition < PromotionCondition
       elsif !codes.exists?(:code => order.promo_code.upcase)
         reason = :promo_code_mismatch
         explanation = "The code '#{order.promo_code.upcase}' isn't valid for this promotion."
-      end  
+      end
       failure(reason, explanation)
     end
   end
@@ -58,11 +58,11 @@ class PromotionUniqueCodeCondition < PromotionCondition
     end
   end
 
-  # An after_save hook which generates codes. It will generate new codes when 
+  # An after_save hook which generates codes. It will generate new codes when
   # the condition is first created. When the code count is increased it will
-  # create codes in addition to the existing ones. 
+  # create codes in addition to the existing ones.
   #
-  # When the code count is decreased it will destroy any that have not been 
+  # When the code count is decreased it will destroy any that have not been
   # redeemed.
   #
   # @return nil
