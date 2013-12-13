@@ -63,12 +63,15 @@ Rails.application.routes.draw do
     end
 
     resources :promotions, :path => 'orders/promotions' do
-      get '(/filter-:filter)(/sort-:sort)(/page-:page)', 
-          :action => 'index', 
-          :on     => :collection, 
+      get '(/filter-:filter)(/sort-:sort)(/page-:page)',
+          :action => 'index',
+          :on     => :collection,
           :as     => 'filter_and_sort'
 
-      get :delete, 
+      get :delete,
+          :on => :member
+
+      get :codes,
           :on => :member
     end
 

@@ -1,4 +1,6 @@
 class OrderBasket < Order
+  include Order::Promotions
+
   after_create :send_thank_you_mail
 
   # Persists an order and purchases the stock.

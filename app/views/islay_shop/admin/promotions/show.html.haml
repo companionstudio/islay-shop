@@ -25,6 +25,8 @@
 
   - if @promotion.code_based?
     %h3 Codes
+    - if @promotion.codes.count > 1
+      %p.note= link_to('Download as .csv file', path(:codes, @promotion, :format => 'csv'))
 
     %table
       %thead
@@ -43,9 +45,8 @@
             %td
               %span.time= code.is_a?(PromotionCode) ? code.redeemed_at : ''
 
-
   %h3 Orders
-
+  %p.note.summary #{@promotion.orders.count} orders. Revenue: #{@promotion.revenue}
   %table
     %thead
       %tr

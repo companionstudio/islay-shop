@@ -7,7 +7,7 @@ class Promotion < ActiveRecord::Base
   has_many :bonus_order_items,        :through => :applications
 
   attr_accessible(
-    :name, :start_at, :end_at, :conditions_attributes, :effects_attributes, 
+    :name, :start_at, :end_at, :conditions_attributes, :effects_attributes,
     :active, :description, :application_limit, :publish_application_limit
   )
 
@@ -23,7 +23,7 @@ class Promotion < ActiveRecord::Base
   # Promotion.
   CODE_CONDITIONS = [PromotionCodeCondition, PromotionUniqueCodeCondition].freeze
 
-  # Returns a relation scoped to the promotions that have been published and 
+  # Returns a relation scoped to the promotions that have been published and
   # have current start and end dates.
   #
   # @return ActiveRecord::Relation
@@ -31,6 +31,16 @@ class Promotion < ActiveRecord::Base
     where(%{
       promotions.active = true
       AND (promotions.start_at IS NULL OR promotions.start_at <= NOW())
+      AND (promotions.end_at IS NULL OR promotions.end_at >= NOW())
+    })
+  end
+
+  # Returns a relation scoped to the promotions that have current start and end dates.
+  #
+  # @return ActiveRecord::Relation
+  def self.current
+    where(%{
+      (promotions.start_at IS NULL OR promotions.start_at <= NOW())
       AND (promotions.end_at IS NULL OR promotions.end_at >= NOW())
     })
   end
@@ -59,18 +69,18 @@ class Promotion < ActiveRecord::Base
   def self.summary
     select(%{
       promotions.*,
-      (SELECT COUNT(orders.*) FROM orders 
+      (SELECT COUNT(orders.*) FROM orders
        JOIN applied_promotions AS aps ON aps.promotion_id = promotions.id AND aps.order_id = orders.id
        WHERE orders.status IN ('billed', 'packed', 'complete')) AS orders_count,
-      (SELECT SUM(orders.total) FROM orders 
+      (SELECT SUM(orders.total) FROM orders
        JOIN applied_promotions AS aps ON aps.promotion_id = promotions.id AND aps.order_id = orders.id
        WHERE orders.status IN ('billed', 'packed', 'complete')) AS revenue,
       (SELECT name FROM users WHERE users.id = promotions.updater_id) AS updater_name
     })
   end
 
-  # Generates a scope where the promotions are filtered by the provided 
-  # argument. Defaults to promotions which are 'current' i.e. upcoming or 
+  # Generates a scope where the promotions are filtered by the provided
+  # argument. Defaults to promotions which are 'current' i.e. upcoming or
   # running.
   #
   # @param [nil, String] f
@@ -82,7 +92,7 @@ class Promotion < ActiveRecord::Base
     when 'all'
       scoped
     else
-      active
+      current
     end
   end
 
@@ -99,8 +109,8 @@ class Promotion < ActiveRecord::Base
     end
   end
 
-  # The revenue is the total of all billed orders which qualified for the 
-  # promotion. Where this attribute doesn't exist, we'll calculate it 
+  # The revenue is the total of all billed orders which qualified for the
+  # promotion. Where this attribute doesn't exist, we'll calculate it
   # ourselves.
   #
   # @return SpookAndPuff::Money
@@ -139,7 +149,7 @@ class Promotion < ActiveRecord::Base
   end
 
   # A predicate which checks to see if the promotion has had any orders placed
-  # against it, in which case it is 'locked' and only some parts of the 
+  # against it, in which case it is 'locked' and only some parts of the
   # promotion can be edited e.g. conditions and effects are immutable.
   #
   # @return [true, false]
@@ -147,7 +157,7 @@ class Promotion < ActiveRecord::Base
     orders_count > 0
   end
 
-  # A predicate which checks to see if the status of the promotion is 
+  # A predicate which checks to see if the status of the promotion is
   # 'running'.
   #
   # @return [true, false]
@@ -181,7 +191,7 @@ class Promotion < ActiveRecord::Base
         end
       end
     end
-  end  
+  end
 
   # Indicates if the promotion has an effect of a particular type
   #
@@ -257,7 +267,7 @@ class Promotion < ActiveRecord::Base
 
   # Checks the order against each promotion.
   #
-  # This method is designed to be called against a scope 
+  # This method is designed to be called against a scope
   # e.g. active.check(order)
   #
   # @param Order order
@@ -269,7 +279,7 @@ class Promotion < ActiveRecord::Base
   # Checks the order against each promotion and for each that succeeds, also
   # applies the promotion's effects.
   #
-  # This method is designed to be called against a scope 
+  # This method is designed to be called against a scope
   # e.g. active.apply(order)
   #
   # @param Order order
@@ -322,7 +332,7 @@ class Promotion < ActiveRecord::Base
 
   private
 
-  # Checks to make sure that the specified conditions and effects are 
+  # Checks to make sure that the specified conditions and effects are
   # compatible with each other. It does this by passing each condition/effect
   # pair's scopes to the Scopes module, which maintains lookup hashes etc.
   #
@@ -341,10 +351,10 @@ class Promotion < ActiveRecord::Base
 
     # For each effect, there must be at least one condition which is compatible.
     effects.each do |e|
-      results = conditions.map do |c| 
+      results = conditions.map do |c|
         Promotions::Scopes.acceptable?(c.condition_scope, e.condition_scope)
       end
-      
+
       if results.none?
         incompatible = true
         e.errors.add(:base, "This effect is not compatible with any of the specified conditions")
