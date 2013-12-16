@@ -55,7 +55,7 @@
         %span.name
           %strong= @order.name
           - if @order.billing_company
-            , 
+            ,
             %span.company #{@order.billing_company}
         %br/
         %span.street= @order.billing_street
@@ -72,18 +72,24 @@
           %strong= @order.ship_to
           - if @order.shipping_company
             ,
-            %span.company #{@order.shipping_company}  
+            %span.company #{@order.shipping_company}
         %br/
         %span.street= @order.shipping_street
         %br/
         %span.city= @order.shipping_city
         %br/
-        %span.state #{@order.shipping_state} #{@order.shipping_postcode}  
+        %span.state #{@order.shipping_state} #{@order.shipping_postcode}
+
+  - unless @order.shipping_instructions.blank?
+    .shipping-instructions
+      %h3 Shipping Instructions
+      %p
+        %span.value= @order.shipping_instructions
 
   - if @order.is_gift?
     .gift-details
-      %h3 
-        %spn.flag.gift-order Gift
+      %h3
+        %span.flag.gift-order Gift
       %p
         %span.value= @order.gift_message
 
@@ -190,7 +196,7 @@
           Tracking reference:
           %strong #{@order.tracking_reference}
           %a.collapsible-expander{:href => '#editTrackingReference'} Change
-        
+
           = link_to('Track order&hellip;'.html_safe, @order.track_shipment, :class => 'track-order')
 
       #editTrackingReference.details
