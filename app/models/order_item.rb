@@ -157,11 +157,11 @@ class OrderItem < ActiveRecord::Base
   # @param Hash options - passes options to spookAndPuff::Money's to_s method
   #
   # @return String
-  def price_summary(options = {:drop_cents => true})
+  def price_summary(options = {})
     if only_bonus?
       "Free!"
     elsif components.length == 1
-      components.first.price(options)
+      components.first.price.to_s(options)
     else
       non_bonus = components.non_bonus.sort {|x, y| x.quantity <=> y.quantity}
       bonus     = components.bonus
