@@ -154,16 +154,18 @@ class OrderItem < ActiveRecord::Base
 
   # Summaries the price and quantity of each component.
   #
+  # @param Hash options - passes options to spookAndPuff::Money's to_s method
+  #
   # @return String
-  def price_summary
+  def price_summary(options = {:drop_cents => true})
     if only_bonus?
       "Free!"
     elsif components.length == 1
-      components.first.price
+      components.first.price(options)
     else
       non_bonus = components.non_bonus.sort {|x, y| x.quantity <=> y.quantity}
       bonus     = components.bonus
-      summaries = non_bonus.map {|c| "#{c.quantity} at #{c.price}"}
+      summaries = non_bonus.map {|c| "#{c.quantity} at #{c.price.to_s(options)}"}
 
       if bonus
         (summaries << "#{bonus.quantity} free").join(', ')
