@@ -76,7 +76,7 @@ class OrderItem
     end
 
     def stock_available?(sku, n)
-      sku.in_stock?
+      !sku.insufficient_stock?(n)
     end
 
     def maximum_quantity_allowed(sku)
