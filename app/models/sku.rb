@@ -225,16 +225,23 @@ class Sku < ActiveRecord::Base
     status == 'for_sale'
   end
 
-  # Checks to see if there is sufficient stock to make a sale.
+  # Checks to see if there is any stock at all
   #
   # @return [true, false]
   def in_stock?
     stock_level > 0
   end
 
+  # Checks to see if there is sufficient stock to make a sale.
+  #
+  # @return [true, false]
+  def sufficient_stock?(n)
+    stock_level >= n
+  end
 
+  #The reverse of sufficient_stock?
   def insufficient_stock?(n)
-    stock_level < n
+    !sufficient_stock?(n)
   end
 
   class InsufficientStock < StandardError
