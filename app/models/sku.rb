@@ -165,7 +165,7 @@ class Sku < ActiveRecord::Base
     "#{product.name} - #{short_desc}"
   end
 
-  # Returns a collection of promotions that are related to the Sku. It 
+  # Returns a collection of promotions that are related to the Sku. It
   # leans on the Promotions::Relevance module to do most of the work. The
   # resulting object has a bunch of methods for inspecting the results. See the
   # docs for Promotions::Relevance::Results.
@@ -175,7 +175,7 @@ class Sku < ActiveRecord::Base
     @related_promotions ||= Promotions::Relevance.to_sku(self)
   end
 
-  # Checks to see if there are any promotions related to this record. See 
+  # Checks to see if there are any promotions related to this record. See
   # #related_promotions for more detail.
   #
   # @return [true, false]
@@ -230,6 +230,11 @@ class Sku < ActiveRecord::Base
   # @return [true, false]
   def in_stock?
     stock_level > 0
+  end
+
+
+  def insufficient_stock?(n)
+    stock_level < n
   end
 
   class InsufficientStock < StandardError
