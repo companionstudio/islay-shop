@@ -12,19 +12,19 @@ class Order
       updates.map {|id, n| set_quantity(Sku.find(id), n.to_i)}
     end
 
-    # Sets the quantity for an item, overwriting any existing quantities. 
+    # Sets the quantity for an item, overwriting any existing quantities.
     #
     # @param ActiveRecord::Base item
     # @param Integer quantity
     #
-    # @return ActiveRecord::Base 
+    # @return ActiveRecord::Base
     def set_quantity(purchase, quantity)
       for_purchase(purchase, :set_quantity, true, quantity)
     end
 
-    # Sets the quantity and price for an item. This bypasses the bracketed 
+    # Sets the quantity and price for an item. This bypasses the bracketed
     # pricing entirely i.e. the item will not have any volume discounts.
-    # 
+    #
     # @param ActiveRecord::Base purchase
     # @param Integer n
     # @param SpookAndPuff::Money price
@@ -37,12 +37,12 @@ class Order
       for_purchase(purchase, :set_quantity_and_price, _opts[:retotal], n, price)
     end
 
-    # Increments the quantity for an item. 
+    # Increments the quantity for an item.
     #
     # @param ActiveRecord::Base item
     # @param Integer quantity
     #
-    # @return ActiveRecord::Base 
+    # @return ActiveRecord::Base
     def increment_quantity(purchase, quantity)
       for_purchase(purchase, :increment_quantity, true, quantity)
     end
@@ -53,7 +53,7 @@ class Order
     # @param ActiveRecord::Base item
     # @param Integer quantity
     #
-    # @return ActiveRecord::Base 
+    # @return ActiveRecord::Base
     def decrement_quantity(purchase, quantity)
       for_purchase(purchase, :decrement_quantity, true, quantity)
     end
@@ -62,7 +62,7 @@ class Order
     #
     # @param ActiveRecord::Base item
     #
-    # @return ActiveRecord::Base 
+    # @return ActiveRecord::Base
     def remove(purchase)
       for_purchase(purchase, :remove, true)
     end

@@ -232,14 +232,20 @@ class Sku < ActiveRecord::Base
     stock_level > 0
   end
 
-  # Checks to see if there is sufficient stock to make a sale.
+  # Checks to see if there is sufficient stock to make a sale of the given quantity.
+  #
+  # @param Integer
   #
   # @return [true, false]
   def sufficient_stock?(n)
     stock_level >= n
   end
 
-  #The reverse of sufficient_stock?
+  # The reverse of sufficient_stock?
+  #
+  # @param Integer
+  #
+  # @return [true, false]
   def insufficient_stock?(n)
     !sufficient_stock?(n)
   end

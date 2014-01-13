@@ -10,7 +10,7 @@ class Order < ActiveRecord::Base
 
   include PgSearch
   multisearchable :against => [
-    :name, :shipping_name, :reference, :email, :billing_city, :billing_postcode, 
+    :name, :shipping_name, :reference, :email, :billing_city, :billing_postcode,
     :shipping_city, :shipping_postcode
   ]
 
@@ -26,7 +26,7 @@ class Order < ActiveRecord::Base
   class_attribute :shipping_calculator
   self.shipping_calculator = :default_shipping_calculator
 
-  # A class attribute used to store a reference to the shipment tracking 
+  # A class attribute used to store a reference to the shipment tracking
   # class. This can be over-ridden per install using extensions.
   #
   # The class should at least have an instance method #track, which accepts
@@ -40,7 +40,7 @@ class Order < ActiveRecord::Base
   has_many    :items,         :class_name => 'OrderItem'
   has_many    :sku_items,     :class_name => 'OrderSkuItem',      :extend => [OrderItem::SkuPurchasing, OrderItem::Adjustments]
   has_many    :service_items, :class_name => 'OrderServiceItem',  :extend => [OrderItem::ServicePurchasing, OrderItem::Adjustments]
-  
+
   # Adjustments for order-level increases or discounts.
   has_many :adjustments, :class_name => "OrderAdjustment", :dependent => :destroy, :autosave => true do
     # Returns the first — possibly only — manual adjustment.
@@ -89,7 +89,7 @@ class Order < ActiveRecord::Base
   # Generates the human readable order ID.
   before_create :store_reference
 
-  # Generates a scope which adds a summary of order items to each row. It is a 
+  # Generates a scope which adds a summary of order items to each row. It is a
   # string consisting of the product name and quantity.
   #
   # @return ActiveRecord::Relation
@@ -142,7 +142,7 @@ class Order < ActiveRecord::Base
 
   # Specifies the values that can be safely exposed to the public. This is used
   # by the #dump method to create a JSON string that can be written to session.
-  dump_config( 
+  dump_config(
     :methods => [:items_dump, :stock_alerts_dump],
     :properties => [
       :person_id, :name, :phone, :email, :is_gift, :shipping_name, :gift_message,
@@ -254,6 +254,16 @@ class Order < ActiveRecord::Base
     items.sku_total_quantity
   end
 
+
+  # Counts the number of a given SKU in an order.
+  #
+  # @param Sku
+  #
+  # @return Integer
+  def quantity_of_sku(sku)
+    sku_items.find_item(sku) ? sku_items.find_item(sku).quantity : 0
+  end
+
   # Indicates if the order has any kind of discount applied to it.
   #
   # @return Boolean
@@ -293,7 +303,7 @@ class Order < ActiveRecord::Base
   end
 
   # The discount applied to the entire order.
-  # 
+  #
   # @return SpookAndPuff::Money
   # @todo Deprecate, then remove this.
   def total_discount
@@ -302,7 +312,7 @@ class Order < ActiveRecord::Base
 
   alias :formatted_total_discount :total_discount
 
-  # Indicates if the order has free shipping. This is true if there is no 
+  # Indicates if the order has free shipping. This is true if there is no
   # shipping service — e.g. no possible charge — or the pre-discount total is
   # zero.
   #
@@ -330,7 +340,7 @@ class Order < ActiveRecord::Base
   def track_shipment
     self.class.shipment_tracker_class.new.track(self)
   end
-  
+
   # Is the order in a state that can be tracked? (Usually after the order is ready for shipping)
   #
   # @return [Boolean]
@@ -383,7 +393,7 @@ class Order < ActiveRecord::Base
     # set the appropriate attributes.
     adjustment = self.original_total - self.total
     zero = SpookAndPuff::Money.new("0")
-    
+
     if adjustment.negative?
       self.increase = adjustment.abs
       self.discount = zero

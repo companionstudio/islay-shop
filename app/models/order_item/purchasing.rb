@@ -1,6 +1,6 @@
 class OrderItem
   # An abstract module intended to be mixed into other more specific modules,
-  # which are then mixed into associations on the Order model. 
+  # which are then mixed into associations on the Order model.
   #
   # Concretely, this module implements methods needed to add SKUs and services to
   # an order; it handles stock checks, selecting the correct price points and any
@@ -13,7 +13,7 @@ class OrderItem
     # order, when in fact, it doesn't exist.
     class OrderItemMissingError < StandardError
       # Initializes the error, duh
-      # 
+      #
       # @param Item item being purchased/updated
       #
       # @return OrderItemMissingError
@@ -36,7 +36,7 @@ class OrderItem
       sum(:total)
     end
 
-    # Returns the pre-discount dollar total for all the items in the target 
+    # Returns the pre-discount dollar total for all the items in the target
     # association.
     #
     # @return SpookAndPuff::Money
@@ -63,33 +63,39 @@ class OrderItem
     # @param ActveRecord::Base entry
     # @return ActiveRecord::Base
     def set_quantity(purchase, n, entry = find_or_create_item(purchase))
-      entry.quantity = n
-      
+
       if n == 0
         delete(entry)
       else
         entry.components.clear
-         
+
         if stock_available?(purchase, n)
           assign_components(entry, purchase, n)
         else
-          # Add some error
-          assign_components(entry, purchase, maximum_quantity_allowed(purchase))
+          max_qty = maximum_quantity_allowed(purchase)
+          assign_components(entry, purchase, max_qty)
+          entry.errors.add(:quantity, "There #{max_qty > 1 ? 'are' : 'is'} only #{max_qty} of this item available.")
         end
 
-        entry.total = entry.components.reduce(SpookAndPuff::Money.new('0')) {|m, c| m + c.total }
-        entry.pre_discount_total = entry.total
+        entry.quantity = entry.components.map(&:quantity).sum
+
+        if entry.quantity == 0
+          delete(entry)
+        else
+          entry.total = entry.components.reduce(SpookAndPuff::Money.new('0')) {|m, c| m + c.total }
+          entry.pre_discount_total = entry.total
+        end
       end
 
       entry
     end
 
-    # A predicate which checks to see if there is an order item for the 
+    # A predicate which checks to see if there is an order item for the
     # provided purchase.
     #
     # @param Class purchase
     # @return [true, false]
-    def has?(purchase) 
+    def has?(purchase)
       !find_item(purchase).nil?
     end
 
@@ -106,9 +112,9 @@ class OrderItem
       end
     end
 
-    # Sets the quantity and price for an item. This bypasses the bracketed 
+    # Sets the quantity and price for an item. This bypasses the bracketed
     # pricing entirely i.e. the item will not have any volume discounts.
-    # 
+    #
     # @param ActiveRecord::Base purchase
     # @param Integer n
     # @param SpookAndPuff::Money price
@@ -181,7 +187,7 @@ class OrderItem
     private
 
     # This is a utility function used to sum up monetary values from attributes
-    # on entries in an association, while ensuring that it always returns a 
+    # on entries in an association, while ensuring that it always returns a
     # SpookAndPuff::Money instance.
     #
     # @param Symbol attr
@@ -196,7 +202,7 @@ class OrderItem
     end
 
     # A helper method which allows for operations to be performed on an entry,
-    # then immediately after recalculating totals, discounts etc. The entry is 
+    # then immediately after recalculating totals, discounts etc. The entry is
     # specified by the purchase.
     #
     # @param ActiveRecord::Base purchase
@@ -234,7 +240,7 @@ class OrderItem
     end
 
     def find_item_or_error(purchase)
-      entry = find_item(purchase) 
+      entry = find_item(purchase)
       if entry
         entry
       else

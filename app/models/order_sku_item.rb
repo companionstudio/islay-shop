@@ -10,4 +10,11 @@ class OrderSkuItem < OrderItem
   def description
     "#{sku.product.name} (#{sku.short_desc})"
   end
+
+  # Return the maximum number of this sku that can be purchased
+  #
+  # @return Integer
+  def maximum_quantity_allowed
+    sku.stock_level
+  end
 end

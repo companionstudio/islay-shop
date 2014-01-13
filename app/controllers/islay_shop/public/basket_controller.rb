@@ -7,22 +7,29 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def add
     sku = Sku.find(params[:sku_id])
-    item = unpromoted_order.increment_quantity(sku, params[:quantity].to_i)
+    original_quantity = unpromoted_order.quantity_of_sku(sku)
+    requested_quantity = params[:quantity].to_i
+
+    item = unpromoted_order.increment_quantity(sku, requested_quantity)
+
+    # @todo: Implement a messaging system so we can communicate this stuff to the user
+    added_quantity = requested_quantity - original_quantity
 
     if request.xhr?
       unpromoted_order.apply_promotions!
       store!
+
       render :json => {
         :result   => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
         :sku      => params[:sku_id],
-        :added    => params[:quantity],
+        :added    => added_quantity,
         :quantity => unpromoted_order.sku_items.quantity,
         :shipping => unpromoted_order.shipping_total.to_s,
         :total    => unpromoted_order.total.to_s,
         :errors   => unpromoted_order.errors
       }
     else
-      store_and_redirect(:order_item_added, {:message => item.description, :added => params[:quantity]})
+      store_and_redirect(:order_item_added, {:message => item.description, :added => added_quantity})
     end
   end
 
@@ -33,7 +40,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def update
     unless params[:items].blank?
-      unpromoted_order.update_quantities(params[:items]) 
+      unpromoted_order.update_quantities(params[:items])
     end
 
     unless params[:promo_code].blank?
