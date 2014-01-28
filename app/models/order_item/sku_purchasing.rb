@@ -86,5 +86,9 @@ class OrderItem
     def find_or_create_item(sku)
       find_item(sku) || build(:sku => sku)
     end
+
+    def paid_quantity
+      reduce(0) {|a, i| a + i.paid_quantity}
+    end
   end
 end
