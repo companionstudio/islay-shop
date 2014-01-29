@@ -96,10 +96,6 @@ class OrderItem
         end
       end
 
-      puts "SET QUANTITY RESULT:"
-      puts "#{entry}: #{n} = #{entry.quantity}"
-      puts "#{entry.errors.inspect}"
-
       entry
     end
 
