@@ -197,7 +197,7 @@ class OrderItem < ActiveRecord::Base
   #
   # @return [Float, Number]
   def paid_quantity
-    @paid_quantity ||= components.reject {|c| c.kind == 'bonus'}.map(&:quantity).sum
+    components.reject {|c| c.kind == 'bonus'}.map(&:quantity).sum
   end
 
   private
