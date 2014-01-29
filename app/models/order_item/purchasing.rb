@@ -52,6 +52,15 @@ class OrderItem
       map(&:quantity).sum
     end
 
+    # Returns the total quantity of non-bonus skus for all the items in the target
+    # association.
+    #
+    # @return Integer
+    def paid_quantity
+      map(&:paid_quantity).sum
+    end
+
+
     # This is the big, whoa-mamma method that drives most actions when
     # purchasing. It either finds or creates an order item for the purchase and
     # divides the specified quantity up amoungst the apppropriate price points.
@@ -86,6 +95,10 @@ class OrderItem
           entry.pre_discount_total = entry.total
         end
       end
+
+      puts "SET QUANTITY RESULT:"
+      puts "#{entry}: #{n} = #{entry.quantity}"
+      puts "#{entry.errors.inspect}"
 
       entry
     end
