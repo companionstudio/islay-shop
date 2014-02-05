@@ -200,5 +200,12 @@ class OrderItem < ActiveRecord::Base
     components.reject {|c| c.kind == 'bonus'}.map(&:quantity).sum
   end
 
+  # Calculates the total for non-bonus components.
+  #
+  # @return SpookAndPuff::Money
+  def paid_total
+    components.reject {|c| c.kind == 'bonus'}.reduce(SpookAndPuff::Money.zero){|a, c| a + c.total}
+  end
+
   private
 end

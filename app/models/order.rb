@@ -57,7 +57,7 @@ class Order < ActiveRecord::Base
     :billing_city, :email, :gift_message, :is_gift, :name, :phone,
     :shipping_name, :shipping_company, :shipping_city, :shipping_country, :shipping_instructions,
     :shipping_postcode, :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
-    :items_dump, :stock_alerts_dump, :person_id, :reference, :tracking_reference
+    :items_dump, :stock_alerts_dump, :person_id, :reference, :tracking_reference, :promo_code, :promotion_id_dump
   )
 
   # The workflow is defined here so it can be queried against this class and
@@ -308,6 +308,13 @@ class Order < ActiveRecord::Base
   # @todo Deprecate, then remove this.
   def total_discount
     discount
+  end
+
+  # The original total for all the paid-for products in the order
+  #
+  # @return SpookAndPuff::Money
+  def paid_original_product_total
+    sku_items.paid_total
   end
 
   alias :formatted_total_discount :total_discount

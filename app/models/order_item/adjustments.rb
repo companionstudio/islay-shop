@@ -3,7 +3,7 @@ class OrderItem
   # the addition of bonuses, discounting and upward adjustments at the order item
   # level
   #
-  # It relies on the OrderPurchasing and OrderItemPurchasing modules, 
+  # It relies on the OrderPurchasing and OrderItemPurchasing modules,
   # specifically the logic for choosing associations and updating entries.
   module Adjustments
     # Discounts the specified quantity for a purchase.
@@ -55,14 +55,14 @@ class OrderItem
       update_entry_for(purchase, :create) do |entry|
         bonus = entry.components.bonus
         if bonus
-          bonus.quantity  = bonus.quantity + quantity 
+          bonus.quantity  = bonus.quantity + quantity
           bonus.total     = bonus.price * bonus.quantity
           value           = bonus.total
         else
           point = purchase.price_points.where(:mode => 'single', :current => true).first
           price = point.price
           value = price * quantity
-          
+
           entry.components.build(
             :price    => price,
             :quantity => quantity,
@@ -93,7 +93,7 @@ class OrderItem
       end
     end
 
-    # Distributes an increase as a percentage of the order total across all the 
+    # Distributes an increase as a percentage of the order total across all the
     # order items.
     #
     # @param Numeric percentage
@@ -112,15 +112,15 @@ class OrderItem
     end
 
     # Removes adjustments of the specified source and kind.
-    # 
+    #
     # @param String source
     # @param String kind
     # @return nil
     def remove_adjustments(source, kind = nil)
       each do |item|
         update_entry(item) do
-          candidates = item.adjustments.select  do |a| 
-            if kind 
+          candidates = item.adjustments.select  do |a|
+            if kind
               a.source == source and a.kind == kind
             else
               a.source == source
@@ -163,7 +163,7 @@ class OrderItem
     def set_manual_unit_price(purchase, price)
       raise PriceBelowZeroError.new(price) if price < 0
       item = find_item_or_error(purchase)
-      
+
       update_entry(item) do |item|
         adjustment = item.adjustments.by_source_and_kind('manual', 'set_unit_price') || item.adjustments.build
 
@@ -188,7 +188,7 @@ class OrderItem
     # @return OrderItem
     def adjust_item(kind, item, quantity, amount, source)
       update_entry(item) do |item|
-        adjustment = if source == "manual" 
+        adjustment = if source == "manual"
           item.adjustments.by_source_and_kind(source, kind).first || item.adjustments.build
         elsif source == "promotion"
           # Promotion adjustments can be added cumulatively
@@ -196,12 +196,20 @@ class OrderItem
         end
 
         adjustment.attributes = {
-          :kind       => kind, 
-          :quantity   => quantity, 
+          :kind       => kind,
+          :quantity   => quantity,
           :adjustment => amount,
           :source     => source
         }
       end
     end
+
+    def paid_total
+      reduce(SpookAndPuff::Money.zero) do |a, i|
+        a + i.paid_total
+      end
+    end
+
+
   end
 end

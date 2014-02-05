@@ -15,7 +15,7 @@ class PromotionSpendCondition < PromotionCondition
   def check(order)
     spend = SpookAndPuff::Money.new(amount.to_s)
 
-    if order.product_total >= spend
+    if order.paid_original_product_total >= spend
       success
     else
       failure(:insufficient_spend, "Must spend at least #{spend}")
