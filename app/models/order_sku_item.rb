@@ -15,6 +15,10 @@ class OrderSkuItem < OrderItem
   #
   # @return Integer
   def maximum_quantity_allowed
-    sku.stock_level
+    if sku.purchase_limiting? and sku.purchase_limit < sku.stock_level
+      sku.purchase_limit
+    else
+      sku.stock_level
+    end
   end
 end

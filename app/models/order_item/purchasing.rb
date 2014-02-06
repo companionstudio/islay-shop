@@ -78,12 +78,17 @@ class OrderItem
       else
         entry.components.clear
 
-        if stock_available?(purchase, n)
+        max_qty = maximum_quantity_allowed(purchase)
+
+        if max_qty > n
           assign_components(entry, purchase, n)
         else
-          max_qty = maximum_quantity_allowed(purchase)
           assign_components(entry, purchase, max_qty)
-          entry.errors.add(:quantity, "There #{max_qty > 1 ? 'are' : 'is'} only #{max_qty} of this item available.")
+          if !stock_available?(purchase, n)
+            entry.errors.add(:quantity, "There #{max_qty > 1 ? 'are' : 'is'} only #{max_qty} of this item available.")
+          elsif purchase_limited?(purchase)
+            entry.errors.add(:quantity, "This item is limited to #{purchase.purchase_limit} per customer.")
+          end
         end
 
         entry.quantity = entry.components.map(&:quantity).sum
@@ -265,7 +270,11 @@ class OrderItem
       raise NotImplementedError
     end
 
-    def maximum_quantity_allowed
+    def purchase_limited?(purchase)
+      raise NotImplementedError
+    end
+
+    def maximum_quantity_allowed(sku)
       raise NotImplementedError
     end
 

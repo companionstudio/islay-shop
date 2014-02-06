@@ -13,20 +13,21 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
     item = unpromoted_order.increment_quantity(sku, requested_quantity)
 
     # @todo: Implement a messaging system so we can communicate this stuff to the user
-    added_quantity = requested_quantity - original_quantity
+    added_quantity = item.quantity - original_quantity
 
     if request.xhr?
       unpromoted_order.apply_promotions!
       store!
 
       render :json => {
-        :result   => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
-        :sku      => params[:sku_id],
-        :added    => added_quantity,
-        :quantity => unpromoted_order.sku_items.quantity,
-        :shipping => unpromoted_order.shipping_total.to_s,
-        :total    => unpromoted_order.total.to_s,
-        :errors   => unpromoted_order.errors
+        :result         => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
+        :sku            => params[:sku_id],
+        :added          => added_quantity,
+        :max_available  => unpromoted_order.find_item(sku).maximum_quantity_allowed - item.quantity,
+        :quantity       => unpromoted_order.sku_items.quantity,
+        :shipping       => unpromoted_order.shipping_total.to_s,
+        :total          => unpromoted_order.total.to_s,
+        :errors         => unpromoted_order.errors
       }
     else
       store_and_redirect(:order_item_added, {:message => item.description, :added => added_quantity})

@@ -79,8 +79,20 @@ class OrderItem
       sku.sufficient_stock?(n)
     end
 
+    def purchase_limited?(sku)
+      sku.purchase_limiting?
+    end
+
+    def purchase_limit(sku)
+      sku.purchase_limiting? ? sku.purchase_limit : nil
+    end
+
     def maximum_quantity_allowed(sku)
-      sku.stock_level
+      if sku.purchase_limiting? and sku.purchase_limit < sku.stock_level
+        sku.purchase_limit
+      else
+        sku.stock_level
+      end
     end
 
     def find_or_create_item(sku)

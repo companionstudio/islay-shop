@@ -27,6 +27,14 @@ class OrderItem
       true
     end
 
+    def purchase_limited?(purchase)
+      false
+    end
+
+    def maximum_quantity_allowed(purchase)
+      Float::INFINITY
+    end
+
     def find_or_create_item(service)
       find_item(service) || build(:service => service)
     end
