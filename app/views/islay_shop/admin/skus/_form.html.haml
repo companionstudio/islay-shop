@@ -18,6 +18,7 @@
         = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
         = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
         = f.input(:size, :class => 'small', :col => 'inline')
+        = f.input(:unit_count, :class => 'small', :col => 'inline')
 
     = f.fieldset('Images & Docs', :class => 'form-tab', :id => 'sku-assets') do
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')
@@ -37,10 +38,10 @@
           = f.fields_for(:price_points, @sku.price_points, :include_id => false) do |p|
             - if @sku.new_record?
               %tr.new
-                %td.current 
+                %td.current
                   %span.boolean.true
                     %span Yes
-                %td.dates 
+                %td.dates
                   %span.indicator New
                 %td.mode
                   - if p.object['mode'] == 'single'
@@ -83,7 +84,7 @@
                   - if p.object.single?
                     &nbsp;
                   - else
-                    %label 
+                    %label
                       Expire
                       = p.check_box(:expire)
 
@@ -107,10 +108,10 @@
 
           = f.fields_for(:new_price_point, @sku.price_point_template, :include_id => false) do |p|
             %tr.template
-              %td.current 
+              %td.current
                 %span.boolean.true
                   %span Yes
-              %td.dates 
+              %td.dates
                 %span.indicator New
               %td.mode
                 %div.pricing-mode
@@ -124,7 +125,7 @@
                 = p.text_field(:volume)
               %td.price
                 = p.text_field(:display_price, :autocomplete => 'off')
-              %td.expire 
+              %td.expire
                 &nbsp;
 
     - f.metadata do |attrs|
