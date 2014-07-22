@@ -4,7 +4,28 @@
 = record_name(@manufacturer.name, 'building')
 
 = content(:class => 'inset') do
-  %p TODO
+  %div.overview
+    = column(4, :class => 'asset-preview') do
+      %div.frame
+        - if @manufacturer.images.empty?
+          %span(class='no-preview image') &nbsp;
+        - else
+          = image_tag(@manufacturer.images.first.previews.url(:thumb), :class => @manufacturer.images.first.orientation)
+
+    = column(8, :class => 'product-description') do
+      %ul.key-value
+        %li.desc
+          %span.key Description
+          %div.value
+            = simple_format(@manufacturer.description)
+
+        %li
+          %span.key Created at
+          %div.value= creation_time(@manufacturer)
+
+        %li
+          %span.key Updated at
+          %div.value= update_time(@manufacturer)
 
 = footer do
   = edit_button(@manufacturer)
