@@ -26,8 +26,8 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   # @todo Do a better job of handling errors that come from authorizing
   def payment_process
     result = payment_provider.confirm_payment_submission(
-      request.env["QUERY_STRING"], 
-      :execute => :authorize, 
+      request.env["QUERY_STRING"],
+      :execute => :authorize,
       :amount => order.total.raw
     )
 
@@ -44,9 +44,11 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
 
   def thank_you
     unless flash['order'].blank?
-      # Yuck! 
+      flash[:order_just_completed] = true
+
+      # Yuck!
       # Keep a record of the order in flash until the user leaves the page - basically, allow refreshes of the thankyou page.
-      flash['order'] = flash['order'] 
+      flash['order'] = flash['order']
     end
   end
 
