@@ -2,7 +2,7 @@
   = record_name(@product.name, 'gift', :when_blank => 'New Product')
 
   = form_errors(@product)
-    
+
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
@@ -20,9 +20,10 @@
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Assets')
 
       - f.metadata do |attrs|
-        = f.fieldset('Attributes') do
-          - attrs.each do |name, opts|
-            = f.metadata_input(name, opts)
+        - if attrs
+          = f.fieldset('Attributes') do
+            - attrs.each do |name|
+              = f.metadata_input(name)
 
   = footer do
     = save_button
