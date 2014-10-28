@@ -22,7 +22,7 @@
       - f.metadata do |attrs|
         - if attrs
           = f.fieldset('Attributes') do
-            - attrs.each do |name|
+            - attrs.each do |name, opts|
               = f.metadata_input(name)
 
   = footer do

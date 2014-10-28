@@ -131,7 +131,7 @@
     - f.metadata do |attrs|
       = f.fieldset('Extra', :class => 'attributes form-tab', :id => 'sku-extra') do
         - attrs.each do |name, opts|
-          = f.metadata_input(name, opts)
+          = f.metadata_input(name)
 
     - if integrate_blog?
       = f.fieldset('Blog Entries', :class => 'form-tab', :id => 'sku-blog') do
