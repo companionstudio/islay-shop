@@ -8,7 +8,7 @@ class PromotionOrderItemQuantityCondition < PromotionCondition
   end
 
   def check(order)
-    if order.sku_items.quantity >= quantity
+    if order.sku_unit_quantity >= quantity
       success
     else
       failure(:insufficient_quantity, "Need at least a quantity of #{quantity} items")

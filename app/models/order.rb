@@ -254,6 +254,14 @@ class Order < ActiveRecord::Base
     items.sku_total_quantity
   end
 
+  # The unit count of the SKUs in an order.
+  #
+  # @return Integer
+  def sku_unit_quantity
+    items.sku_items.sum do |item|
+      item.quantity * item.sku.unit_count
+    end
+  end
 
   # Counts the number of a given SKU in an order.
   #
