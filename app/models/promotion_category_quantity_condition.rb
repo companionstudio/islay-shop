@@ -1,6 +1,6 @@
 class PromotionCategoryQuantityCondition < PromotionCondition
   desc "Have a SKU from the specified category"
-  condition_scope :sku_items
+  condition_scope :sku
   exclusivity_scope :sku_items
 
   metadata(:config) do

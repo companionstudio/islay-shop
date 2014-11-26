@@ -299,9 +299,18 @@ module Promotions
       if c.html?
         quantity = h.content_tag(:span, c.part.quantity, :class => 'condition-quantity')
         name = link_to(c.part.category.name, c.part.category)
-        "buy any #{quantity} from #{name}"
+        if c.part.quantity == 1
+          "buy anything from #{name}"
+        else
+          "buy any #{quantity} from #{name}"
+        end
       else
-        "buy any #{c.part.quantity} from #{c.part.category.name}"
+        if c.part.quantity == 1
+          "buy anything from #{c.part.category.name}"
+        else
+          "buy any #{c.part.quantity} from #{c.part.category.name}"
+        end
+        
       end
     end
 
