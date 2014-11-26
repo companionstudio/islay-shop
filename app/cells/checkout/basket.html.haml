@@ -53,14 +53,15 @@
           %button{:type => 'submit', :class => 'primary'} Update
 
   - unless @checkout_promotions.blank? or @order.code_promotion_successful?
-    - if @order.code_promotion_failed?
-      = label_tag(:promo_code, 'This promotion code is incorrect')
+    .code-based-promotion-details
+      - if @order.code_promotion_failed?
+        = label_tag(:promo_code, 'This promotion code is incorrect')
 
-    - else
-      = label_tag(:promo_code, 'Do you have an offer code?')
+      - else
+        = label_tag(:promo_code, 'Do you have an offer code?')
 
-    = text_field_tag(:promo_code, @order.promo_code, :class => 'code', :placeholder => 'Offer Code')
-    %button{:type => 'submit'} Apply code
+      = text_field_tag(:promo_code, @order.promo_code, :class => 'code', :placeholder => 'Offer Code')
+      %button{:type => 'submit'} Apply code
 
   - unless @order.pending_promotions.blank?
     .order-promotions
