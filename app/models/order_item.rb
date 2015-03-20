@@ -193,6 +193,13 @@ class OrderItem < ActiveRecord::Base
     !discount.zero?
   end
 
+  # Checks to see if the line item has had a discount applied to it.
+  #
+  # @return [true, false]
+  def free?
+    total.zero?
+  end
+
   # Calculates the quantity of non-bonus components.
   #
   # @return [Float, Number]
