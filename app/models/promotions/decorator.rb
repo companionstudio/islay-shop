@@ -28,16 +28,16 @@ module Promotions
       output = "#{start} #{what} #{join} #{to}".squeeze(" ")
 
       case _opts[:format]
-      when :html 
+      when :html
         nf = Nokogiri::HTML.fragment(output)
         nf.traverse do |c|
           if c.text? and !c.text.blank?
             c.replace(c.text.sub(/\w/, &:capitalize))
-            break 
+            break
           end
         end
-        nf.to_xhtml.gsub(%r{\s+}, ' ').html_safe 
-      when :text 
+        nf.to_xhtml.gsub(%r{\s+}, ' ').html_safe
+      when :text
         output.sub(/\w/, &:capitalize)
       end
     end
@@ -93,7 +93,7 @@ module Promotions
         @possessive = opts[:possessive]
       end
 
-      # A concatenation of mode and format. Intended to be used in case 
+      # A concatenation of mode and format. Intended to be used in case
       # statements when deciding how to render a component.
       #
       # @return [:general_text, :general_html, :specifc_text, :specific_html]
@@ -159,9 +159,9 @@ module Promotions
       case summaries.length
       when 0
         ""
-      when 1 
+      when 1
         summaries.first
-      when 2 
+      when 2
         summaries.join(' and ')
       else
         last = summaries.pop
@@ -169,8 +169,8 @@ module Promotions
       end
     end
 
-    # Generates a preamble/statement to be appended to the front of the 
-    # summary. 
+    # Generates a preamble/statement to be appended to the front of the
+    # summary.
     #
     # @param String condition_summary
     # @param String effect_summary
@@ -193,7 +193,7 @@ module Promotions
     # summaries by enumerating over the join rules and choosing the first one
     # that succeeds.
     #
-    # Where the condition summary is black, it will skip evaluating the join 
+    # Where the condition summary is black, it will skip evaluating the join
     # rules and return "receive".
     #
     # @param String condition_summary
@@ -268,7 +268,7 @@ module Promotions
       }
     end
 
-    # Defines a rule used to determine how conditions and effect summaries 
+    # Defines a rule used to determine how conditions and effect summaries
     # should be joined together.
     #
     # @param Symbol name
@@ -282,7 +282,7 @@ module Promotions
     condition(:all, :skip => true)
 
     condition(:code) do |c|
-      code = if c.html? 
+      code = if c.html?
         h.content_tag(:span, c.part.code, :class => 'condition-code')
       else
         c.part.code
@@ -293,6 +293,10 @@ module Promotions
 
     condition(:order_item_quantity) do |c|
       "buy at least #{h.pluralize(c.part.quantity, "item")}"
+    end
+
+    condition(:for_every_n_items) do |c|
+      "buy #{c.part.quantity}"
     end
 
     condition(:category_quantity) do |c|
@@ -310,7 +314,7 @@ module Promotions
         else
           "buy any #{c.part.quantity} from #{c.part.category.name}"
         end
-        
+
       end
     end
 
@@ -349,6 +353,22 @@ module Promotions
         "buy #{quantity}"
       end
     end
+
+    condition(:for_every_quantity) do |c|
+      quantity = if c.html?
+        h.content_tag(:span, c.part.quantity, :class => 'condition-quantity')
+      else
+        c.part.quantity
+      end
+
+      case c.requested
+      when :general_text, :general_html
+        "buy #{quantity} items"
+      when :specific_text, :specific_html
+        "buy #{quantity} items"
+      end
+    end
+
 
     condition(:spend) do |c|
       amount = if c.html?
@@ -411,6 +431,20 @@ module Promotions
       "#{quantity} free"
     end
 
+    effect(:get_n_cheapest_free) do |c|
+      quantity = if c.html?
+        h.content_tag(:span, c.part.quantity, :class => 'effect-quantity')
+      else
+        c.part.quantity
+      end
+
+      "#{quantity} of the lowest priced item free"
+    end
+
+    effect(:get_cheapest_item_free) do |c|
+      "the lowest priced item free"
+    end
+
     effect(:shipping) do |c|
       if c.part.amount.zero?
         "free shipping"
@@ -427,16 +461,20 @@ module Promotions
       '' if c.promotion.has_effect?(:generic)
     end
 
+    join_rule :get_cheapest_item_free do |c|
+      'receive' if c.promotion.has_effect?(:get_cheapest_item_free)
+    end
+
     join_rule :customer_limit do |c|
       'receive' if c.promotion.limited?
     end
-    
+
     join_rule :competition_entry do |c|
       if c.promotion.effects.length == 1 and c.promotion.has_effect?(:competition_entry)
         "will"
       end
     end
-    
+
     join_rule :to_receive do |c|
       'will receive'
     end

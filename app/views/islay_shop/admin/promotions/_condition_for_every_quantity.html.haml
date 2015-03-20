@@ -1,0 +1,16 @@
+= f.fieldset("For every N items", condition_opts(condition)) do
+  = f.hidden_field(:type)
+
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .condition-contents
+    %p.summary For every N items purchased.
+
+    = f.input(:quantity, :class => 'tiny', :inline => true)
+
+    .help
+      .extra.islay-toggle
+        %p This condition will qualify once for every N sku items the customer puts in their order.
+
+        %p If the quantity is 5, a customer ordering 5 items will have the promotion's effects applied once. A customer ordering 10 items will have the effects applied twice.

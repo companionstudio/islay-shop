@@ -1,0 +1,14 @@
+= f.fieldset("Cheapest SKU free", effect_opts(effect)) do
+  = f.hidden_field(:type)
+
+  .effect-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .effect-contents
+    %p.summary Completely discounts the cheapest SKU in the order
+
+    .help
+      .extra.islay-toggle
+        %p
+          For every qualification, the order will have a discount equivalent to one of the cheapest item in the order applied.
+

@@ -207,5 +207,28 @@ class OrderItem < ActiveRecord::Base
     components.reject {|c| c.kind == 'bonus'}.reduce(SpookAndPuff::Money.zero){|a, c| a + c.total}
   end
 
+
+  # Derive a unit price by taking the paid total and dividing it -
+  # helpful for working backwards on a discounted line item
+  #
+  # @param SpookAndPuff::Money total
+  # @param Integer quantity
+  #
+  # @return SpookAndPuff::Money total
+  def derived_unit_price
+    total / paid_quantity
+  end
+
+  # Derive a unit price by taking the pre-discount total and dividing it -
+  # helpful for providing unit prices on service items
+  #
+  # @param SpookAndPuff::Money total
+  # @param Integer quantity
+  #
+  # @return SpookAndPuff::Money total
+  def derived_pre_discount_unit_price
+    pre_discount_total / quantity
+  end
+
   private
 end

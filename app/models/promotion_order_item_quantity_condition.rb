@@ -9,9 +9,12 @@ class PromotionOrderItemQuantityCondition < PromotionCondition
 
   def check(order)
     if order.sku_unit_quantity >= quantity
-      success
+      items = order.sku_items.reduce({}) {|h, c| h.merge(c => {:qualifications => 1, :count => c.quantity})}
+      puts "Checking Number of items:"
+      puts items
+      success(items)
     else
-      failure(:insufficient_quantity, "Need at least a quantity of #{quantity} items")
+      failure(:insufficient_quantity, "Need at least #{quantity} items")
     end
   end
 end
