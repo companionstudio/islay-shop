@@ -1,6 +1,5 @@
 class PromotionShippingEffect < PromotionEffect
   desc "Discounts the shipping"
-  #condition_scope :shipping_item
   effect_scope :service_items
 
   metadata(:config) do
