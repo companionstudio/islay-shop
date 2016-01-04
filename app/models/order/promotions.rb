@@ -8,7 +8,7 @@ class Order
       klass.send :attr_accessor, :promo_code
       klass.dump_config :methods => [:promotion_id_dump]
       klass.attr_accessible(:promotion_id_dump, :promo_code)
-
+      
       klass
     end
 
