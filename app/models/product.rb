@@ -52,7 +52,7 @@ class Product < ActiveRecord::Base
   # fields like a SKU summary have been added.
   def self.summary
     select(%{
-      id, slug, published, status, name, updated_at,
+      id, slug, published, status, name, updated_at, position, 
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(short_desc), ', ')
        FROM skus
@@ -85,7 +85,7 @@ class Product < ActiveRecord::Base
     if s
       order(s)
     else
-      order(:name)
+      order(:position)
     end
   end
 

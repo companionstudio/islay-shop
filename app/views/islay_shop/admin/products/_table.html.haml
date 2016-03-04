@@ -1,27 +1,34 @@
-%table.fixed-header
-  %thead
-    %tr
-      %th.boolean Published
-      %th Product
-      %th Status
-      %th.indicator Stock Level
-      %th.meta Updated At
-  %tbody
-    - @products.each do |product|
+= form_tag(path(:position, :products), :method => :put) do
+  %table.fixed-header.sortable
+    %thead
       %tr
-        %td.boolean
-          %span(class="boolean #{product.published?}")
-            %span= friendly_bool(product.published?)
-        %td
-          = link_to(product.name, path(product), :class => 'title product')
-          %ul.children
-            - product.skus.short_desc_only.each do |sku|
-              %li= link_to(sku.short_desc, path(:edit, product, sku))
-        %td
-          %span.indicator= product.status.humanize
-        %td.indicator
-          %span(class="indicator #{product.stock_level_notice}")
-            = product.stock_level_notice
-        %td.meta
-          %span.time= product.updated_at
-          by #{product.updater_name}
+        %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+        %th.boolean Published
+        %th Product
+        %th Status
+        %th.indicator Stock Level
+        %th.meta Updated At
+    %tbody
+      - @products.each do |product|
+        %tr
+          %td.select= check_box_tag('ids[]', product.id, selected?(product.id), :class => 'toggle')
+          %td.boolean
+            %span(class="boolean #{product.published?}")
+              %span= friendly_bool(product.published?)
+          %td
+            = link_to(product.name, path(product), :class => 'title product')
+            %ul.children
+              - product.skus.short_desc_only.each do |sku|
+                %li= link_to(sku.short_desc, path(:edit, product, sku))
+          %td
+            %span.indicator= product.status.humanize
+          %td.indicator
+            %span(class="indicator #{product.stock_level_notice}")
+              = product.stock_level_notice
+          %td.meta
+            %span.time= product.updated_at
+            by #{product.updater_name}
+
+  .table-footer
+    .selection-controls
+      = position_buttons
