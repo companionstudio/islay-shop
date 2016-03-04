@@ -49,6 +49,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
       # Yuck!
       # Keep a record of the order in flash until the user leaves the page - basically, allow refreshes of the thankyou page.
       flash['order'] = flash['order']
+      order_from_flash
     end
   end
 
