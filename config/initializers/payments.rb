@@ -8,7 +8,7 @@ if Settings.defined?(:shop, :payment_provider)
   end
 
   case Settings.for(:shop, :payment_provider)
-  when'braintree'
+  when 'braintree'
     %w(env merchant_id public_key private_key).each do |name|
       var = :"braintree_#{name}"
       IslayShop::Engine.config.payments[name.to_sym] = Settings.for(:shop, var)
