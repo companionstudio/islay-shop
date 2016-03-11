@@ -19,7 +19,6 @@ class ProductCategory < ActiveRecord::Base
   )
 
   track_user_edits
-  validations_from_schema
 
   # Returns a relation with information sufficient to arrange the categories
   # into a tree.

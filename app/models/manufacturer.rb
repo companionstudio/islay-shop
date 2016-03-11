@@ -10,7 +10,6 @@ class Manufacturer < ActiveRecord::Base
 
   attr_accessible :name, :description, :published, :asset_ids
   track_user_edits
-  validations_from_schema
 
   has_many :products
   has_many   :manufacturer_assets

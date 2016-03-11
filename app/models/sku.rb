@@ -51,7 +51,6 @@ class Sku < ActiveRecord::Base
 
   track_user_edits
 
-  validations_from_schema
   validates_presence_of :purchase_limit, :if => :purchase_limiting?, :message => "required when limiting is on"
   before_validation :calculate_short_desc
 

@@ -16,7 +16,6 @@ class Promotion < ActiveRecord::Base
 
   track_user_edits
   before_validation :clean_components
-  validations_from_schema
   validate :validate_component_compatibility
 
   # Conditions which are code based. Used in a bunch of predicates defined on

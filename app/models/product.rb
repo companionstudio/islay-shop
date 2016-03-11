@@ -36,7 +36,6 @@ class Product < ActiveRecord::Base
   )
 
   track_user_edits
-  validations_from_schema
 
   before_save :store_published_at
 
