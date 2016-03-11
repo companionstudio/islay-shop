@@ -2,11 +2,16 @@ class Order < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :total, :original_total, :product_total, :original_product_total, :discount, :increase
 
-  include Order::Session
-  include Order::Workflow
-  include Order::Purchasing
-  include Order::Adjustments
-  include Order::Promotions
+  include OrderSessionConcern
+  include OrderWorkflowConcern
+  include OrderPurchasingConcern
+  include OrderAdjustmentConcern
+  include OrderPromotionConcern
+  
+  # include Order::Workflow
+  # include Order::Purchasing
+  # include Order::Adjustments
+  # include Order::Promotions
 
   include PgSearch
   multisearchable :against => [
@@ -75,8 +80,6 @@ class Order < ActiveRecord::Base
   accepts_nested_attributes_for :items
   track_user_edits
 
-  validations_from_schema :except => [:reference]
-
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?
   validates :shipping_city,      :presence => true, :if => :use_shipping_address?
@@ -84,7 +87,7 @@ class Order < ActiveRecord::Base
   validates :shipping_postcode,  :presence => true, :if => :use_shipping_address?
 
   # Validate email format
-  validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
+  validates :email, :format   => {:with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => 'Please check your email address is correct'}
 
   # Generates the human readable order ID.
   before_create :store_reference

@@ -10,8 +10,8 @@ class PromotionUniqueCodeCondition < PromotionCondition
   end
 
   has_many :codes,            :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id'
-  has_many :unredeemed_codes, :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id', :conditions => 'redeemed_at IS NULL',      :order => 'created_at DESC'
-  has_many :redeemed_codes,   :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id', :conditions => 'redeemed_at IS NOT NULL',  :order => 'redeemed_at DESC'
+  has_many :unredeemed_codes, -> {where('redeemed_at IS NULL').order('created_at DESC')}, :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id'
+  has_many :redeemed_codes, -> {where('redeemed_at IS NOT NULL').order('redeemed_at DESC')}, :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id'
 
   validates   :limit, :numericality => {:greater_than => 0}
   validate    :prefix_and_or_suffix_required

@@ -2,9 +2,9 @@ class Sku
   module PricePoints
     def self.included(klass)
       klass.class_eval do
-        has_many :price_points,           :class_name => 'SkuPricePoint', :order => 'volume ASC, valid_from', :extend => [AssociationMethods]
-        has_many :historic_price_points,  :class_name => 'SkuPricePoint', :conditions => {:current => false}, :extend => [AssociationMethods]
-        has_many :current_price_points,   :class_name => 'SkuPricePoint', :conditions => {:current => true},  :extend => [AssociationMethods]
+        has_many :price_points,           -> {order('volume ASC, valid_from')}, :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
+        has_many :historic_price_points,  -> {where(current: false)}, :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
+        has_many :current_price_points,   -> {where(current: true)},  :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
 
         validates_associated :price_points
         validate :validate_boxed_and_bracketed_overlap

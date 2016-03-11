@@ -15,19 +15,19 @@ class Product < ActiveRecord::Base
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
   belongs_to :manufacturer
 
-  has_many   :skus,         :order => 'position ASC'
+  has_many   :skus,         -> {order('position ASC')}
   has_many   :sku_assets,   :through => :skus, :through => :assets
-  has_many   :stock_logs,   :through => :skus, :order => 'created_at DESC'
+  has_many   :stock_logs,   -> {order('created_at DESC')},   :through => :skus
   has_many   :price_points, :through => :skus
-  has_many   :current_skus, :class_name => "Sku", :order => 'position ASC', :conditions => {:published => true, :status => %w(for_sale not_for_sale)}
-  has_many   :variants,     :class_name => 'ProductVariant', :order => 'position ASC'
+  has_many   :current_skus, -> {order('position ASC').where({:published => true, :status => %w(for_sale not_for_sale)})}, :class_name => "Sku"
+  has_many   :variants,     -> {order('position ASC')}, :class_name => 'ProductVariant'
 
   has_many   :product_assets
-  has_many   :assets,     :through => :product_assets, :order => 'position ASC'
-  has_many   :images,     :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'ImageAsset'
-  has_many   :audio,      :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'AudioAsset'
-  has_many   :videos,     :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'VideoAsset'
-  has_many   :documents,  :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
+  has_many   :assets,     -> {order('position ASC')},  :through => :product_assets
+  has_many   :images,     -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'ImageAsset'
+  has_many   :audio,      -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'AudioAsset'
+  has_many   :videos,     -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'VideoAsset'
+  has_many   :documents,  -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'DocumentAsset'
 
 
   attr_accessible(

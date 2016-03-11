@@ -13,19 +13,19 @@ class Sku < ActiveRecord::Base
 
   has_many :order_items
 
-  has_many   :sku_assets,                          :order => 'position ASC'
-  has_many   :assets,     :through => :sku_assets, :order => 'position ASC'
-  has_many   :images,     :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'ImageAsset'
-  has_many   :audio,      :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'AudioAsset'
-  has_many   :videos,     :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'VideoAsset'
-  has_many   :documents,  :through => :sku_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
+  has_many   :sku_assets, -> {order('position ASC')}
+  has_many   :assets,     -> {order('position ASC')},  :through => :sku_assets
+  has_many   :images,     -> {order('position ASC')},  :through => :sku_assets, :source => :asset, :class_name => 'ImageAsset'
+  has_many   :audio,      -> {order('position ASC')},  :through => :sku_assets, :source => :asset, :class_name => 'AudioAsset'
+  has_many   :videos,     -> {order('position ASC')},  :through => :sku_assets, :source => :asset, :class_name => 'VideoAsset'
+  has_many   :documents,  -> {order('position ASC')},  :through => :sku_assets, :source => :asset, :class_name => 'DocumentAsset'
 
   positioned :product_id
 
   if defined?(::IslayBlog)
     attr_accessible :blog_entry_ids
     has_many :sku_blog_entries
-    has_many :blog_entries, :through => :sku_blog_entries, :order => 'published_at DESC' do
+    has_many :blog_entries, -> {order('published_at DESC')}, :through => :sku_blog_entries do
       # Filters the blog entries by tag.
       #
       # @param String tag

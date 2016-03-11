@@ -12,8 +12,8 @@ class Service < ActiveRecord::Base
     end
   end
 
-  has_one  :current_price_point,    :class_name => "ServicePricePoint", :conditions => {:current => true}, :order => 'valid_from DESC'
-  has_many :historic_price_points,  :class_name => 'ServicePricePoint', :conditions => {:current => false}
+  has_one  :current_price_point,    -> {where(current: true).order('valid_from DESC')}, :class_name => "ServicePricePoint"
+  has_many :historic_price_points,  -> {where(current: false)},  :class_name => 'ServicePricePoint'
 
   after_save :retire_price_points
 

@@ -10,7 +10,7 @@ class ProductCategory < ActiveRecord::Base
 
   positioned :path
 
-  has_many    :products, :order => 'products.position'
+  has_many    :products, -> {order('products.position')}
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
 
   attr_accessible(
