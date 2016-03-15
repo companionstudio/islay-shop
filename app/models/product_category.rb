@@ -1,5 +1,5 @@
 class ProductCategory < ActiveRecord::Base
-  include Hierarchy
+  include HierarchyConcern
   include IslayShop::Statuses
 
   extend FriendlyId
