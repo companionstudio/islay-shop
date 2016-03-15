@@ -1,7 +1,7 @@
 module Promotions
   # A decorator which wraps a Promotion in order to provide functionality for
   # summarising and rendering a Promotion to HTML.
-  class Decorator < Draper::Base
+  class Decorator < Draper::Decorator
     # Generates a summary for the encapsulated Promotion.
     #
     # @param Hash opts

@@ -1,4 +1,4 @@
-class OrderAggregateDecorator < Draper::Base
+class OrderAggregateDecorator < Draper::Decorator
   decorates :report
 
   # Accessing Helpers

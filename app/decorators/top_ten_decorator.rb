@@ -1,4 +1,4 @@
-class TopTenDecorator < Draper::Base
+class TopTenDecorator < Draper::Decorator
   decorates :report
 
   def long_desc
