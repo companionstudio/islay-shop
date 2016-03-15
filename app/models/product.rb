@@ -16,7 +16,7 @@ class Product < ActiveRecord::Base
   belongs_to :manufacturer
 
   has_many   :skus,         -> {order('position ASC')}
-  has_many   :sku_assets,   :through => :skus, :through => :assets
+  has_many   :sku_assets,   :through => :skus, :class_name => 'Asset'
   has_many   :stock_logs,   -> {order('created_at DESC')},   :through => :skus
   has_many   :price_points, :through => :skus
   has_many   :current_skus, -> {order('position ASC').where({:published => true, :status => %w(for_sale not_for_sale)})}, :class_name => "Sku"
