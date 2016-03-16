@@ -4,6 +4,8 @@ class OrderSkuItem < OrderItem
 
   attr_accessible(:sku)
 
+  schema_validations except: :order
+
   # Generates a description based on the SKU description and product name.
   #
   # @return String

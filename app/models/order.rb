@@ -7,11 +7,6 @@ class Order < ActiveRecord::Base
   include OrderPurchasingConcern
   include OrderAdjustmentConcern
   include OrderPromotionConcern
-  
-  # include Order::Workflow
-  # include Order::Purchasing
-  # include Order::Adjustments
-  # include Order::Promotions
 
   include PgSearch
   multisearchable :against => [
@@ -79,6 +74,8 @@ class Order < ActiveRecord::Base
 
   accepts_nested_attributes_for :items
   track_user_edits
+
+  schema_validations except: :reference
 
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?

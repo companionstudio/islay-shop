@@ -3,6 +3,8 @@ class OrderBasket < Order
 
   after_create :send_thank_you_mail
 
+  schema_validations except: :reference
+
   # Persists an order and purchases the stock.
   #
   # @param SpookAndPay::Result result
