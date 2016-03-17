@@ -2,6 +2,7 @@ class SkuPricePoint < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :price
   belongs_to  :sku
+  schema_validations except: :sku
   validates :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
   validates :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
   validate :validates_price
