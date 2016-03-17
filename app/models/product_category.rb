@@ -3,7 +3,7 @@ class ProductCategory < ActiveRecord::Base
   include IslayShop::Statuses
 
   extend FriendlyId
-  friendly_id :name, :use => :slugged
+  friendly_id :name, :use => [:slugged, :finders]
 
   include PgSearch
   multisearchable :against => [:name, :description]

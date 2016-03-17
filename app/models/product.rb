@@ -4,7 +4,7 @@ class Product < ActiveRecord::Base
   include Islay::Publishable
 
   extend FriendlyId
-  friendly_id :name, :use => :slugged
+  friendly_id :name, :use => [:slugged, :finders]
 
   include PgSearch
   multisearchable :against => [:name, :description, :metadata]
@@ -76,7 +76,8 @@ class Product < ActiveRecord::Base
       when 'unpublished' then false
       end
     else
-      scoped
+      # This is a replacement for 'scoped' from Rails 3
+      where(nil)
     end
   end
 
@@ -113,12 +114,12 @@ class Product < ActiveRecord::Base
     skus.map {|s| s.stock_level > 0}.any?
   end
 
-  def stock_warning?
-    !in_stock? or stock_low?
+  def stock_low?
+    skus.map {|s| s.stock_level <= Settings.for(:shop, :alert_level)}.any?
   end
 
-  def stock_low?
-    false
+  def stock_warning?
+    !in_stock? or stock_low?
   end
 
   def stock_level_status
@@ -133,6 +134,17 @@ class Product < ActiveRecord::Base
 
   def friendly_stock_level_status
     'OK'
+  end
+
+  # This is also provided by the product summary class
+  def stock_level_notice
+    if !in_stock?
+      'out'
+    elsif stock_low?
+      'low'
+    else
+      'ok'
+    end
   end
 
   def for_sale?
