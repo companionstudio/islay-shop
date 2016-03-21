@@ -258,8 +258,8 @@ class Order < ActiveRecord::Base
   #
   # @return Integer
   def sku_unit_quantity
-    sku_items.sum do |item|
-      item.quantity * item.sku.unit_count
+    sku_items.reduce(0) do |a, item|
+      a + (item.quantity * item.sku.unit_count)
     end
   end
 
