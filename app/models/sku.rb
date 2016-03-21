@@ -130,7 +130,7 @@ class Sku < ActiveRecord::Base
     when 'discontinued', 'not_for_sale'
       where(["products.status = ? or skus.status = ?", f, f]).joins(:product)
     when 'all'
-      scoped
+      where(nil) # 'scoped'
     when 'saleable'
       where(%{
         skus.status = 'for_sale' AND skus.published = true

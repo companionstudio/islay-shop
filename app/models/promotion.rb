@@ -89,7 +89,7 @@ class Promotion < ActiveRecord::Base
     when 'finished'
       where("promotions.end_at <= NOW()")
     when 'all'
-      scoped
+      where(nil) # 'scoped'
     else
       current
     end
