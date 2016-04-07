@@ -29,7 +29,7 @@ class PromotionEffect < ActiveRecord::Base
   #
   # @return Array<PromotionEffect>
   def self.effect_classes
-    @@effect_classes ||= Dir[File.expand_path('../promotion_*_effect.rb', __FILE__)].map do |f|
+    @@effect_classes ||= [Dir[File.expand_path('../promotion_*_effect.rb', __FILE__)], Dir[File.expand_path(Rails.root.join('app', 'models', 'promotion_*_effect.rb'), __FILE__)]].flatten.map do |f|
       f.match(/(promotion_[a-z_]+_effect)/)[1].classify.constantize
     end
   end

@@ -69,7 +69,7 @@
               %span.reference.numeric= order.reference
               %span.summary= order.items_summary
             %td
-              %span.numeric= order.formatted_total
+              %span.numeric= order.total.to_s(:drop_cents => true)
             %td
               %span.time= order.created_at
 
