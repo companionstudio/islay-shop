@@ -47,6 +47,13 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
       session.delete('order')
       redirect_to path(:order_checkout_thank_you, :reference => order.reference)
     else
+      puts '-------------------------'
+      puts 'Payment processing error:'
+      result.errors.each do |e| 
+        puts "  - #{e.raw[:attribute]}: #{e.raw[:message]}"
+      end
+      puts '-------------------------'
+      order.logs.build(:action => 'payment', :notes => "Processing Error: #{order.errors}", :succeeded => false)
       render :payment
     end
   end
