@@ -25,10 +25,19 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
 
   # @todo Do a better job of handling errors that come from authorizing
   def payment_process
+
+    #Spreedly requires the amount in cents
+    process_amount = case Settings.for(:shop, :payment_provider)
+    when 'spreedly'
+      order.total.cents.to_i
+    else
+      order.total.raw
+    end
+
     result = payment_provider.confirm_payment_submission(
       request.env["QUERY_STRING"],
       :execute => :authorize,
-      :amount => order.total.raw
+      :amount => process_amount
     )
 
     @payment = PaymentSubmission.new(result)
