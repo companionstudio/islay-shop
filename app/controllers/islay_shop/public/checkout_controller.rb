@@ -49,9 +49,15 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     else
       puts '-------------------------'
       puts 'Payment processing error:'
+      puts "Amount: #{order.total.raw} (processed as #{process_amount})"
+      puts ""
+      puts "Provider errors:"
       result.errors.each do |e| 
         puts "  - #{e.raw[:attribute]}: #{e.raw[:message]}"
       end
+      puts ""
+      puts "Order errors:"
+      puts order.errors.messages
       puts '-------------------------'
       order.logs.build(:action => 'payment', :notes => "Processing Error: #{order.errors}", :succeeded => false)
       render :payment
