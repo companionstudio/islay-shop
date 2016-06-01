@@ -1,12 +1,22 @@
 - breadcrumb('Reports', :reports)
 - breadcrumb('Shop', :shop_reports)
 
-= record_name('Shop', 'shopping-cart')
+= record_name(params[:month] ? "Sales reports for #{Date::MONTHNAMES[params[:month].to_i]} #{params[:year]}" : 'Sales reports', 'bar-chart')
 
 = content(:class => 'inset inset-vertical') do
+
   = column(8) do
+  
+    .report-date
+      .report-date-el-controls
+        %a.report-date-el-previous-month{href: report_date_link(:previous_month, @report_range), title: 'Previous month'}
+        %span.report-date-el-current-month= Date::MONTHNAMES[@report_range[:month]]
+        %span.report-date-el-current-year= @report_range[:year]
+        %a.report-date-el-next-month{href: report_date_link(:next_month, @report_range), title: 'Next month'}
+
+
     %div#order-graphs.report-cell
-      %h3 Orders Over Time
+      %h3 Daily sales
 
       %table.series-graph
         %thead
@@ -95,14 +105,3 @@
       = @totals.movement('average_value')
       = @totals.average('average_value')
       = @totals.best('average_value')
-
-    %div.report-cell.total
-      %h3 Total Orders
-      %p.total= @totals['total_volume']
-      %p.since Since: #{format_month(@totals['first_order'])}
-
-    %div.report-cell.total
-      %h3 Total Revenue
-      %p.total= format_money(@totals['total_revenue'])
-      %p.since Since: #{format_month(@totals['first_order'])}
-

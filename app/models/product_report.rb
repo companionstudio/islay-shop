@@ -120,8 +120,8 @@ class ProductReport < Report
 
   PRODUCT_ORDERS = %{
     SELECT
-      os.id, os.reference, os.name, os.created_at, SUM(total) AS item_total,
-      SUM(quantity) AS quantity, ARRAY_TO_STRING(ARRAY_AGG(sku_name), ', ') AS sku_names
+      os.id, os.reference, os.name, os.created_at, COALESCE(SUM(total), 0) AS item_total,
+      COALESCE(SUM(quantity), 0) AS quantity, ARRAY_TO_STRING(ARRAY_AGG(sku_name), ', ') AS sku_names
     FROM (
       SELECT os.id, os.reference, os.name, ois.quantity, ois.total, os.created_at, skus.id AS sku_name
       FROM orders AS os
@@ -195,7 +195,7 @@ class ProductReport < Report
 
   PRODUCT_SUMMARY = %{
     WITH sales AS (
-      SELECT skus.product_id, SUM(ois.quantity) AS volume, SUM(ois.total) AS revenue
+      SELECT skus.product_id, COALESCE(SUM(ois.quantity), 0) AS volume, COALESCE(SUM(ois.total), 0) AS revenue
       FROM order_items AS ois
       JOIN orders AS os ON is_revenue(os.status) AND os.id = ois.order_id
       JOIN skus ON skus.id = ois.sku_id
@@ -204,7 +204,7 @@ class ProductReport < Report
 
     SELECT
       ps.id, ps.slug, ps.name, ps.status, ps.published,
-      ois.volume, ois.revenue
+      COALESCE(ois.volume, 0) AS volume, COALESCE(ois.revenue, 0) AS revenue
     FROM (
       SELECT * FROM sales
       UNION ALL

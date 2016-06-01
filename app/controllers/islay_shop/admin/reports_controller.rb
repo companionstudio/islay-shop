@@ -6,6 +6,13 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @top_ten  = OrderOverviewReport.top_ten(@report_range)
     @series   = OrderOverviewReport.series(@report_range)
     @totals   = OrderOverviewReport.aggregates(@report_range)
+    @grand_totals = OrderOverviewReport.grand_totals
+  end
+
+  def month
+    @top_ten  = OrderOverviewReport.top_ten(@report_range)
+    @series   = OrderOverviewReport.series(@report_range)
+    @totals   = OrderOverviewReport.aggregates(@report_range)
   end
 
   def totals
@@ -40,5 +47,68 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
     @series   = SkuReport.series(@sku.id, @report_range)
     @totals   = SkuReport.aggregates(@sku.id, @report_range)
     @orders   = SkuReport.orders(@sku.id, @report_range)
+  end
+
+  private
+
+  # Intended to be run as a before filter, which will then draw out date/time
+  # related params, coerce them and put them into a Hash.
+  #
+  # @return Hash
+  def parse_dates
+    @report_range = if params[:month] and params[:year]
+      now       = Date.today
+      date      = Date.new(params[:year].to_i, params[:month].to_i)
+      last_day  = date.month == now.month ? now.mday : date.end_of_month.mday
+
+      {
+        :mode       => :month,
+        :start_date => date,
+        :end_date   => last_day,
+        :year       => params[:year].to_i,
+        :month      => params[:month].to_i,
+        :days       => (1..last_day).map {|d| "#{d}/#{date.month}/#{date.year}"}
+      }
+    elsif params[:from] and params[:to]
+      from  = Date.parse(params[:from])
+      to    = Date.parse(params[:to])
+
+      {
+        :mode       => :range,
+        :start_date => from,
+        :end_date   => to,
+        :from       => params[:from],
+        :to         => params[:to],
+        :days       => (from..to).map {|d| "#{d.mday}/#{d.month}/#{d.year}"}
+      }
+    else
+      now = Date.today
+
+      {
+        :mode       => :none,
+        :start_date => now,
+        :year       => now.year,
+        :month      => now.month,
+        :days       => (1..now.mday).map {|d| "#{d}/#{now.month}/#{now.year}"}
+      }
+    end
+
+  end
+
+  def set_range
+    @from = params[:from] || default_date
+    @to = params[:to]     || default_date
+  end
+
+  def default_date
+    @default_date ||= begin
+      meth = "beginning_of_#{params[:span]}"
+      Time.now.send(meth).strftime('%Y-%m-%d')
+    end
+  end
+
+  def find_start_date
+    order = Order.order('created_at ASC').limit(1).first
+    @start_date = order ? order.created_at : Time.now
   end
 end
