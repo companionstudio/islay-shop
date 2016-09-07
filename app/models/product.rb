@@ -30,10 +30,10 @@ class Product < ActiveRecord::Base
   has_many   :documents,  -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'DocumentAsset'
 
 
-  attr_accessible(
-    :name, :description, :product_category_id, :product_range_id, :manufacturer_id, 
-    :published, :status, :skus_attributes, :asset_ids, :position
-  )
+  # attr_accessible(
+  #   :name, :description, :product_category_id, :product_range_id, :manufacturer_id,
+  #   :published, :status, :skus_attributes, :asset_ids, :position
+  # )
 
   track_user_edits
 
@@ -51,7 +51,7 @@ class Product < ActiveRecord::Base
   # fields like a SKU summary have been added.
   def self.summary
     select(%{
-      id, slug, published, status, name, updated_at, position, 
+      id, slug, published, status, name, updated_at, position,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(short_desc), ', ')
        FROM skus
@@ -89,7 +89,7 @@ class Product < ActiveRecord::Base
     end
   end
 
-  # Returns a collection of promotions that are related to the Product. It 
+  # Returns a collection of promotions that are related to the Product. It
   # leans on the Promotions::Relevance module to do most of the work. The
   # resulting object has a bunch of methods for inspecting the results. See the
   # docs for Promotions::Relevance::Results.
@@ -99,7 +99,7 @@ class Product < ActiveRecord::Base
     @related_promotions ||= Promotions::Relevance.to_product(self)
   end
 
-  # Checks to see if there are any promotions related to this record. See 
+  # Checks to see if there are any promotions related to this record. See
   # #related_promotions for more detail.
   #
   # @return [true, false]

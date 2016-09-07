@@ -1,14 +1,14 @@
 module OrderPromotionConcern
   extend ActiveSupport::Concern
-  # This module provides the basic promotions functionality for an order. It 
+  # This module provides the basic promotions functionality for an order. It
   # handles qualification and application of promotions.
   included do
     has_many :applied_promotions, :foreign_key => 'order_id'
     has_many :promotions, :through => :applied_promotions
-    
+
     send :attr_accessor, :promo_code
     dump_config :methods => [:promotion_id_dump]
-    attr_accessible(:promotion_id_dump, :promo_code)
+    # attr_accessible(:promotion_id_dump, :promo_code)
   end
 
   # An error raised if an attempt is made to reapply promotions to an order.
@@ -32,7 +32,7 @@ module OrderPromotionConcern
   #
   # @return Array<Promotions::Decorator>
   def new_promotions
-    @new_promotions ||= [] 
+    @new_promotions ||= []
   end
 
   # Checks to see if any new promotions have been applied to the order.
@@ -42,7 +42,7 @@ module OrderPromotionConcern
     !new_promotions.empty?
   end
 
-  # Retrieve the promotions that have been applied, but before the order is 
+  # Retrieve the promotions that have been applied, but before the order is
   # persisted.
   #
   # @return Array<Promotions::Decorator>
@@ -78,7 +78,7 @@ module OrderPromotionConcern
     @promotion_results ||= Promotions::CheckResultCollection.new
   end
 
-  # An array of IDs of the promotions that have been applied, used to dump 
+  # An array of IDs of the promotions that have been applied, used to dump
   # the previous promotion state to session.
   #
   # @return Array<Integer>
@@ -86,7 +86,7 @@ module OrderPromotionConcern
     pending_promotions.map(&:id)
   end
 
-  # When loading up an order from session, this accessor is used to cache 
+  # When loading up an order from session, this accessor is used to cache
   # the previous promotion state:
   #
   # @param Array<[String, Numeric]> ids
@@ -110,7 +110,7 @@ module OrderPromotionConcern
     promotion_results.code_based.successful?
   end
 
-  # Checks to see if there is a promotion code set against this order. If it 
+  # Checks to see if there is a promotion code set against this order. If it
   # is nil, then code promotions are pending i.e. haven't been checked yet.
   #
   # @return [true, false]
@@ -118,8 +118,8 @@ module OrderPromotionConcern
     promo_code.blank?
   end
 
-  # Checks to see if a promotion code has been entered, promotions have been 
-  # applied and that the order has failed to qualify for any code based 
+  # Checks to see if a promotion code has been entered, promotions have been
+  # applied and that the order has failed to qualify for any code based
   # promotions.
   def code_promotion_failed?
     !promo_code.blank? and promotion_results.code_based.failed?
@@ -135,11 +135,11 @@ module OrderPromotionConcern
     @promotion_results = Promotion.active.apply!(self)
     apply_adjustments!
 
-    # Convert all the applied promotions into an array of decorated 
+    # Convert all the applied promotions into an array of decorated
     # promotions.
     @pending_promotions = applied_promotions.map {|p| ::Promotions::Decorator.new(p.promotion)}
 
-    # If no promotions have been added to the order, they're all new. 
+    # If no promotions have been added to the order, they're all new.
     # Otherwise generate a new collection which is the difference between the
     # existing ones and the new ones.
     if previous_promotion_ids.empty?
