@@ -8,7 +8,6 @@ class Manufacturer < ActiveRecord::Base
   include PgSearch
   multisearchable :against => [:name, :description, :metadata]
 
-  attr_accessible :name, :description, :published, :asset_ids
   track_user_edits
 
   has_many   :products
@@ -34,4 +33,3 @@ class Manufacturer < ActiveRecord::Base
 
   check_for_extensions
 end
-

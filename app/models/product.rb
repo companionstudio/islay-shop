@@ -29,12 +29,6 @@ class Product < ActiveRecord::Base
   has_many   :videos,     -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'VideoAsset'
   has_many   :documents,  -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'DocumentAsset'
 
-
-  # attr_accessible(
-  #   :name, :description, :product_category_id, :product_range_id, :manufacturer_id,
-  #   :published, :status, :skus_attributes, :asset_ids, :position
-  # )
-
   track_user_edits
 
   before_save :store_published_at

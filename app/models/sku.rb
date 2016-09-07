@@ -23,7 +23,6 @@ class Sku < ActiveRecord::Base
   positioned :product_id
 
   if defined?(::IslayBlog)
-    # attr_accessible :blog_entry_ids
     has_many :sku_blog_entries
     has_many :blog_entries, -> {order('published_at DESC')}, :through => :sku_blog_entries do
       # Filters the blog entries by tag.
@@ -42,12 +41,6 @@ class Sku < ActiveRecord::Base
       end
     end
   end
-
-  # attr_accessible(
-  #   :product_id, :description, :unit, :amount, :stock_level, :status,
-  #   :published, :template, :position, :name, :weight, :volume, :size,
-  #   :purchase_limiting, :purchase_limit, :asset_ids, :unit_count
-  # )
 
   track_user_edits
 

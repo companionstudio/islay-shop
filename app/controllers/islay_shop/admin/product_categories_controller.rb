@@ -39,6 +39,13 @@ module IslayShop
 
         acc
       end
+
+      def permitted_params
+        params.permit(:product_category => [
+          :name, :description, :asset_id, :product_category_id, :published,
+          :status, :position
+        ])
+      end
     end
   end
 end

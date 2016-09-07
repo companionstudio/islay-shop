@@ -31,7 +31,7 @@ module IslayShop
       private
 
       def dependencies
-        @skus = Sku.published.summarize_product.order(:product_name).map do |e|
+        @skus = Sku.published.summarize_product.order("product_name ASC").map do |e|
           ["#{e.product_name} - #{e.short_desc}", e.id]
         end
 
@@ -61,6 +61,12 @@ module IslayShop
         Promotion.new.tap(&:prefill)
       end
 
+      def permitted_params
+        params.permit(:promotion => [
+          :name, :start_at, :end_at, :conditions_attributes, :effects_attributes,
+          :active, :description, :application_limit, :publish_application_limit
+        ])
+      end
     end
   end
 end

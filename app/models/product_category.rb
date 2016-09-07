@@ -13,11 +13,6 @@ class ProductCategory < ActiveRecord::Base
   has_many    :products, -> {order('products.position')}
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
 
-  # attr_accessible(
-  #   :name, :description, :asset_id, :product_category_id, :published, :status,
-  #   :position
-  # )
-
   track_user_edits
 
   # Returns a relation with information sufficient to arrange the categories

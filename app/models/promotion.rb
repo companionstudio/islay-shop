@@ -6,11 +6,6 @@ class Promotion < ActiveRecord::Base
   has_many :qualifying_order_items,   :through => :applications
   has_many :bonus_order_items,        :through => :applications
 
-  # attr_accessible(
-  #   :name, :start_at, :end_at, :conditions_attributes, :effects_attributes,
-  #   :active, :description, :application_limit, :publish_application_limit
-  # )
-
   accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
