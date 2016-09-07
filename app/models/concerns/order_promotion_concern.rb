@@ -8,7 +8,6 @@ module OrderPromotionConcern
 
     send :attr_accessor, :promo_code
     dump_config :methods => [:promotion_id_dump]
-    # attr_accessible(:promotion_id_dump, :promo_code)
   end
 
   # An error raised if an attempt is made to reapply promotions to an order.

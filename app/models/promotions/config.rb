@@ -11,7 +11,6 @@ module Promotions
     def self.included(klass)
       klass.class_eval do
         class_attribute :promo_config
-        # attr_accessible   :active, :type
         after_initialize  :set_active
         attr_reader       :active
 

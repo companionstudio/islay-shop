@@ -6,7 +6,6 @@ class SkuPricePoint < ActiveRecord::Base
   validates :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
   validates :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
   validate :validates_price
-  # attr_accessible(:current, :valid_from, :valid_to, :price, :volume, :mode, :display_price)
   track_user_edits
 
   # Returns an ActiveRecord::Relation with a bunch of joins and calculated

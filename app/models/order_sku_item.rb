@@ -2,8 +2,6 @@ class OrderSkuItem < OrderItem
   belongs_to :sku
   has_one :product, :through => :sku
 
-  # attr_accessible(:sku)
-
   schema_validations except: :order
 
   # Generates a description based on the SKU description and product name.

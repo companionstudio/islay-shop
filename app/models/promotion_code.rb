@@ -3,7 +3,6 @@ class PromotionCode < ActiveRecord::Base
   belongs_to    :condition, :class_name => 'PromotionUniqueCodeCondition'
   validates     :code, :uniqueness => true
   before_create :generate_code
-  attr_accessible :prefix, :suffix
   attr_accessor :prefix, :suffix
 
   def redeem!(order)
@@ -12,7 +11,7 @@ class PromotionCode < ActiveRecord::Base
 
   private
 
-  # A before_create hook that generates a unique code based on the supplied 
+  # A before_create hook that generates a unique code based on the supplied
   # prefix and suffix.
   #
   # @param Integer attempts
@@ -27,4 +26,3 @@ class PromotionCode < ActiveRecord::Base
     end
   end
 end
-

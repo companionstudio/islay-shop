@@ -14,7 +14,6 @@ class Sku
 
         # All editing of price points is done via the SKU
         accepts_nested_attributes_for :price_points
-        # attr_accessible :price_points_attributes, :new_price_point
 
         # Use an alias chain to swap in our own attributes= method
         alias_method :original_price_points_attributes=, :price_points_attributes=

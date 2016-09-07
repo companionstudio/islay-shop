@@ -10,7 +10,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   def update
-    order.update_details(params[:order_basket])
+    order.update_details(permitted_params[:order_basket])
     session['order'] = @order.dump
     if @order.valid?
       redirect_to path(:order_checkout_payment)
@@ -54,6 +54,15 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   end
 
   private
+
+  def permitted_params
+    params.permit(:order_basket => [
+      :billing_company, :billing_country, :billing_postcode, :billing_state, :billing_street,
+      :billing_city, :email, :gift_message, :is_gift, :name, :phone,
+      :shipping_name, :shipping_company, :shipping_city, :shipping_country, :shipping_instructions,
+      :shipping_postcode, :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address
+    ])
+  end
 
   # This is made annoying by the fact that @order is set by a before filter in the application controller
   # This workaround checks the session dump directly.

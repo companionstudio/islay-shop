@@ -94,8 +94,6 @@ class OrderItem < ActiveRecord::Base
     end
   end
 
-  # attr_accessible :quantity
-
   # Used to count the total number of individual SKUs. Most useful when called
   # via an association. In fact, that's probably the only time you should use it.
   #
