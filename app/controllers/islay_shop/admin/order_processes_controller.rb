@@ -81,7 +81,7 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   end
 
   def update
-    @order.update_attributes(params[:order])
+    @order.update_attributes(permitted_params[:order])
     redirect_to path(:order, :id => @order)
   end
 
@@ -93,5 +93,9 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
 
   def find_order
     @order = OrderProcess.find(params[:id])
+  end
+
+  def permitted_params
+    params.permit!
   end
 end
