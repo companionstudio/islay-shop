@@ -65,8 +65,7 @@ class Order < ActiveRecord::Base
 
   accepts_nested_attributes_for :items
   track_user_edits
-
-  schema_validations except: :reference
+  validations_from_schema :except => [:reference]
 
   # Require shipping address if the user wants to use it.
   validates :shipping_street,    :presence => true, :if => :use_shipping_address?

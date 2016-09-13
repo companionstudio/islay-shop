@@ -3,8 +3,6 @@ class OrderItemComponent < ActiveRecord::Base
   attr_money :price, :total
   belongs_to :order_item
 
-  schema_validations except: :order_item
-
   # Checks to see if this component is a bonus.
   #
   # @return [true, false]

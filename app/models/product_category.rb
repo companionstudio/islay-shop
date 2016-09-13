@@ -14,6 +14,7 @@ class ProductCategory < ActiveRecord::Base
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
 
   track_user_edits
+  validations_from_schema
 
   # Returns a relation with information sufficient to arrange the categories
   # into a tree.

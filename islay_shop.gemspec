@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'islay',                 '~> 2.0.0'
   s.add_dependency 'spook_and_pay',         '~> 1.1.1'
-  s.add_dependency 'spook_and_puff_money',  '~> 0.5.9'
+  s.add_dependency 'spook_and_puff_money',  '~> 1.0.0'
 
   s.add_development_dependency 'rspec-rails',         '2.14.0'
   s.add_development_dependency 'factory_girl_rails',  '4.2.1'

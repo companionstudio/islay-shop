@@ -9,6 +9,7 @@ class Manufacturer < ActiveRecord::Base
   multisearchable :against => [:name, :description, :metadata]
 
   track_user_edits
+  validations_from_schema
 
   has_many   :products
   has_many   :manufacturer_assets

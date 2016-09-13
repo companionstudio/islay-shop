@@ -10,6 +10,7 @@ class Promotion < ActiveRecord::Base
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
   track_user_edits
+  validations_from_schema
   before_validation :clean_components
   validate :validate_component_compatibility
 

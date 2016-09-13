@@ -30,6 +30,7 @@ class Product < ActiveRecord::Base
   has_many   :documents,  -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'DocumentAsset'
 
   track_user_edits
+  validations_from_schema
 
   before_save :store_published_at
 

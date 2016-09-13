@@ -4,5 +4,4 @@ class ServicePricePoint < ActiveRecord::Base
   belongs_to :service
   has_many   :order_items, :class_name => "OrderServiceItem"
   track_user_edits
-  schema_validations except: :sku
 end

@@ -4,9 +4,9 @@ class PromotionCondition < ActiveRecord::Base
 
   belongs_to :promotion
 
-  # Defines the exclusivity scope of the condition. The semantics of 
+  # Defines the exclusivity scope of the condition. The semantics of
   # exclusivity are pretty simple. Where the scope is :open, the condition may
-  # be configured with any other conditions. For any other scope, there may 
+  # be configured with any other conditions. For any other scope, there may
   # only be condition within that scope.
   #
   # @param [:full, :none, Symbol] scope
@@ -50,7 +50,7 @@ class PromotionCondition < ActiveRecord::Base
   end
 
   # Used to check if the promotion condition succeeds for the provided order.
-  # It returns a Result class, which encapsulates success, partial success, 
+  # It returns a Result class, which encapsulates success, partial success,
   # failure and any additional information.
   #
   # For example, in the case of success, the condition may indicate a number of
@@ -77,7 +77,7 @@ class PromotionCondition < ActiveRecord::Base
     # @attr_reader Symbol
     attr_accessor :condition
 
-    # The scope of the qualification. It captures if this is a complete 
+    # The scope of the qualification. It captures if this is a complete
     # failure, partial qualification or full qualification.
     #
     # @attr_reader Symbol
@@ -98,14 +98,14 @@ class PromotionCondition < ActiveRecord::Base
     # Captures the reason for a result succeeding or failing. Really only
     # significant for partial or complete failures.
     #
-    # This corresponsds to the reason accessor, except that it is intended to 
-    # be a human readable version explanation of the partial or complete 
+    # This corresponsds to the reason accessor, except that it is intended to
+    # be a human readable version explanation of the partial or complete
     # failure.
     #
     # @attr_reader Symbol
     attr_accessor :explanation
 
-    # The components of the order affected by the condition.  
+    # The components of the order affected by the condition.
     #
     # @attr_reader Hash<OrderItem, Numeric>
     attr_reader :targets
@@ -129,7 +129,7 @@ class PromotionCondition < ActiveRecord::Base
       @targets        = opts[:targets] || {}
     end
 
-    # Hash of counts keyed by OrderItem. Count is the number of items a 
+    # Hash of counts keyed by OrderItem. Count is the number of items a
     # condition considers to be 'included' when assessing an order.
     #
     # @return Hash<OrderItem, Integer>
@@ -184,7 +184,7 @@ class PromotionCondition < ActiveRecord::Base
   end
 
   # Generates a partial result.
-  # 
+  #
   # @param Symbol reason
   # @param String explanation
   # @param Hash<OrderItem, Numeric> targets
@@ -200,7 +200,7 @@ class PromotionCondition < ActiveRecord::Base
   end
 
   # Generates a failure result.
-  # 
+  #
   # @param Symbol reason
   # @param String explanation
   # @return Result

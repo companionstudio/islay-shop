@@ -8,6 +8,7 @@ class ProductRange < ActiveRecord::Base
   has_many    :products
   belongs_to  :image, :class_name => 'ImageAsset', :foreign_key => 'asset_id'
   track_user_edits
+  validations_from_schema
 
   def self.published
     all

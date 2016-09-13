@@ -18,20 +18,21 @@ class Service < ActiveRecord::Base
   after_save :retire_price_points
 
   track_user_edits
+  validations_from_schema
 
   # All editing of price points is done via the SKU
   accepts_nested_attributes_for :price_points
-  
+
   # Incoming nested price points are inspected for changes to existing price points,
   # existing points are 'expired', and new ones inserted to become the replacement point
   alias_method :original_price_points_attributes=, :price_points_attributes=
 
   # This exploits the ::nested_attributes_for declaration to make it easy for
-  # us to update multiple price points and perform validation across them in 
+  # us to update multiple price points and perform validation across them in
   # one hit.
   #
   # @param Hash incoming
-  # 
+  #
   # @return Hash
   def price_points_attributes=(incoming)
     incoming.each_pair do |i, attrs|
