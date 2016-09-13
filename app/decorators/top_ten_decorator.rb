@@ -1,5 +1,6 @@
 class TopTenDecorator < Draper::Decorator
   decorates :report
+  delegate_all
 
   def long_desc
     "#{report['product_name']} - #{short_desc}"
