@@ -4,6 +4,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
   default :from => Settings.for(:shop, :email),
           :charset => 'UTF-8'
 
+  layout  'mail'
+
   def thank_you(order)
     @order = order
     mail(
