@@ -6,7 +6,7 @@ class OrderSummary < Order
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      id, status, name, updated_at, reference, is_gift,
+      id, status, name, updated_at, reference, is_gift
       total,
       CASE
         WHEN orders.updater_id IS NOT NULL THEN (SELECT name FROM users WHERE id = updater_id)
@@ -44,8 +44,8 @@ class OrderSummary < Order
 
   def self.alt_summary
     select(%{
-      id, name, updated_at, billing_street, billing_city, billing_state, reference,
-      billing_postcode, shipping_street, shipping_city, shipping_state, shipping_postcode,
+      id, name, updated_at, billing_street, billing_city, billing_state, reference, use_shipping_address,
+      billing_postcode, shipping_street, shipping_city, shipping_state, shipping_postcode, total, 
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name
     })
