@@ -24,6 +24,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'vcr',                 '2.5.0'
   s.add_development_dependency 'ffaker',              '~> 1.16.1'
   s.add_development_dependency 'webmock',             '~> 1.8.7'
-  s.add_development_dependency 'debugger',            '1.6.1'
   s.add_development_dependency 'figaro',              '0.7.0'
 end
