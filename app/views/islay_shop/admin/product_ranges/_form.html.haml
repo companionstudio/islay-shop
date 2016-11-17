@@ -6,9 +6,16 @@
   = content do
     = f.fieldset(:class => 'primary') do
       = f.input(:name)
+      = f.input(:published, :col => 'first-inline')
     = f.fieldset do
       = f.input(:description, :as => 'text')
 
+    - f.metadata do |attrs|
+      - if attrs
+        = f.fieldset('Extra details') do
+          - attrs.each do |name, opts|
+            = f.metadata_input(name)
+            
   = footer do
     = save_button
     = cancel_button(@product_range)
