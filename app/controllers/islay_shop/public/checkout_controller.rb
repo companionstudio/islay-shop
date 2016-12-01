@@ -4,6 +4,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
 
   use_https
   before_filter :check_for_order_contents,   :except => [:thank_you]
+  before_filter :configure_countries
 
   def details
 
@@ -70,5 +71,10 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     if order.empty?
       redirect_to path(:order_basket)
     end
+  end
+
+  def configure_countries
+    @billable_countries = IslayShop::Engine.config.billable_countries
+    @shippable_countries = IslayShop::Engine.config.shippable_countries
   end
 end
