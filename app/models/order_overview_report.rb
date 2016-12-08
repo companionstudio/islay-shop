@@ -17,9 +17,41 @@ class OrderOverviewReport < Report
   # @param Hash range
   #
   # @return Array<Hash>
-  def self.series(range)
+  def self.series(range, granularity = :daily)
     values = Hash[select_all_by_range(SERIES, range, :column => 'os.created_at').map {|v| [v['day'], v]}]
-    range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
+    days = range[:days].map {|d| values[d] || {'day' => d, 'value' => 0, 'volume' => 0, 'sku_volume' => 0}}
+    case granularity
+    when :daily, 'day'
+      days
+    when :weekly, 'week'
+      weeks = days.group_by do |d|
+        day = Date.strptime(d['day'], '%d/%m/%Y')
+        (day - day.wday).strftime('%d/%m/%Y')
+      end
+
+      weeks.reduce([]) do |a, (k, days)|
+        week_value = days.map{|d| d['value'].to_f}.reduce(0, :+)
+        week_volume = days.map{|d| d['volume'].to_f}.reduce(0, :+)
+        week_sku_volume = days.map{|d| d['sku_volume'].to_f}.reduce(0, :+)
+
+        a << {'day' => k, 'value' => week_value, 'volume' => week_volume, 'sku_volume' => week_sku_volume}
+        a
+      end
+      
+    when :monthly, 'month'
+      months = days.group_by do |d|
+        Date.strptime(d['day'], '%d/%m/%Y').at_beginning_of_month.strftime('%d/%m/%Y')
+      end
+
+      months.reduce([]) do |a, (k, days)|
+        month_value = days.map{|d| d['value'].to_f}.reduce(0, :+)
+        month_volume = days.map{|d| d['volume'].to_f}.reduce(0, :+)
+        month_sku_volume = days.map{|d| d['sku_volume'].to_f}.reduce(0, :+)
+
+        a << {'day' => k, 'value' => month_value, 'volume' => month_volume, 'sku_volume' => month_sku_volume}
+        a
+      end
+    end
   end
 
   # Returns a hash, where each key is a different aggregate value e.g. average_value
