@@ -14,6 +14,9 @@
       = f.fieldset do 
         = f.input(:application_limit, :class => 'small', :first_inline => true)
         = f.input(:publish_application_limit, :inline => true, :label => 'Publish limit')
+      
+      = f.fieldset do 
+        = f.input(:custom_description, :as => 'text', :hint => 'If set, this description will be used instead of the one generated from the conditions and effects.')
 
     = f.fieldset('Conditions and Effects', :class => 'form-tab', :id => 'promotion-config') do
       - if @promotion.locked?
