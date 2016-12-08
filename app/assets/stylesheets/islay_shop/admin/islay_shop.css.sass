@@ -36,10 +36,8 @@
     .number
       font-size: 1.3em
       font-weight: bold
-      letter-spacing: 0.2em
       white-space: nowrap
       width: 100%
-
 
     .name,
     .expiry
@@ -833,6 +831,7 @@ table
     clear: none
     float: none
     display: inline-block
+    vertical-align: middle
     width: auto
 
     &:first-child
@@ -936,6 +935,12 @@ table
   .forward,
   .forwardYear
     +icon-caret-right
+
+.date-controls
+  position: absolute
+  right: 1rem
+  top: 3rem
+  z-index: 2
 
 .report-cell.total
   p
