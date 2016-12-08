@@ -1,4 +1,7 @@
 class ProductRange < ActiveRecord::Base
+  include Islay::MetaData
+  include Islay::Publishable
+  
   extend FriendlyId
   friendly_id :name, :use => [:slugged, :finders]
 
@@ -11,6 +14,11 @@ class ProductRange < ActiveRecord::Base
   validations_from_schema
 
   def self.published
-    all
+    where(published: true)
   end
+
+  def self.latest
+    order('published_at DESC').limit(1).last
+  end
+
 end
