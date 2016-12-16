@@ -704,7 +704,7 @@ $SP.where('#islay-shop-admin-reports.index').run(function() {
   var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var topTen = new $SP.GUI.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
   var dates = new $SP.GUI.DateSelection({action: window.location.href, soloMode: true});
-  $('#sub-header').append(dates.render().el);
+  $('.date-controls').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.orders').run(function() {
@@ -712,7 +712,7 @@ $SP.where('#islay-shop-admin-reports.orders').run(function() {
   var orders = new $SP.GUI.SortableTable({el: $("#orders-summary")});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
-  $('#sub-header').append(dates.render().el);
+  $('.date-controls').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.products').run(function() {
@@ -726,14 +726,14 @@ $SP.where('#islay-shop-admin-reports.product').run(function() {
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
 
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
-  $('#sub-header').append(dates.render().el);
+  $('.date-controls').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.sku').run(function() {
   var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
-  $('#sub-header').append(dates.render().el);
+  $('.date-controls').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-promotions.[edit, new, update, create]').run(function() {
