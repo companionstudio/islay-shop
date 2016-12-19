@@ -173,6 +173,14 @@ class OrderItem < ActiveRecord::Base
     end
   end
 
+  # The total, but with a lower-bound of zero enforced (items can be free, but not give the customer credit)
+  #
+  # @return SpookAndPuff::Money
+  def total
+    unbound_total = SpookAndPuff::Money.new(attributes['total'])
+    unbound_total < SpookAndPuff::Money.zero ? SpookAndPuff::Money.zero : unbound_total
+  end
+
   # Calculates a discount from the pre-discount total and total.
   #
   # @return SpookAndPuff::Money

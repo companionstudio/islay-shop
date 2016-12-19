@@ -99,6 +99,7 @@ module OrderPurchasingConcern
   #
   # @todo Currently fixed to the sku_items association.
   def for_purchase(purchase, action, recalculate, *args)
+
     result = if !args.empty?
       item_association_for_purchase(purchase).send(action, purchase, *args)
     else

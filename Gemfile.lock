@@ -1,13 +1,4 @@
 PATH
-  remote: .
-  specs:
-    islay_shop (1.2.2)
-      country_select (~> 2.5, >= 2.5.2)
-      islay (~> 2.0.0)
-      spook_and_pay (~> 1.1.1)
-      spook_and_puff_money (~> 1.0.0)
-
-PATH
   remote: ../islay
   specs:
     islay (2.0.0)
@@ -36,6 +27,15 @@ PATH
       simple_form (~> 3.1.0)
       streamio-ffmpeg (~> 0.8.5)
       zipruby (~> 0.3.6)
+
+PATH
+  remote: .
+  specs:
+    islay_shop (1.2.5)
+      country_select (~> 2.5, >= 2.5.2)
+      islay (~> 2.0.0)
+      spook_and_pay (~> 1.1.1)
+      spook_and_puff_money (~> 1.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -325,3 +325,6 @@ DEPENDENCIES
   rspec-rails (= 2.14.0)
   vcr (= 2.5.0)
   webmock (~> 1.8.7)
+
+BUNDLED WITH
+   1.13.1
