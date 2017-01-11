@@ -96,7 +96,7 @@ module Promotions
         @promotion = promotion
         @mode = opts[:mode]
         @format = opts[:format]
-        @possessive = opts[:possessive]
+        @possessive = opts[:possessive]        
       end
 
       # A concatenation of mode and format. Intended to be used in case
@@ -484,5 +484,12 @@ module Promotions
     join_rule :to_receive do |c|
       'will receive'
     end
+
+    def self.check_for_extensions
+      target = File.join(Rails.root, "app/decorators/#{self.to_s.underscore}_extensions.rb")
+      require_dependency(target) if File.exists?(target)
+    end
+
+    check_for_extensions
   end
 end

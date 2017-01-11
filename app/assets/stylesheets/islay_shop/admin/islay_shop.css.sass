@@ -958,6 +958,51 @@ table
   top: 3rem
   z-index: 2
 
+.report-date
+  margin-bottom: 0.6em
+
+.report-date-el-controls
+  +widget-gradient
+  display: inline-block
+  border: 0.1em solid $light-grey
+  background-color: $light-grey + 27
+
+.report-date-el-previous-month,
+.report-date-el-next-month
+  +unstyled-link
+  +widget-gradient
+  display: inline-block
+  height: 2.5em
+  line-height: 2.5em
+  text-align: center
+  text-decoration: none
+  width: 2.5em
+
+  &:before
+    font-family: Icons
+    text-indent: 0
+
+  &:hover,
+  &:focus
+    background: #FFF
+    text-decoration: none
+
+.report-date-el-previous-month
+  +widget-border-radius(left)
+  +icon-caret-left
+  border-right: 1px solid $light-grey
+
+.report-date-el-next-month
+  +widget-border-radius(right)
+  +icon-caret-right
+  border-left: 1px solid $light-grey
+  margin-right: -0.075em
+
+.report-date-el-current-month
+  padding-left: 0.6em
+.report-date-el-current-year
+  padding-right: 0.6em
+
 .report-cell.total
   p
     width: 100%
@@ -988,6 +1033,25 @@ table
 
   .since
     margin-top: 1em !important
+
+#detailed-nav
+
+  ul
+    clear: both
+    margin: 0
+    padding: 0
+  
+  li
+    border-bottom: 1px solid $light-grey
+    margin: 0
+    padding: 0
+
+    &:last-child
+      border-bottom: 0
+
+  a
+    display: block
+    padding: 0.6em
 
 #top-ten
   th.rank,

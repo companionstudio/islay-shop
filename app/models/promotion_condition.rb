@@ -22,7 +22,7 @@ class PromotionCondition < ActiveRecord::Base
   #
   # @return Array<PromotionCondition>
   def self.condition_classes
-    @@condition_classes ||= Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)].map do |f|
+    @@condition_classes ||= [Dir[File.expand_path('../promotion_*_condition.rb', __FILE__)], Dir[File.expand_path(Rails.root.join('app', 'models', 'promotion_*_condition.rb'), __FILE__)]].flatten.map do |f|
       f.match(/(promotion_[a-z_]+_condition)/)[1].classify.constantize
     end
   end
