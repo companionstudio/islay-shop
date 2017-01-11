@@ -1,6 +1,8 @@
 - breadcrumb('Orders', :orders)
 - breadcrumb("Billing")
 
+= record_name('Orders to be billed', 'shopping-cart')
+
 - render :partial => 'filters'
 
 = content do
@@ -13,19 +15,23 @@
         %th Bill
 
     %tbody
-      - @orders.each do |order|
+      - if @orders.blank?
         %tr
-          %td
-            = link_to(order.name, path(order), :class => 'title')
-            %span.reference.numeric= order.reference
-            %span.summary= order.items_summary
-          %td
-            = order.formatted_total
-          %td.meta
-            %span.time= order.updated_at
-            by #{order.updater_name}
-          %td
-            = link_to('Bill', path(:bill, :order_process, :id => order), :class => 'button')
+          %td.empty{colspan: 5} No orders
+      - else
+        - @orders.each do |order|
+          %tr
+            %td
+              = link_to(order.name, path(order), :class => 'title')
+              %span.reference.numeric= order.reference
+              %span.summary= order.items_summary
+            %td
+              = order.formatted_total
+            %td.meta
+              %span.time= order.updated_at
+              by #{order.updater_name}
+            %td
+              = link_to('Bill', path(:bill, :order_process, :id => order), :class => 'button')
 
 = footer do
   = paginate(@orders, :theme => 'admin')

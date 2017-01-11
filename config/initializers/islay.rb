@@ -4,6 +4,11 @@ Islay::Engine.extensions.register do |e|
   e.admin_styles true
   e.admin_scripts true
 
+  e.configuration('Shop', :islay_shop) do |c|
+    c.string  :notification_email
+    c.string  :shop_email
+  end
+
   e.reports('Shop', :shop_reports, :class => 'basket')
 
   e.dashboard(:primary, :top, :order_overview)

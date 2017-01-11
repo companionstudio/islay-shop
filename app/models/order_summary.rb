@@ -34,7 +34,8 @@ class OrderSummary < Order
       :packing  => packing.count,
       :shipping => shipping.count,
       :recent   => recently_completed.count,
-      :expiring => expiring.count
+      :expiring => expiring.count,
+      :processable  => billing.count + packing.count + shipping.count
     }
   end
 

@@ -1,6 +1,8 @@
 - breadcrumb('Orders', :orders)
 - breadcrumb("Shipping")
 
+= record_name('Orders ready to be shipped', 'shopping-cart')
+
 - render :partial => 'filters'
 
 = form_tag(path(:ship_all, :order_processes), :method => :put) do
@@ -17,27 +19,31 @@
           %th.meta Updated At
 
       %tbody
-        - @orders.each do |order|
+        - if @orders.blank?
           %tr
-            %td.select
-              = check_box_tag('ids[]', order.id)
-            %td
-              = link_to(order.name, path(order), :class => 'title')
-              %span.reference.numeric= order.reference
-            %td
-              %p
-                %strong= order.ship_to
-                %br/
-                = order.shipping_street
-                %br/
-                = order.shipping_city
-                %br/
-                #{order.shipping_state} #{order.shipping_postcode}
-            %td
-              %span.numeric= order.formatted_total
-            %td.meta
-              %span.time= order.updated_at
-              by #{order.updater_name}
+            %td.empty{colspan: 5} No orders
+        - else
+          - @orders.each do |order|
+            %tr
+              %td.select
+                = check_box_tag('ids[]', order.id)
+              %td
+                = link_to(order.name, path(order), :class => 'title')
+                %span.reference.numeric= order.reference
+              %td
+                %p
+                  %strong= order.ship_to
+                  %br/
+                  = order.shipping_street
+                  %br/
+                  = order.shipping_city
+                  %br/
+                  #{order.shipping_state} #{order.shipping_postcode}
+              %td
+                %span.numeric= order.formatted_total
+              %td.meta
+                %span.time= order.updated_at
+                by #{order.updater_name}
 
   = footer do
     = paginate(@orders, :theme => 'admin')
