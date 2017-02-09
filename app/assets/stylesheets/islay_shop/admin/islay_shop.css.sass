@@ -46,10 +46,14 @@
     .expiry
       float: right
 
+  .tracking
+    +clear-fix
+
   #displayTrackingReference
     clear: both
     font-size: 1.2em
-    margin-bottom: 0
+    margin: 1rem 0 0 0
+    padding-bottom: 0.5rem
     strong
       font-weight: bold
     a
@@ -105,7 +109,7 @@
     width: 20em
 
   .order-overview
-    margin-left: 2%
+    margin-left: 0
     li
       line-height: 1.2
       margin-bottom: 0.5em
@@ -583,13 +587,17 @@ table
   td.index
     color: $mid-grey
 
-
   .flag
+    +border-radius(0.2em)
     float: right
+    background: rgba(#FFB066,0.5)
+    padding: 0.2em 0.3em 0.1em
+    margin-right: 0.33rem
 
   .summary
     font-size: 0.9em
     margin-top: 0.2em
+    padding-top: 0!important
     color: $dark-grey
     margin-right: 10em
     line-height: 1.3

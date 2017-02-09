@@ -27,14 +27,14 @@ Islay::Engine.extensions.register do |e|
     s.sub_nav('Products', :products)
     s.sub_nav('Ranges', :product_ranges)
     s.sub_nav('Manufacturers', :manufacturers)
-    s.sub_nav('Stock', :stock_levels)
+    s.sub_nav('Stock Levels', :stock_levels)
   end
 
   e.nav_section(:orders) do |s|
     s.root('Shop', :orders, 'shopping-cart')
-    s.sub_nav('Overview', :orders, :root => true)
+    s.sub_nav('Latest orders', :orders, :root => true)
+    s.sub_nav('Completed orders', :order_archives)
     s.sub_nav('Processing', :order_processes)
-    s.sub_nav('Archive', :order_archives)
     s.sub_nav('Promotions', :promotions)
   end
 

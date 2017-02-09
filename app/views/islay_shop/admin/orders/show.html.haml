@@ -111,7 +111,7 @@
             %td
               = promo.status.capitalize
 
-  %h3.items Order Items
+  %h3.items Order contents
   %table.items
     %thead
       %tr
@@ -188,7 +188,7 @@
           - if @order.discounted?
             %span.numeric.discount #{@order.formatted_total}
 
-  %h3Tracking
+  %h3 Tracking
   %div.tracking.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
     - if @order.trackable?
       - unless @order.tracking_reference.blank?
