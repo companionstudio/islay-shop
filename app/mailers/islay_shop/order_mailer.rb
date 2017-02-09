@@ -2,6 +2,7 @@ class IslayShop::OrderMailer < ActionMailer::Base
   helper '/islay/public/application'
 
   default :from => Settings.for(:shop, :email),
+          :bcc => Settings.for(:shop, :email),
           :charset => 'UTF-8'
 
   layout  'mail'
