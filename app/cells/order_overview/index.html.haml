@@ -8,17 +8,17 @@
         %li
           %a{:href => billing_admin_order_processes_url}
             %span.value= @counts[:billing]
-            %span.key ready to bill.
+            %span.key ready to bill
       - if @counts[:packing] > 0
         %li
           %a{:href => packing_admin_order_processes_url}
             %span.value= @counts[:packing]
-            %span.key ready to pack,
+            %span.key ready to pack
       - if @counts[:shipping] > 0
         %li
           %a{:href => shipping_admin_order_processes_url}
             %span.value= @counts[:shipping]
-            %span.key ready to ship,
+            %span.key ready to ship
   - else
     %p.notice.complete No orders are waiting to be processed.
 

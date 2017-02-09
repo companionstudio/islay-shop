@@ -405,20 +405,88 @@ $SP.GUI.LineGraph = Backbone.View.extend({
   },
 
   render: function(width) {
-    this.paper = Raphael(this.el);
-    this.width = width || this.$el.innerWidth();
+    console.log(this.el, this.x, this.y);
 
-    var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, colors: [this.options.values.color]},
-        graphW = width ? width - 60 : 500;
+    this.canvas = $('<canvas class="chart-canvas"></canvas>');
 
-    this.line = this.paper.linechart(30, 0, graphW, 250, this.x, this.y, opts);
+    this.$el.append(this.canvas);
 
-    // These callbacks are defined inline, and we use the behaviour of closures
-    // to keep our view in scope and call our own handlers. This is because of
-    // gRaphael's limited callbacks.
-    var view = this;
-    this.line.hoverColumn(function() {view.hoverIn(this);}, function() {view.hoverOut(this);});
-    this.renderXLabels();
+    this.chart = new Chart(this.canvas, {
+      type: 'bar',
+      labels: this.x,
+      data: {
+        datasets: [{
+          label: 'Orders, last 30 days',
+          data: this.y,
+          backgroundColor: [
+            'rgba(72, 109, 96, 0.65)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero:true
+            }
+          }]
+        }
+      }
+    });
+
+    //         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+    //         datasets: [{
+    //             label: '# of Votes',
+    //             data: [12, 19, 3, 5, 2, 3],
+    //             backgroundColor: [
+    //                 'rgba(255, 99, 132, 0.2)',
+    //                 'rgba(54, 162, 235, 0.2)',
+    //                 'rgba(255, 206, 86, 0.2)',
+    //                 'rgba(75, 192, 192, 0.2)',
+    //                 'rgba(153, 102, 255, 0.2)',
+    //                 'rgba(255, 159, 64, 0.2)'
+    //             ],
+    //             borderColor: [
+    //                 'rgba(255,99,132,1)',
+    //                 'rgba(54, 162, 235, 1)',
+    //                 'rgba(255, 206, 86, 1)',
+    //                 'rgba(75, 192, 192, 1)',
+    //                 'rgba(153, 102, 255, 1)',
+    //                 'rgba(255, 159, 64, 1)'
+    //             ],
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                     beginAtZero:true
+    //                 }
+    //             }]
+    //         }
+    //     }
+    // });
+
+
+
+    // this.paper = Raphael(this.el);
+    // this.width = width || this.$el.innerWidth();
+
+    // var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, colors: [this.options.values.color]},
+    //     graphW = width ? width - 60 : 500;
+
+    // this.line = this.paper.linechart(30, 0, graphW, 250, this.x, this.y, opts);
+
+    // // These callbacks are defined inline, and we use the behaviour of closures
+    // // to keep our view in scope and call our own handlers. This is because of
+    // // gRaphael's limited callbacks.
+    // var view = this;
+    // this.line.hoverColumn(function() {view.hoverIn(this);}, function() {view.hoverOut(this);});
+    // this.renderXLabels();
 
     return this;
   },

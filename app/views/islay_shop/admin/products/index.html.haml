@@ -8,7 +8,10 @@
 - sort_nav(:products, 'Created', 'created_at')
 - sort_nav(:products, 'Updated', 'updated_at')
 
+= record_name('All Products', 'gift')
+
 = content do
+
   = render :partial => 'table'
 
 = footer do

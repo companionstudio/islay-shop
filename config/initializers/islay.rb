@@ -5,6 +5,7 @@ Islay::Engine.extensions.register do |e|
   e.admin_scripts true
 
   e.configuration('Shop', :islay_shop) do |c|
+    binding.pry
     c.string  :notification_email
     c.string  :shop_email
   end
