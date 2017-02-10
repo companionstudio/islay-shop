@@ -54,6 +54,7 @@ class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationControl
 
   def parse_resolution
     @resolution = params[:resolution] || :daily
+  end
 
   # Intended to be run as a before filter, which will then draw out date/time
   # related params, coerce them and put them into a Hash.
