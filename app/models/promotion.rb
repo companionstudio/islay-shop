@@ -121,12 +121,30 @@ class Promotion < ActiveRecord::Base
     end
   end
 
+  # Return any condition which relies on codes.
+  #
+  # @return PromotionCondition
+  def code_condition
+    @code_condition ||= conditions.first{|c| CODE_CONDITIONS.include? c.class}
+  end
+
   # Predicate which checks to see if the promotion has a condition which relies
   # on codes.
   #
   # @return [true, false]
   def code_based?
-    @code_based ||= !(conditions.map(&:class) & CODE_CONDITIONS).empty?
+    code_condition.present?
+  end
+
+  # Checks to see if the promotion has any unique_code conditions.
+  #
+  # @return Boolean
+  def unique_code_based?
+    if conditions[0]
+      has_condition?(:unique_code)
+    else
+      conditions.where(:type => 'PromotionUniqueCodeCondition').exists?
+    end
   end
 
   # Return any codes (unique or shared) for this promotion

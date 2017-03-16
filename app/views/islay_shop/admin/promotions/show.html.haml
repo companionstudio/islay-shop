@@ -24,7 +24,7 @@
         %span.value.time= @promotion.end_at
 
   - if @promotion.code_based?
-    %h3 Codes
+    %h3 #{@promotion.codes.count} #{@promotion.code_condition.code_type} #{'Code'.pluralize(@promotion.codes.count)}
     - if @promotion.codes.count > 1
       %p.note= link_to('Download as .csv file', path(:codes, @promotion, :format => 'csv'))
 
@@ -32,18 +32,22 @@
       %thead
         %tr
           %th.index #
-          %th Type
           %th Code
-          %th Status
+          %th Last redeemed
+          %th Orders
       %tbody
         - @promotion.codes.each_with_index do |code, i|
           %tr
             %td.index= i + 1
-            %td= code.is_a?(PromotionCode) ? 'Unique' : 'Shared'
             %td
               %span.numeric= code.is_a?(PromotionCode) ? code.code : code
             %td
               %span.time= code.is_a?(PromotionCode) ? code.redeemed_at : ''
+            %td
+              - if code.is_a? PromotionCode and code.applied_promotions.count > 0
+                %span.numeric #{code.applied_promotions.count} #{'Order'.pluralize(code.applied_promotions.count)}
+              - else
+                \-
 
   %h3 Orders
   %p.note.summary #{@promotion.orders.count} orders. Revenue: #{@promotion.revenue}

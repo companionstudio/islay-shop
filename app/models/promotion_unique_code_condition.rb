@@ -7,6 +7,7 @@ class PromotionUniqueCodeCondition < PromotionCondition
     integer :limit, :required => true
     string :code_prefix
     string :code_suffix
+    enum  :mode, :required => true, :values => %w(single reusable), :default => 'single'
   end
 
   has_many :codes,            :class_name => 'PromotionCode', :foreign_key => 'promotion_condition_id'
@@ -21,13 +22,14 @@ class PromotionUniqueCodeCondition < PromotionCondition
 
 
   def check(order)
-    if order.promo_code and unredeemed_codes.exists?(:code => order.promo_code.upcase)
+    if order.promo_code.blank?
+      failure(:no_promo_code, 'No code was provided')
+    elsif single_use? and unredeemed_codes.exists?(:code => order.promo_code.upcase)
+      success
+    elsif reusable? and codes.exists?(:code => order.promo_code.upcase)
       success
     else
-      if order.promo_code.blank?
-        reason = :no_promo_code
-        explanation = 'No code was provided'
-      elsif redeemed_codes.exists?(:code => order.promo_code.upcase)
+      if single_use? and redeemed_codes.exists?(:code => order.promo_code.upcase)
         reason = :code_already_redeemed
         explanation = "The code '#{order.promo_code.upcase}' has been redeemed already."
       elsif !codes.exists?(:code => order.promo_code.upcase)
@@ -44,6 +46,18 @@ class PromotionUniqueCodeCondition < PromotionCondition
 
   def locking?
     false
+  end
+
+  def single_use?
+    mode == 'single'
+  end
+
+  def reusable?
+    !single_use?
+  end
+
+  def code_type
+    single_use? ? 'Single-use' : 'Re-usable'
   end
 
   private
