@@ -125,7 +125,7 @@ class Promotion < ActiveRecord::Base
   #
   # @return PromotionCondition
   def code_condition
-    @code_condition ||= conditions.first{|c| CODE_CONDITIONS.include? c.class}
+    @code_condition ||= conditions.find{|c| CODE_CONDITIONS.include? c.class}
   end
 
   # Predicate which checks to see if the promotion has a condition which relies
