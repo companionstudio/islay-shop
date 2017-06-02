@@ -8,12 +8,11 @@ class PromotionShippingEffect < PromotionEffect
     enum  :mode,  :required => true, :values => %(set fixed percentage), :default => 'fixed'
   end
 
-  attr_accessible :amount
   validate :check_amount
 
-  # Sets the amount for the effect. The value updated depends on the mode it 
+  # Sets the amount for the effect. The value updated depends on the mode it
   # is in.
-  # 
+  #
   # @param [Numeric, String] n
   # @return [SpookAndPuff::Money, Numeric]
   def amount=(n)
@@ -25,7 +24,7 @@ class PromotionShippingEffect < PromotionEffect
 
   # Returns the amount. The underlying value chosen depends on the current
   # mode.
-  # 
+  #
   # @return [SpookAndPuff::Money, Numeric]
   def amount
     case mode

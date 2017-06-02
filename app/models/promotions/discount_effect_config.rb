@@ -15,7 +15,7 @@ module Promotions
         end
 
         # Custom accessor for setting percentage or dollar amount.
-        attr_accessible :amount
+        attr_accessor :amount
 
         # Custom validator.
         validate :validate_amount
@@ -50,7 +50,7 @@ module Promotions
       n
     end
 
-    # Custom accessor for writing the mode which coerces input and calls the 
+    # Custom accessor for writing the mode which coerces input and calls the
     # #reassign helper.
     #
     # @param String k
@@ -61,13 +61,13 @@ module Promotions
       k
     end
 
-    # Shortcut which returns a formatted string representing either the 
+    # Shortcut which returns a formatted string representing either the
     # percentage or dollar amount.
     #
     # @return String
     def amount_and_mode
       case mode
-      when 'percentage' 
+      when 'percentage'
         if percentage.to_i == percentage
           "#{percentage.to_i}%"
         else

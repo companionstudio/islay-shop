@@ -5,7 +5,7 @@ class Sku
         extend ClassMethods
         include InstanceMethods
 
-        has_many :stock_logs, :class_name => 'SkuStockLog', :order => 'created_at DESC'
+        has_many :stock_logs, -> {order('created_at DESC')}, :class_name => 'SkuStockLog'
       end
     end
 

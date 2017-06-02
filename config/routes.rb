@@ -92,16 +92,16 @@ Rails.application.routes.draw do
         end
 
         member do
-          get 'billing',  :action => 'review_billing', :as => 'bill'
-          put 'billing',  :action => 'bill'
+          get   'billing',  :action => 'review_billing', :as => 'bill'
+          patch 'billing',  :action => 'bill'
 
-          put 'packing',  :action => 'pack', :as => 'pack'
-          put 'shipping', :action => 'ship', :as => 'ship'
+          patch 'packing',  :action => 'pack', :as => 'pack'
+          patch 'shipping', :action => 'ship', :as => 'ship'
 
           get 'cancel',   :action => 'review_cancellation', :as => 'cancel'
-          put 'cancel',   :action => 'cancel'
+          patch 'cancel',   :action => 'cancel'
 
-          put 'update',   :action => 'update', :as => 'update'
+          patch 'update',   :action => 'update', :as => 'update'
         end
       end
 
@@ -148,4 +148,3 @@ Rails.application.routes.draw do
     end # scope
   end # unless Settings
 end # draw
-

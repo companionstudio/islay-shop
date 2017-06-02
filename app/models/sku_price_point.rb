@@ -5,11 +5,10 @@ class SkuPricePoint < ActiveRecord::Base
   validates :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
   validates :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
   validate :validates_price
-  attr_accessible(:current, :valid_from, :valid_to, :price, :volume, :mode, :display_price)
   track_user_edits
 
-  # Returns an ActiveRecord::Relation with a bunch of joins and calculated 
-  # fields necessary for summarising each price point e.g. SKU, if it's 
+  # Returns an ActiveRecord::Relation with a bunch of joins and calculated
+  # fields necessary for summarising each price point e.g. SKU, if it's
   # current etc.
   #
   # @return ActiveRecord::Relation
@@ -65,7 +64,7 @@ class SkuPricePoint < ActiveRecord::Base
   # e.g. for single volume is says 'each'.
   #
   # @return String
-  def mode_desc 
+  def mode_desc
     case mode
     when 'single'     then 'each'
     when 'bracketed'  then "for #{volume} or more"
@@ -82,7 +81,7 @@ class SkuPricePoint < ActiveRecord::Base
     else
       raise "Boxed prices are only available on boxed price points"
     end
-  end  
+  end
 
   # Set the unit price by calculating from a box price
   #
@@ -139,7 +138,7 @@ class SkuPricePoint < ActiveRecord::Base
       "Price cannot be modified on existing price points."
     end
   end
-  
+
   # Returns the saving on a purchase of this volume when compared to the provided point.
   #
   # @param SkuPricePoint point
@@ -169,7 +168,7 @@ class SkuPricePoint < ActiveRecord::Base
 
   private
 
-  # This validates the price. Since the price will actually be a Money 
+  # This validates the price. Since the price will actually be a Money
   # instance, we need a custom validator. The build in validators are for
   # floats and integers. Additionlly, the errors are associated with a custom
   # attribute.

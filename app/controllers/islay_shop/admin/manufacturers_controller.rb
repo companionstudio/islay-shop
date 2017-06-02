@@ -10,5 +10,10 @@ class IslayShop::Admin::ManufacturersController < IslayShop::Admin::ApplicationC
   def dependencies
     @assets = Asset.order('name')
   end
-end
 
+  private
+
+  def permitted_params
+    params.permit(:manufacturer => [:name, :description, :published, :asset_ids])
+  end
+end

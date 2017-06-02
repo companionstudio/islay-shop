@@ -39,6 +39,13 @@ module IslayShop
         @manufacturers  = Manufacturer.order('name')
         @assets         = Asset.order('name')
       end
+
+      def permitted_params
+        params.permit(:product => [
+          :name, :description, :product_category_id, :product_range_id, :manufacturer_id,
+          :published, :status, :skus_attributes, :asset_ids, :position
+        ])
+      end
     end
   end
 end

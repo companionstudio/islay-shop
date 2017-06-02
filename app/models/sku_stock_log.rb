@@ -3,8 +3,6 @@ class SkuStockLog < ActiveRecord::Base
 
   belongs_to :sku
 
-  attr_accessible :before, :after, :action
-
   track_user_edits
 
   # Returns a scope with calculated fields for who created the log and also,

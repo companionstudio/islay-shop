@@ -10,6 +10,7 @@
     = f.input(:limit, :class => 'tiny', :inline => true)
     = f.input(:code_prefix, :class => 'small', :inline => true)
     = f.input(:code_suffix, :class => 'small', :inline => true)
+    = f.input(:mode, :collection => %w(single reusable), :as => :radio_buttons, :inline => true)
   
     .help
       .extra.islay-toggle

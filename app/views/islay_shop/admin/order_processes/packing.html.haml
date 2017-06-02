@@ -1,6 +1,8 @@
 - breadcrumb('Orders', :orders)
 - breadcrumb("Packing")
 
+= record_name('Orders to be packed', 'shopping-cart')
+
 - render :partial => 'filters'
 
 = form_tag(path(:pack_all, :order_processes), :method => :put) do
@@ -17,32 +19,36 @@
           %th.meta Updated At
 
       %tbody
-        - @orders.each do |order|
+        - if @orders.blank?
           %tr
-            %td.select
-              = check_box_tag('ids[]', order.id)
-            %td
-              = link_to(order.name, path(order), :class => 'title')
-              %span.reference.numeric= order.reference
-              %ul.items
-                - order.sku_items.each do |item|
-                  %li
-                    = link_to(item.sku.short_desc, path(:product, :id => item.sku.product_id))
-                    %span.numeric= item.quantity
-            %td
-              %p
-                %strong= order.name
-                %br/
-                = order.shipping_street
-                %br/
-                = order.shipping_city
-                %br/
-                #{order.shipping_state} #{order.shipping_postcode}
-            %td
-              = order.formatted_total
-            %td.meta
-              %span.time= order.updated_at
-              by #{order.updater_name}
+            %td.empty{colspan: 5} No orders
+        - else
+          - @orders.each do |order|
+            %tr
+              %td.select
+                = check_box_tag('ids[]', order.id)
+              %td
+                = link_to(order.name, path(order), :class => 'title')
+                %span.reference.numeric= order.reference
+                %ul.items
+                  - order.sku_items.each do |item|
+                    %li
+                      = link_to(item.sku.short_desc, path(:product, :id => item.sku.product_id))
+                      %span.numeric= item.quantity
+              %td
+                %p
+                  %strong= order.name
+                  %br/
+                  = order.shipping_street
+                  %br/
+                  = order.shipping_city
+                  %br/
+                  #{order.shipping_state} #{order.shipping_postcode}
+              %td
+                = order.formatted_total
+              %td.meta
+                %span.time= order.updated_at
+                by #{order.updater_name}
 
   = footer do
     = paginate(@orders, :theme => 'admin')

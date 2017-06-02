@@ -1,22 +1,17 @@
 class ProductCategory < ActiveRecord::Base
-  include Hierarchy
+  include HierarchyConcern
   include IslayShop::Statuses
 
   extend FriendlyId
-  friendly_id :name, :use => :slugged
+  friendly_id :name, :use => [:slugged, :finders]
 
   include PgSearch
   multisearchable :against => [:name, :description]
 
   positioned :path
 
-  has_many    :products, :order => 'products.position'
+  has_many    :products, -> {order('products.position')}
   belongs_to  :image,     :class_name => 'ImageAsset',       :foreign_key => 'asset_id'
-
-  attr_accessible(
-    :name, :description, :asset_id, :product_category_id, :published, :status,
-    :position
-  )
 
   track_user_edits
   validations_from_schema
@@ -118,7 +113,7 @@ class ProductCategory < ActiveRecord::Base
     end
   end
 
-  # Returns a collection of promotions that are related to the Category. It 
+  # Returns a collection of promotions that are related to the Category. It
   # leans on the Promotions::Relevance module to do most of the work. The
   # resulting object has a bunch of methods for inspecting the results. See the
   # docs for Promotions::Relevance::Results.
@@ -128,7 +123,7 @@ class ProductCategory < ActiveRecord::Base
     @related_promotions ||= Promotions::Relevance.to_category(self)
   end
 
-  # Checks to see if there are any promotions related to this record. See 
+  # Checks to see if there are any promotions related to this record. See
   # #related_promotions for more detail.
   #
   # @return [true, false]

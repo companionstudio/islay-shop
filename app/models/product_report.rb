@@ -160,7 +160,8 @@ class ProductReport < Report
       JOIN order_items AS ois ON ois.order_id = os.id
       JOIN skus ON skus.id = ois.sku_id
       JOIN products AS ps ON ps.id = skus.product_id
-      GROUP BY ps.product_category_id, os.status HAVING is_revenue(os.status)
+      WHERE is_revenue(os.status)
+      GROUP BY ps.product_category_id
     )
 
     SELECT

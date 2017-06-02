@@ -4,16 +4,11 @@ class OrderPayment < ActiveRecord::Base
 
   belongs_to :order
 
-  attr_accessible(
-    :provider_name, :provider_token, :name, :number, :expiration_month, 
-    :expiration_year, :status, :card_type
-  )
-
-  # Delegate a bunch of methods to the transaction object provided by 
-  # SpookAndPay. If you want to see the signatures for these particular 
+  # Delegate a bunch of methods to the transaction object provided by
+  # SpookAndPay. If you want to see the signatures for these particular
   # methods, please refer to the SpookAndPay::Transaction class.
   def_delegators(
-    :transaction, :can_capture?, :can_void?, :can_refund?, :settled?, 
+    :transaction, :can_capture?, :can_void?, :can_refund?, :settled?,
     :settling?, :authorized?
   )
 
@@ -65,7 +60,7 @@ class OrderPayment < ActiveRecord::Base
     self[:card_type] = type.downcase.gsub(' ', '_')
   end
 
-  # Captures the funds from the authorized transaction in the payment 
+  # Captures the funds from the authorized transaction in the payment
   # provider's system.
   #
   # @return [true, false]
@@ -83,7 +78,7 @@ class OrderPayment < ActiveRecord::Base
     handle_result('void', transaction.void!)
   end
 
-  # Refunds a payment. Underlying transaction must be captured first. 
+  # Refunds a payment. Underlying transaction must be captured first.
   # Transactions that are only authorized should instead be voided.
   #
   # @return [true, false]

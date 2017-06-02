@@ -1,22 +1,17 @@
 class Promotion < ActiveRecord::Base
-  has_many :conditions,               :class_name => 'PromotionCondition', :order => 'type ASC', :dependent => :destroy
-  has_many :effects,                  :class_name => 'PromotionEffect',    :order => 'type ASC', :dependent => :destroy
-  has_many :applications,             :class_name => 'AppliedPromotion'
-  has_many :orders,                   :through => :applications, :order => 'orders.created_at DESC'
+  has_many :conditions, -> {order('type ASC')}, :class_name => 'PromotionCondition', :dependent => :destroy
+  has_many :effects,    -> {order('type ASC')}, :class_name => 'PromotionEffect', :dependent => :destroy
+  has_many :applications, :class_name => 'AppliedPromotion'
+  has_many :orders,-> {order('orders.created_at DESC')}, :through => :applications
   has_many :qualifying_order_items,   :through => :applications
   has_many :bonus_order_items,        :through => :applications
-
-  attr_accessible(
-    :name, :start_at, :end_at, :conditions_attributes, :effects_attributes,
-    :active, :description, :application_limit, :publish_application_limit
-  )
 
   accepts_nested_attributes_for :conditions,  :reject_if => :condition_or_order_inactive?
   accepts_nested_attributes_for :effects,     :reject_if => :condition_or_order_inactive?
 
   track_user_edits
-  before_validation :clean_components
   validations_from_schema
+  before_validation :clean_components
   validate :validate_component_compatibility
 
   # Conditions which are code based. Used in a bunch of predicates defined on
@@ -90,7 +85,7 @@ class Promotion < ActiveRecord::Base
     when 'finished'
       where("promotions.end_at <= NOW()")
     when 'all'
-      scoped
+      where(nil) # 'scoped'
     else
       current
     end
@@ -126,12 +121,30 @@ class Promotion < ActiveRecord::Base
     end
   end
 
+  # Return any condition which relies on codes.
+  #
+  # @return PromotionCondition
+  def code_condition
+    @code_condition ||= conditions.find{|c| CODE_CONDITIONS.include? c.class}
+  end
+
   # Predicate which checks to see if the promotion has a condition which relies
   # on codes.
   #
   # @return [true, false]
   def code_based?
-    @code_based ||= !(conditions.map(&:class) & CODE_CONDITIONS).empty?
+    code_condition.present?
+  end
+
+  # Checks to see if the promotion has any unique_code conditions.
+  #
+  # @return Boolean
+  def unique_code_based?
+    if conditions[0]
+      has_condition?(:unique_code)
+    else
+      conditions.where(:type => 'PromotionUniqueCodeCondition').exists?
+    end
   end
 
   # Return any codes (unique or shared) for this promotion

@@ -1,5 +1,5 @@
 class OrderBasket < Order
-  include Order::Promotions
+  include OrderPromotionConcern
 
   after_create :send_thank_you_mail
 

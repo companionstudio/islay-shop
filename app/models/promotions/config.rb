@@ -1,6 +1,6 @@
 module Promotions
   # This module provides methods for defining and accessing configuration. It
-  # is mixed into both the PromotionCondition and PromotionEffect abstract 
+  # is mixed into both the PromotionCondition and PromotionEffect abstract
   # classes.
   module Config
     # The hook is used to stub out configuration and do some metaprogramming
@@ -11,10 +11,9 @@ module Promotions
     def self.included(klass)
       klass.class_eval do
         class_attribute :promo_config
-        attr_accessible   :active, :type
         after_initialize  :set_active
         attr_reader       :active
-        
+
         include InstanceMethods
         extend ClassMethods
       end
@@ -55,7 +54,7 @@ module Promotions
         promo_config[:desc]
       end
 
-      # Accessor which returns the condition scope configured against the 
+      # Accessor which returns the condition scope configured against the
       # promotion component's class.
       #
       # @return Symbol
@@ -63,7 +62,7 @@ module Promotions
         promo_config[:condition_scope]
       end
 
-      # Accessor which returns the effect scope configured against the 
+      # Accessor which returns the effect scope configured against the
       # promotion component's class.
       #
       # @return Symbol
@@ -96,7 +95,7 @@ module Promotions
     end
 
     module ClassMethods
-      # When the promotion component is inherited, we need to ensure that it's 
+      # When the promotion component is inherited, we need to ensure that it's
       # configuration is initialized with defaults.
       #
       # @param Class klass
@@ -109,7 +108,7 @@ module Promotions
       end
 
       # Sets the condition scope for the promotion components. For conditions
-      # this communicates the portion of the order it examines. For effects 
+      # this communicates the portion of the order it examines. For effects
       # this specifies a requirement for corresponding conditions with the same
       # scope.
       #
@@ -136,7 +135,7 @@ module Promotions
         self.promo_config[:desc] = s
       end
 
-      # Configures the desired position of a component relative to it's 
+      # Configures the desired position of a component relative to it's
       # siblings. Default orderings are often unclear, so this lets us enforce
       # a specific order globally.
       #

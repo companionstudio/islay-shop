@@ -34,7 +34,8 @@ class OrderSummary < Order
       :packing  => packing.count,
       :shipping => shipping.count,
       :recent   => recently_completed.count,
-      :expiring => expiring.count
+      :expiring => expiring.count,
+      :processable  => billing.count + packing.count + shipping.count
     }
   end
 
@@ -44,8 +45,8 @@ class OrderSummary < Order
 
   def self.alt_summary
     select(%{
-      id, name, updated_at, billing_street, billing_city, billing_state, reference,
-      billing_postcode, shipping_street, shipping_city, shipping_state, shipping_postcode,
+      id, name, updated_at, billing_street, billing_city, billing_state, reference, use_shipping_address,
+      billing_postcode, shipping_name, shipping_street, shipping_city, shipping_state, shipping_postcode, total, is_gift,
       '$' || TRIM(TO_CHAR(total, '99,999,999.99')) AS formatted_total,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name
     })

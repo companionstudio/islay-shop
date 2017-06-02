@@ -3,6 +3,8 @@
 
 = record_name(params[:month] ? "Sales reports for #{Date::MONTHNAMES[params[:month].to_i]} #{params[:year]}" : 'Sales reports', 'bar-chart')
 
+.date-controls
+
 = content(:class => 'inset inset-vertical') do
 
   = column(8) do

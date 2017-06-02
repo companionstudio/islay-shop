@@ -9,9 +9,9 @@
   - @config[:hidden_fields].each do |name, value|
     = hidden_field_tag(name, value)
 
-  = f.input(:number, input_opts(:number, :label => 'Card number'))
+  = f.input(:number, input_opts(:number, :label => 'Card number', :pattern => '[0-9]*', :type => 'tel'))
   = f.input(:name, input_opts(:name))
-  = f.input(:cvv, input_opts(:cvv, :label => 'Security code'))
+  = f.input(:cvv, input_opts(:cvv, :label => 'Security code', :pattern => '[0-9]*', :type => 'tel'))
   .inline-group
     = f.input(:expiration_month, select_opts(:expiration_month, 'Month', @months, :label => 'Expiry'))
     = f.input(:expiration_year, select_opts(:expiration_year, 'Year', @years, :label => '/'))

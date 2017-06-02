@@ -4,7 +4,7 @@ class Product < ActiveRecord::Base
   include Islay::Publishable
 
   extend FriendlyId
-  friendly_id :name, :use => :slugged
+  friendly_id :name, :use => [:slugged, :finders]
 
   include PgSearch
   multisearchable :against => [:name, :description, :metadata]
@@ -15,25 +15,19 @@ class Product < ActiveRecord::Base
   belongs_to :range,    :class_name => 'ProductRange',    :foreign_key => 'product_range_id'
   belongs_to :manufacturer
 
-  has_many   :skus,         :order => 'position ASC'
-  has_many   :sku_assets,   :through => :skus, :through => :assets
-  has_many   :stock_logs,   :through => :skus, :order => 'created_at DESC'
+  has_many   :skus,         -> {order('position ASC')}
+  has_many   :sku_assets,   :through => :skus, :class_name => 'Asset'
+  has_many   :stock_logs,   -> {order('created_at DESC')},   :through => :skus
   has_many   :price_points, :through => :skus
-  has_many   :current_skus, :class_name => "Sku", :order => 'position ASC', :conditions => {:published => true, :status => %w(for_sale not_for_sale)}
-  has_many   :variants,     :class_name => 'ProductVariant', :order => 'position ASC'
+  has_many   :current_skus, -> {order('position ASC').where({:published => true, :status => %w(for_sale not_for_sale)})}, :class_name => "Sku"
+  has_many   :variants,     -> {order('position ASC')}, :class_name => 'ProductVariant'
 
   has_many   :product_assets
-  has_many   :assets,     :through => :product_assets, :order => 'position ASC'
-  has_many   :images,     :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'ImageAsset'
-  has_many   :audio,      :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'AudioAsset'
-  has_many   :videos,     :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'VideoAsset'
-  has_many   :documents,  :through => :product_assets, :order => 'position ASC', :source => :asset, :class_name => 'DocumentAsset'
-
-
-  attr_accessible(
-    :name, :description, :product_category_id, :product_range_id, :manufacturer_id, 
-    :published, :status, :skus_attributes, :asset_ids, :position
-  )
+  has_many   :assets,     -> {order('position ASC')},  :through => :product_assets
+  has_many   :images,     -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'ImageAsset'
+  has_many   :audio,      -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'AudioAsset'
+  has_many   :videos,     -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'VideoAsset'
+  has_many   :documents,  -> {order('position ASC')},  :through => :product_assets, :source => :asset, :class_name => 'DocumentAsset'
 
   track_user_edits
   validations_from_schema
@@ -52,7 +46,7 @@ class Product < ActiveRecord::Base
   # fields like a SKU summary have been added.
   def self.summary
     select(%{
-      id, slug, published, status, name, updated_at, position, 
+      id, slug, published, status, name, updated_at, position,
       (SELECT name FROM users WHERE id = updater_id) AS updater_name,
       (SELECT ARRAY_TO_STRING(ARRAY_AGG(short_desc), ', ')
        FROM skus
@@ -77,7 +71,8 @@ class Product < ActiveRecord::Base
       when 'unpublished' then false
       end
     else
-      scoped
+      # This is a replacement for 'scoped' from Rails 3
+      where(nil)
     end
   end
 
@@ -89,7 +84,7 @@ class Product < ActiveRecord::Base
     end
   end
 
-  # Returns a collection of promotions that are related to the Product. It 
+  # Returns a collection of promotions that are related to the Product. It
   # leans on the Promotions::Relevance module to do most of the work. The
   # resulting object has a bunch of methods for inspecting the results. See the
   # docs for Promotions::Relevance::Results.
@@ -99,7 +94,7 @@ class Product < ActiveRecord::Base
     @related_promotions ||= Promotions::Relevance.to_product(self)
   end
 
-  # Checks to see if there are any promotions related to this record. See 
+  # Checks to see if there are any promotions related to this record. See
   # #related_promotions for more detail.
   #
   # @return [true, false]
@@ -114,12 +109,12 @@ class Product < ActiveRecord::Base
     skus.map {|s| s.stock_level > 0}.any?
   end
 
-  def stock_warning?
-    !in_stock? or stock_low?
+  def stock_low?
+    skus.map {|s| s.stock_level <= Settings.for(:shop, :alert_level)}.any?
   end
 
-  def stock_low?
-    false
+  def stock_warning?
+    !in_stock? or stock_low?
   end
 
   def stock_level_status
@@ -134,6 +129,17 @@ class Product < ActiveRecord::Base
 
   def friendly_stock_level_status
     'OK'
+  end
+
+  # This is also provided by the product summary class
+  def stock_level_notice
+    if !in_stock?
+      'out'
+    elsif stock_low?
+      'low'
+    else
+      'ok'
+    end
   end
 
   def for_sale?

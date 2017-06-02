@@ -2,11 +2,11 @@ class Order < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :total, :original_total, :product_total, :original_product_total, :discount, :increase
 
-  include Order::Session
-  include Order::Workflow
-  include Order::Purchasing
-  include Order::Adjustments
-  include Order::Promotions
+  include OrderSessionConcern
+  include OrderWorkflowConcern
+  include OrderPurchasingConcern
+  include OrderAdjustmentConcern
+  include OrderPromotionConcern
 
   include PgSearch
   multisearchable :against => [
@@ -51,15 +51,6 @@ class Order < ActiveRecord::Base
     end
   end
 
-  # These are the only attributes that we want to expose publically.
-  attr_accessible(
-    :billing_company, :billing_country, :billing_postcode, :billing_state, :billing_street,
-    :billing_city, :email, :gift_message, :is_gift, :name, :phone,
-    :shipping_name, :shipping_company, :shipping_city, :shipping_country, :shipping_instructions,
-    :shipping_postcode, :shipping_state, :shipping_street, :use_shipping_address, :use_billing_address,
-    :items_dump, :stock_alerts_dump, :person_id, :reference, :tracking_reference, :promo_code, :promotion_id_dump
-  )
-
   # The workflow is defined here so it can be queried against this class and
   # it's sub-classes, but the actual workflow should be run against an instance
   # of OrderProcess
@@ -74,7 +65,6 @@ class Order < ActiveRecord::Base
 
   accepts_nested_attributes_for :items
   track_user_edits
-
   validations_from_schema :except => [:reference]
 
   # Require shipping address if the user wants to use it.
@@ -84,7 +74,7 @@ class Order < ActiveRecord::Base
   validates :shipping_postcode,  :presence => true, :if => :use_shipping_address?
 
   # Validate email format
-  validates :email, :format   => {:with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Please check your email address is correct'}
+  validates :email, :format   => {:with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => 'Please check your email address is correct'}
 
   # Generates the human readable order ID.
   before_create :store_reference
@@ -251,15 +241,16 @@ class Order < ActiveRecord::Base
   #
   # @return Integer
   def sku_total_quantity
-    sku_items.sku_total_quantity
+    # sku_items.sku_total_quantity
+    0
   end
 
   # The unit count of the SKUs in an order.
   #
   # @return Integer
   def sku_unit_quantity
-    sku_items.sum do |item|
-      item.quantity * item.sku.unit_count
+    sku_items.reduce(0) do |a, item|
+      a + (item.quantity * item.sku.unit_count)
     end
   end
 

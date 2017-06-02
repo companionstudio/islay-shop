@@ -1,4 +1,28 @@
-%h3 Order Overview
+%h3 Order Processing
+
+.dashboard-order-processing{class:  @processing_required ? 'with-processing-required' : ''}
+  - if @processing_required
+    %p.notice There #{@counts[:processable] == 1 ? 'is' : 'are'} #{pluralize(@counts[:processable], 'order')} waiting to be processed.
+    %ul#dashboard-order-counts
+      - if @counts[:billing] > 0
+        %li
+          %a{:href => billing_admin_order_processes_url}
+            %span.value= @counts[:billing]
+            %span.key ready to bill
+      - if @counts[:packing] > 0
+        %li
+          %a{:href => packing_admin_order_processes_url}
+            %span.value= @counts[:packing]
+            %span.key ready to pack
+      - if @counts[:shipping] > 0
+        %li
+          %a{:href => shipping_admin_order_processes_url}
+            %span.value= @counts[:shipping]
+            %span.key ready to ship
+  - else
+    %p.notice.complete No orders are waiting to be processed.
+
+%h3 Recent Orders
 
 %table.series-graph
   %thead
@@ -15,17 +39,3 @@
         %td= entry['value']
         %td= entry['volume']
         %td= entry['sku_volume']
-
-%ul#dashboard-order-counts
-  %li
-    %a{:href => billing_admin_order_processes_url}
-      %span.value.indicator.neutral= @counts[:billing]
-      %span.key to Bill
-  %li
-    %a{:href => packing_admin_order_processes_url}
-      %span.value.indicator.neutral= @counts[:packing]
-      %span.key to Pack
-  %li
-    %a{:href => shipping_admin_order_processes_url}
-      %span.value.indicator.neutral= @counts[:shipping]
-      %span.key to Ship

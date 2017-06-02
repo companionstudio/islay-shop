@@ -1,6 +1,5 @@
 class AppliedPromotion < ActiveRecord::Base
   belongs_to :promotion
   belongs_to :order
-
-  attr_accessible :promotion, :order
+  belongs_to :promotion_code
 end

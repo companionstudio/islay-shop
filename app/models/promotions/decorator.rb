@@ -1,8 +1,11 @@
 module Promotions
   # A decorator which wraps a Promotion in order to provide functionality for
   # summarising and rendering a Promotion to HTML.
-  class Decorator < Draper::Base
+  class Decorator < Draper::Decorator
+    delegate_all
+    
     # Generates a summary for the encapsulated Promotion.
+    # If the promotion has a custom description set, use that.
     #
     # @param Hash opts
     # @option opts Array<Symbol> :exclude_conditions
@@ -12,6 +15,9 @@ module Promotions
     # @return String
     # @todo Order conditions/effects before mapping.
     def summary(opts = {})
+
+      return model.custom_description if model.custom_description.present? 
+
       _opts = {
         :mode       => :general,
         :format     => :html,

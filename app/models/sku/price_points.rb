@@ -2,9 +2,9 @@ class Sku
   module PricePoints
     def self.included(klass)
       klass.class_eval do
-        has_many :price_points,           :class_name => 'SkuPricePoint', :order => 'volume ASC, valid_from', :extend => [AssociationMethods]
-        has_many :historic_price_points,  :class_name => 'SkuPricePoint', :conditions => {:current => false}, :extend => [AssociationMethods]
-        has_many :current_price_points,   :class_name => 'SkuPricePoint', :conditions => {:current => true},  :extend => [AssociationMethods]
+        has_many :price_points,           -> {order('volume ASC, valid_from')}, :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
+        has_many :historic_price_points,  -> {where(current: false)}, :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
+        has_many :current_price_points,   -> {where(current: true)},  :class_name => 'SkuPricePoint', :extend => [AssociationMethods]
 
         validates_associated :price_points
         validate :validate_boxed_and_bracketed_overlap
@@ -14,15 +14,14 @@ class Sku
 
         # All editing of price points is done via the SKU
         accepts_nested_attributes_for :price_points
-        attr_accessible :price_points_attributes, :new_price_point
 
         # Use an alias chain to swap in our own attributes= method
         alias_method :original_price_points_attributes=, :price_points_attributes=
-        alias_method :price_points_attributes=, :specialised_price_points_attributes= 
+        alias_method :price_points_attributes=, :specialised_price_points_attributes=
       end
     end
 
-    # A module containing some helpers which is mixed into the price points 
+    # A module containing some helpers which is mixed into the price points
     # associations.
     module AssociationMethods
       # Returns the current price points with a specified mode, and optionally volume
@@ -62,11 +61,11 @@ class Sku
     end
 
     # This exploits the ::nested_attributes_for declaration to make it easy for
-    # us to update multiple price points and perform validation across them in 
+    # us to update multiple price points and perform validation across them in
     # one hit.
     #
     # @param Hash incoming
-    # 
+    #
     # @return Hash
     def specialised_price_points_attributes=(incoming)
       incoming.each_pair do |i, attrs|
@@ -98,7 +97,7 @@ class Sku
       @single_price_point ||= current_price_points.where(:mode => 'single').first
     end
 
-    # Returns all the current prices which have a mode of 'boxed', ordered by 
+    # Returns all the current prices which have a mode of 'boxed', ordered by
     # volume.
     #
     # @return Array<SkuPricePoint>
@@ -128,7 +127,7 @@ class Sku
       single_price
     end
 
-    # Returns a stubbed out price point which serves as a 'template' for 
+    # Returns a stubbed out price point which serves as a 'template' for
     # generating new price points.
     #
     # @return SkuPricePoint
@@ -136,7 +135,7 @@ class Sku
       SkuPricePoint.new(:mode => mode, :volume => volume, :price => '0')
     end
 
-    # This is a no-op. It just allows us to use the price_point_template in 
+    # This is a no-op. It just allows us to use the price_point_template in
     # forms.
     #
     # @return nil

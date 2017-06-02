@@ -28,6 +28,10 @@ class PromotionCodeCondition < PromotionCondition
     end
   end
 
+  def code_type
+    'Shared'
+  end
+
   private
 
   def unique_code

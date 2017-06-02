@@ -12,26 +12,27 @@ class Service < ActiveRecord::Base
     end
   end
 
-  has_one  :current_price_point,    :class_name => "ServicePricePoint", :conditions => {:current => true}, :order => 'valid_from DESC'
-  has_many :historic_price_points,  :class_name => 'ServicePricePoint', :conditions => {:current => false}
+  has_one  :current_price_point,    -> {where(current: true).order('valid_from DESC')}, :class_name => "ServicePricePoint"
+  has_many :historic_price_points,  -> {where(current: false)},  :class_name => 'ServicePricePoint'
 
   after_save :retire_price_points
 
   track_user_edits
+  validations_from_schema
 
   # All editing of price points is done via the SKU
   accepts_nested_attributes_for :price_points
-  
+
   # Incoming nested price points are inspected for changes to existing price points,
   # existing points are 'expired', and new ones inserted to become the replacement point
   alias_method :original_price_points_attributes=, :price_points_attributes=
 
   # This exploits the ::nested_attributes_for declaration to make it easy for
-  # us to update multiple price points and perform validation across them in 
+  # us to update multiple price points and perform validation across them in
   # one hit.
   #
   # @param Hash incoming
-  # 
+  #
   # @return Hash
   def price_points_attributes=(incoming)
     incoming.each_pair do |i, attrs|
