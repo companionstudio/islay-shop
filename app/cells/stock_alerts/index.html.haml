@@ -3,11 +3,14 @@
 - if @alerts.empty?
   %p#dashboard-no-stock-alerts No stock alerts
 - else
-  %ul#dashboard-stock-alerts
-    - @alerts.each do |sku|
-      %li
-        - if sku.out_of_stock?
-          %span.value.indicator.warning= sku.stock_level
-        - else
-          %span.value.indicator.neutral= sku.stock_level
-        %span.key= link_to(sku.long_desc, admin_product_path(:id => sku.product_id))
+  %table#dashboard-stock-alerts
+    %tbody
+      - @alerts.each do |sku|
+        %tr
+          %td
+            - if sku.out_of_stock?
+              %span.value.indicator.warning= sku.stock_level
+            - else
+              %span.value.indicator.neutral= sku.stock_level
+          %td
+            %span.key= link_to(sku.long_desc, admin_product_path(:id => sku.product_id))
