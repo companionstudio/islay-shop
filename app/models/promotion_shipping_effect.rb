@@ -5,7 +5,7 @@ class PromotionShippingEffect < PromotionEffect
   metadata(:config) do
     money :money
     float :percentage
-    enum  :mode,  :required => true, :values => %(set fixed percentage), :default => 'fixed'
+    enum  :mode,  :required => true, :values => ['set', 'fixed', 'percentage'], :default => 'fixed'
   end
 
   validate :check_amount
