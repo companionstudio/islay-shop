@@ -400,27 +400,26 @@ $SP.GUI.LineGraph = Backbone.View.extend({
   className: 'graph',
 
   initialize: function() {
-    this.x = this.options.values.x;
+    this.x = this.options.dates;
     this.y = this.options.values.y;
+    this.label = this.options.values.label;
+    this.backgroundColor = this.options.values.color;
+    this.format = this.options.values.monentaryValues ? 'money' : 'integer';
   },
 
   render: function(width) {
-    console.log(this.el, this.x, this.y);
-
     this.canvas = $('<canvas class="chart-canvas"></canvas>');
-
     this.$el.append(this.canvas);
 
-    this.chart = new Chart(this.canvas, {
+    this.chart = new Chart(this.canvas[0].getContext('2d'), {
       type: 'bar',
-      labels: this.x,
+     
       data: {
+        labels: this.x,
         datasets: [{
-          label: 'Orders, last 30 days',
+          label: this.label,
           data: this.y,
-          backgroundColor: [
-            'rgba(72, 109, 96, 0.65)'
-          ],
+          backgroundColor: this.backgroundColor,
           borderWidth: 0
         }]
       },
@@ -430,63 +429,27 @@ $SP.GUI.LineGraph = Backbone.View.extend({
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero:true
+              beginAtZero: true,
+              callback: $.proxy(function(value, i, values) {
+                if (this.format == 'money') {
+                  return '$' + value;
+                } else if (this.format == 'integer'){
+                  return value % 1 == 0 ? value : '';
+                } else {
+                  return value;
+                }
+              }, this)
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              scaleStartValue: 1,
+              beginAtZero: false
             }
           }]
         }
       }
     });
-
-    //         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-    //         datasets: [{
-    //             label: '# of Votes',
-    //             data: [12, 19, 3, 5, 2, 3],
-    //             backgroundColor: [
-    //                 'rgba(255, 99, 132, 0.2)',
-    //                 'rgba(54, 162, 235, 0.2)',
-    //                 'rgba(255, 206, 86, 0.2)',
-    //                 'rgba(75, 192, 192, 0.2)',
-    //                 'rgba(153, 102, 255, 0.2)',
-    //                 'rgba(255, 159, 64, 0.2)'
-    //             ],
-    //             borderColor: [
-    //                 'rgba(255,99,132,1)',
-    //                 'rgba(54, 162, 235, 1)',
-    //                 'rgba(255, 206, 86, 1)',
-    //                 'rgba(75, 192, 192, 1)',
-    //                 'rgba(153, 102, 255, 1)',
-    //                 'rgba(255, 159, 64, 1)'
-    //             ],
-    //             borderWidth: 1
-    //         }]
-    //     },
-    //     options: {
-    //         scales: {
-    //             yAxes: [{
-    //                 ticks: {
-    //                     beginAtZero:true
-    //                 }
-    //             }]
-    //         }
-    //     }
-    // });
-
-
-
-    // this.paper = Raphael(this.el);
-    // this.width = width || this.$el.innerWidth();
-
-    // var opts = {symbol: '', axis: '0 0 1 1', axisxstep: 1, axisystep: 5, colors: [this.options.values.color]},
-    //     graphW = width ? width - 60 : 500;
-
-    // this.line = this.paper.linechart(30, 0, graphW, 250, this.x, this.y, opts);
-
-    // // These callbacks are defined inline, and we use the behaviour of closures
-    // // to keep our view in scope and call our own handlers. This is because of
-    // // gRaphael's limited callbacks.
-    // var view = this;
-    // this.line.hoverColumn(function() {view.hoverIn(this);}, function() {view.hoverOut(this);});
-    // this.renderXLabels();
 
     return this;
   },
@@ -497,6 +460,10 @@ $SP.GUI.LineGraph = Backbone.View.extend({
   },
 
   show: function() {
+    if (!this.$el.data('canvas-initialised')) {
+      this.$el.find('canvas').css({width: this.$el.innerWidth(), height: this.$el.innerHeight()});
+      this.$el.data('canvas-initialised', true);
+    }
     this.$el.show();
     return this;
   },
@@ -564,9 +531,9 @@ $SP.GUI.SeriesGraph = Backbone.View.extend({
     this.current = 0;
 
     this.values = {
-      value:      {x: [], y: [], color: 'green', monentaryValues: true},
-      volume:     {x: [], y: [], color: 'blue'},
-      sku_volume: {x: [], y: [], color: 'red'}
+      value:      {x: [], y: [], color: '#87B4FF', monentaryValues: true, label: 'Revenue'},
+      volume:     {x: [], y: [], color: '#8ACC96', label: 'Orders'},
+      sku_volume: {x: [], y: [], color: '#CC7C66', label: 'SKUs'}
     };
 
     _.each(this.options.table.find('tbody tr'), function(el, i) {
@@ -617,7 +584,11 @@ $SP.GUI.SeriesGraph = Backbone.View.extend({
       this.$el.append(view.$el);
       view.render(view.$el.innerWidth());
 
-      if (i > 0) {view.hide();}
+      if (i > 0) {
+        view.hide();
+      } else {
+        view.show();
+      }
     }, this);
 
     return this;

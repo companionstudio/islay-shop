@@ -5,7 +5,7 @@ class OrderOverviewCell < Cell::Rails
     @processing_required = @counts[:processable] > 0
 
     finish = Date.today
-    start = finish.months_ago(1)
+    start = Date.today.beginning_of_month
     @series = OrderOverviewReport.series(
       :mode => :none,
       :days => (start..finish).map {|d| "#{d.mday}/#{d.month}/#{d.year}"}
