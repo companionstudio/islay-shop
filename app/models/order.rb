@@ -241,8 +241,7 @@ class Order < ActiveRecord::Base
   #
   # @return Integer
   def sku_total_quantity
-    # sku_items.sku_total_quantity
-    0
+    sku_unit_quantity
   end
 
   # The unit count of the SKUs in an order.

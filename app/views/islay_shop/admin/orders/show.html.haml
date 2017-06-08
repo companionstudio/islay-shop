@@ -1,14 +1,18 @@
+- if @logo.present?
+  .print-only
+    .print-logo{class: @logo.portrait? ? 'is-portrait' : 'is-landscape' }= image_tag(@logo.versions.url(:original))
+    
 - breadcrumb('Orders', :orders)
 - breadcrumb("#{@order.name} - #{@order.reference}")
 
 = record_name("#{@order.name} - #{@order.reference}", 'shopping-cart')
 
 = content(:class => 'inset') do
-  #summary
-    = process_progression(@order)
+  #summary= process_progression(@order)
 
-  %div.panel
-    %div.order-overview
+
+  .panel
+    .order-overview
       %ul
         %li
           %span.key Reference #
@@ -21,7 +25,7 @@
           %span.value= link_to(@order.email, "mailto:#{@order.email}?subject=Your order #{@order.reference}")
         %li
           %span.key Placed
-          %span.value.time= @order.logs.first.created_at
+          %span.value= @order.logs.first.created_at.to_formatted_s(:pretty)
         %li
           %span.key Status
           %span.value= @order.status.humanize
@@ -38,7 +42,7 @@
               - else
                 %span.value.indicator.warning Expires Soon!
 
-    %div.billing
+    .billing
       %h3 Billing Details
 
       %p.card-details
@@ -48,7 +52,7 @@
           %span.name= @order.payment.name
         %span.expiry Expiry: #{@order.payment.expiry}
 
-    %div.address
+    .address
       %h3 Billing Address
 
       %p
@@ -64,7 +68,7 @@
         %br/
         %span.state #{@order.billing_state} #{@order.billing_postcode}
 
-    %div.address
+    .address
       %h3 Shipping Address
 
       %p
@@ -189,7 +193,7 @@
             %span.numeric.discount #{@order.formatted_total}
 
   %h3 Tracking
-  %div.tracking.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
+  .tracking.collapsible{:class => @order.tracking_reference.blank? ? 'expanded' : 'collapsed'}
     - if @order.trackable?
       - unless @order.tracking_reference.blank?
         %p#displayTrackingReference.summary
@@ -230,8 +234,7 @@
             - else
               &nbsp;
           %td.meta
-            %span.time= log.created_at
-            by #{log.updater_name}
+            %span= log.created_at.to_formatted_s(:pretty)
 
 = footer do
   %button.print Print

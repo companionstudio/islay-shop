@@ -8,6 +8,11 @@ class IslayShop::Admin::OrdersController < IslayShop::Admin::ApplicationControll
     @counts = OrderSummary.status_counts
   end
 
+  def show
+    @logo = Asset.find_by(:name => 'Print Logo')
+    super
+  end
+
   def edit_payment
 
   end
