@@ -38,9 +38,14 @@ class PromotionCategoryQuantityCondition < PromotionCondition
   #
   # @return Array<OrderItem>
   def qualifying_items(order)
-    order.candidate_items.select do |item| 
-      item.sku.product.product_category_id == product_category_id or
-      item.product.category.path < category.path
+    order.candidate_items.select do |item|
+
+      if category.path.present? and item.product.category.path.present?
+        item.sku.product.product_category_id == product_category_id or item.product.category.path < category.path
+      else
+        item.sku.product.product_category_id == product_category_id
+      end
+
     end
   end
 end
