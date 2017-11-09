@@ -22,7 +22,7 @@ module IslayShop
       end
 
       def prepare_for_editing
-        @offer.offer_items.build
+        @offer.offer_items << @offer.offer_item_template
         @skus = Sku.published.summarize_product.order("product_name ASC").map do |e|
           ["#{e.product_name} - #{e.short_desc}", e.id]
         end
