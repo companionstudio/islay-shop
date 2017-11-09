@@ -11,8 +11,6 @@ class Offer < ActiveRecord::Base
   has_many :offer_orders
   has_many :orders, through: :offer_orders
 
-  before_save :check_items
-
   accepts_nested_attributes_for :offer_items, allow_destroy: true, reject_if: lambda {|a| a[:sku_id].blank?}
 
   def self.filtered(filter)
@@ -36,6 +34,10 @@ class Offer < ActiveRecord::Base
     true
   end
 
+  def candidates
+    Member.active.with_payment_method
+  end
+
    # Returns a stubbed out offer item which serves as a 'template' for
    # generating new items.
    #
@@ -44,16 +46,16 @@ class Offer < ActiveRecord::Base
      OfferItem.new(:quantity => quantity)
    end
 
-   # This is a no-op. It just allows us to use the offer_item_template in
-   # forms.
+   alias_method :original_offer_items_attributes=, :offer_items_attributes=
+   # Massage incoming item params before saving
    #
    # @return nil
-   # def new_offer_item=(vals)
-   #   nil
-   # end
-
-   def check_items
+   def offer_items_attributes=(vals)
+     vals.each do |_, val|
+        val['_destroy'] = true if val['quantity'].blank? or val['quantity'] == '0'
+     end
      binding.pry
+     self.original_offer_items_attributes = vals
    end
 
 end

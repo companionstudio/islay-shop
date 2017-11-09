@@ -10,7 +10,10 @@
       = f.input(:close_at, :as => :date_picker, :label => 'Close date')
       = f.input(:ship_at, :as => :date_picker, :label => 'Ship date')
 
-    = f.fieldset('Items in this offer', :class => 'islay-shop-sku-pricing form-tab', :id => 'offer-items') do
+    = f.fieldset('Items in this offer', :class => 'form-tab', :id => 'offer-items') do
+
+      %p Add the items you want to include in this offer and their quantities below. To remove an item from the offer, just set its quantity to 0.
+
       %table.islay-offer-items.editable-grid.folded
         %thead
           %tr
@@ -22,6 +25,23 @@
               %td.quantity
                 = oif.input(:quantity)
               %td= oif.input(:sku_id, :collection => @skus, :include_blank => true, :label => 'Product SKU')
+
+    = f.fieldset('Orders', :class => 'form-tab', :id => 'offer-orders') do
+      %h2 Candidates
+      - if f.object.candidates.empty?
+        %p No members qualify for the offer.
+      - else
+        %p These members qualify for the offer.
+        - f.object.candidates.each do |candidate|
+          = candidate.inspect
+
+      %h2 Orders
+      - if f.object.orders.empty?
+        %p No orders have been created yet.
+      - else
+        %p The following orders have already been created for this offer.
+        - f.object.orders.each do |order|
+          = order.inspect
 
   = footer do
     = save_button
