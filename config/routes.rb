@@ -75,6 +75,11 @@ Rails.application.routes.draw do
           :on => :member
     end
 
+    resources :offers do
+      get '(/filter-:filter)(/sort-:sort)', :action => :index, :as => 'filter_and_sort', :on => :collection
+      get :delete, :on => :member
+    end
+
     scope :path => 'orders' do
       resources :order_processes, :path => 'processing', :only => 'index' do
         collection do

@@ -1,0 +1,28 @@
+- breadcrumb('Offers')
+
+- filter_nav(:offers, 'Running')
+- filter_nav(:offers, 'Finished', 'finished')
+- filter_nav(:offers, 'Future', 'future')
+- filter_nav(:offers, 'All', 'all')
+
+- sort_nav(:offers, 'Name')
+- sort_nav(:offers, 'Updated', 'updated_at')
+
+= content do
+  %table.fixed-header(cellpadding=0 cellspacing=0)
+    %thead
+      %th{:colspan => 2} Name
+      %th Updated At
+    %tbody
+      - @offers.each do |offer|
+        %tr
+          %td.status
+            = offer.status
+          %td
+            = link_to(offer.name, path(:edit, offer), :class => 'title')
+          %td
+            %span.time= offer.updated_at
+
+= footer do
+  = new_button('Offer', :offer)
+  = paginate(@offers, :theme => 'admin')

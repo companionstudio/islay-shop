@@ -413,7 +413,7 @@ $SP.GUI.LineGraph = Backbone.View.extend({
 
     this.chart = new Chart(this.canvas[0].getContext('2d'), {
       type: 'bar',
-     
+
       data: {
         labels: this.x,
         datasets: [{
@@ -782,4 +782,8 @@ $SP.where('#islay-shop-admin-promotions.[edit, new, update, create]').run(functi
 $SP.where('#islay-shop-admin-skus.[edit, new, update, create]').run(function() {
   $('.islay-shop-sku-pricing table').islaySkuPricing();
   $('.islay-shop-sku-pricing :checkbox').islayCheckbox({mode: 'depressed'});
+});
+
+$SP.where('#islay-shop-admin-offers.[edit, new, update, create]').run(function() {
+  $('.islay-offer-items table').islayOfferEditing();
 });
