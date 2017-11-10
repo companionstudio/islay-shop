@@ -6,6 +6,8 @@
       = f.input(:name, :col => 6)
       = f.input(:description, :as => 'text')
 
+      = f.input(:price, :label => 'Price', :autocomplete => 'off')
+
       = f.input(:open_at, :as => :date_picker, :label => 'Open date')
       = f.input(:close_at, :as => :date_picker, :label => 'Close date')
       = f.input(:ship_at, :as => :date_picker, :label => 'Ship date')
@@ -25,6 +27,9 @@
               %td.quantity
                 = oif.input(:quantity)
               %td= oif.input(:sku_id, :collection => @skus, :include_blank => true, :label => 'Product SKU')
+              %td
+                - if oif.object.sku_id
+                  = oif.object.sku.price
 
     = f.fieldset('Orders', :class => 'form-tab', :id => 'offer-orders') do
       %h2 Candidates
