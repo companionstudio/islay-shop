@@ -1,13 +1,18 @@
 class Offer < ActiveRecord::Base
   validations_from_schema
 
+  include OfferOrdersConcern
+
   include PgSearch
   multisearchable :against => [:name]
 
   extend FriendlyId
   friendly_id :name, :use => [:slugged, :finders]
 
-  has_many :offer_items
+  extend SpookAndPuff::MoneyAttributes
+  attr_money :price
+
+  has_many :offer_items, :autosave => true
   has_many :offer_orders
   has_many :orders, through: :offer_orders
 
@@ -38,12 +43,37 @@ class Offer < ActiveRecord::Base
     Member.active.with_payment_method
   end
 
+  # The number of items in the offer
+  def sku_total_quantity
+    offer_items.to_a.sum(&:quantity)
+  end
+
+  # The nominal unit price, based on the number of items and the offer price
+  def sku_unit_price
+    price / sku_total_quantity
+  end
+
    # Returns a stubbed out offer item which serves as a 'template' for
    # generating new items.
    #
    # @return OfferItem
    def offer_item_template(quantity = 1)
-     OfferItem.new(:quantity => quantity)
+     {quantity: quantity, offer_id: self.id}
+   end
+
+
+   # @param [Money, Numeric, String] price
+   #
+   # @return Money
+   def display_price=(price_value)
+       self.price = price_value
+   end
+
+   # Return the 'display' price
+   #
+   # @return Money
+   def display_price
+     price
    end
 
    alias_method :original_offer_items_attributes=, :offer_items_attributes=
@@ -54,7 +84,6 @@ class Offer < ActiveRecord::Base
      vals.each do |_, val|
         val['_destroy'] = true if val['quantity'].blank? or val['quantity'] == '0'
      end
-     binding.pry
      self.original_offer_items_attributes = vals
    end
 

@@ -6,7 +6,7 @@
       = f.input(:name, :col => 6)
       = f.input(:description, :as => 'text')
 
-      = f.input(:price, :label => 'Price', :autocomplete => 'off')
+      = f.input(:display_price, :label => 'Price', :autocomplete => 'off')
 
       = f.input(:open_at, :as => :date_picker, :label => 'Open date')
       = f.input(:close_at, :as => :date_picker, :label => 'Close date')
@@ -21,24 +21,35 @@
           %tr
             %th Quantity
             %th Product & Sku
+            %th Base price
         %tbody
           = f.fields_for(:offer_items) do |oif|
             %tr
               %td.quantity
                 = oif.input(:quantity)
-              %td= oif.input(:sku_id, :collection => @skus, :include_blank => true, :label => 'Product SKU')
+              %td= oif.input(:sku_id, :collection => @skus, :include_blank => 'Select SKU', :label => 'Product SKU')
               %td
                 - if oif.object.sku_id
-                  = oif.object.sku.price
+                  = oif.object.sku.single_price
 
     = f.fieldset('Orders', :class => 'form-tab', :id => 'offer-orders') do
       %h2 Candidates
-      - if f.object.candidates.empty?
-        %p No members qualify for the offer.
-      - else
-        %p These members qualify for the offer.
-        - f.object.candidates.each do |candidate|
-          = candidate.inspect
+      %table.islay-offer-candidates.sortable
+        %thead
+          %tr
+            %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+            %th Name
+            %th Email
+        %tbody
+          - if f.object.candidates.empty?
+            %tr
+              %td{colspan: 3} No members qualify for the offer.
+          - else
+            - f.object.candidates.each do |candidate|
+              %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
+              %td= candidate.name
+              %td= candidate.email
+
 
       %h2 Orders
       - if f.object.orders.empty?
