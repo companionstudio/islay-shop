@@ -33,31 +33,53 @@
                   = oif.object.sku.single_price
 
     = f.fieldset('Orders', :class => 'form-tab', :id => 'offer-orders') do
-      %h2 Candidates
-      %table.islay-offer-candidates.sortable
-        %thead
-          %tr
-            %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
-            %th Name
-            %th Email
-        %tbody
-          - if f.object.candidates.empty?
+      .form-block
+        %h2 Candidates
+        %table.islay-offer-candidates.sortable
+          %thead
             %tr
-              %td{colspan: 3} No members qualify for the offer.
-          - else
-            - f.object.candidates.each do |candidate|
-              %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
-              %td= candidate.name
-              %td= candidate.email
+              %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
+              %th Name
+              %th Email
+          %tbody
+            - if f.object.candidates.empty?
+              %tr
+                %td{colspan: 3} No members qualify for the offer.
+            - else
+              - f.object.candidates.each do |candidate|
+                %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
+                %td= link_to(candidate.name, path(candidate))
+                %td= candidate.email
 
 
-      %h2 Orders
-      - if f.object.orders.empty?
-        %p No orders have been created yet.
-      - else
-        %p The following orders have already been created for this offer.
-        - f.object.orders.each do |order|
-          = order.inspect
+
+      .form-block
+        %h2 Orders
+        %p= link_to('Generate orders', generate_admin_offer_path)
+        %table.islay-offer-candidates.sortable
+          %thead
+            %tr
+              %th Status
+              %th Name
+              %th Total
+              %th.meta Updated
+          %tbody
+            - if f.object.orders.empty?
+              %tr
+                %td{colspan: 3} No orders have been created yet.
+            - else
+              - f.object.orders.each do |order|
+                %tr
+                  %td
+                    %span.indicator= order.status
+                  %td
+                    = link_to(order.name, path(order), :class => 'title')
+                    %span.reference.numeric= order.reference
+                  %td
+                    %span.numeric= order.total
+                  %td.meta
+                    %span.time= order.updated_at
+
 
   = footer do
     = save_button

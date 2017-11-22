@@ -1,7 +1,7 @@
 - if @logo.present?
   .print-only
     .print-logo{class: @logo.portrait? ? 'is-portrait' : 'is-landscape' }= image_tag(@logo.versions.url(:original))
-    
+
 - breadcrumb('Orders', :orders)
 - breadcrumb("#{@order.name} - #{@order.reference}")
 
@@ -9,7 +9,6 @@
 
 = content(:class => 'inset') do
   #summary= process_progression(@order)
-
 
   .panel
     .order-overview
@@ -252,4 +251,3 @@
 
   - if @order.run?(:cancel)
     = link_to('Cancel', path(:cancel, :order_process, :id => @order), :title => 'Cancel Order', :class => 'button delete')
-

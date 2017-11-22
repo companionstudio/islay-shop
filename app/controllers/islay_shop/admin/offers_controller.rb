@@ -15,6 +15,12 @@ module IslayShop
         redirect_to edit_admin_offer_path(id: params[:id])
       end
 
+      def generate
+        set_ivar(find_record)
+        @offer.generate_orders!
+        redirect_to edit_admin_offer_path(id: params[:id])
+      end
+
       private
 
       def dependencies

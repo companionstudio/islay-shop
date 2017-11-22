@@ -77,6 +77,7 @@ Rails.application.routes.draw do
 
     resources :offers do
       get '(/filter-:filter)(/sort-:sort)', :action => :index, :as => 'filter_and_sort', :on => :collection
+      get :generate, :on => :member
       get :delete, :on => :member
     end
 

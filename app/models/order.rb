@@ -41,6 +41,11 @@ class Order < ActiveRecord::Base
   has_many    :sku_items,     :class_name => 'OrderSkuItem',      :extend => [OrderItem::SkuPurchasing, OrderItem::Adjustments]
   has_many    :service_items, :class_name => 'OrderServiceItem',  :extend => [OrderItem::ServicePurchasing, OrderItem::Adjustments]
 
+  has_one     :offer_order
+  has_one     :member_order
+  has_one     :member, through: :member_order
+  has_one     :offer, through: :offer_order
+
   # Adjustments for order-level increases or discounts.
   has_many :adjustments, :class_name => "OrderAdjustment", :dependent => :destroy, :autosave => true do
     # Returns the first — possibly only — manual adjustment.
