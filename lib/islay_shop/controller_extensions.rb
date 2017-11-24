@@ -3,8 +3,8 @@ module IslayShop
     module Public
       def self.included(klass)
         klass.send(
-          :helper_method, 
-          :retrieve_order, :create_order, :order, :checkout_promotions, 
+          :helper_method,
+          :retrieve_order, :create_order, :order, :checkout_promotions,
           :checkout_promotions?, :promotion_summary
         )
       end
@@ -44,7 +44,7 @@ module IslayShop
         Promotions::Decorator.new(promotion).summary_text
       end
 
-      # A predicate which checks to see if there are any checkout promotions 
+      # A predicate which checks to see if there are any checkout promotions
       # available.
       #
       # @return [true, false]
@@ -52,14 +52,14 @@ module IslayShop
         !checkout_promotions.empty?
       end
 
-      # A simple accessor which looks up and caches promotions that should be 
+      # A simple accessor which looks up and caches promotions that should be
       # displayed at checkout.
       #
       # @return Array<Promotion>
       def checkout_promotions
         @checkout_promotions ||= Promotion.active.code_based
       end
-      
+
       def retrieve_order
         order_from_session
       end
@@ -67,7 +67,7 @@ module IslayShop
       def retrieve_order_without_promotions
         order_from_session(false)
       end
-      
+
       def order_from_session(apply = true)
         order_from_source(session, apply)
       end
@@ -80,10 +80,14 @@ module IslayShop
         if source['order']
           @order = OrderBasket.load(source['order'])
 
+          if member_signed_in? and @order.member_order.blank?
+            @order.member_order = MemberOrder.find_or_initialize_by(order: @order, member: current_member)
+          end
+
           @order.apply_promotions! if apply
 
           source['order'] = @order.dump if @order.new_promotions?
-          
+
         else
           create_order
         end

@@ -3,7 +3,7 @@ module Promotions
   # summarising and rendering a Promotion to HTML.
   class Decorator < Draper::Decorator
     delegate_all
-    
+
     # Generates a summary for the encapsulated Promotion.
     # If the promotion has a custom description set, use that.
     #
@@ -16,7 +16,7 @@ module Promotions
     # @todo Order conditions/effects before mapping.
     def summary(opts = {})
 
-      return model.custom_description if model.custom_description.present? 
+      return model.custom_description if model.custom_description.present?
 
       _opts = {
         :mode       => :general,
@@ -96,7 +96,7 @@ module Promotions
         @promotion = promotion
         @mode = opts[:mode]
         @format = opts[:format]
-        @possessive = opts[:possessive]        
+        @possessive = opts[:possessive]
       end
 
       # A concatenation of mode and format. Intended to be used in case
@@ -303,6 +303,10 @@ module Promotions
 
     condition(:for_every_n_items) do |c|
       "buy #{c.part.quantity}"
+    end
+
+    condition(:membership) do |c|
+      "belong to the club"
     end
 
     condition(:category_quantity) do |c|

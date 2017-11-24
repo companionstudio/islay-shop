@@ -1,0 +1,13 @@
+= f.fieldset("Be a member", condition_opts(condition)) do
+  = f.hidden_field(:type)
+
+  .condition-toggle
+    = f.input(:active, :as => :boolean, :first_inline => true)
+
+  .condition-contents
+    %p.summary
+      Active members qualify
+
+    .help
+      %div.extra.islay-toggle
+        %p Members who are logged in will qualify for this condition.
