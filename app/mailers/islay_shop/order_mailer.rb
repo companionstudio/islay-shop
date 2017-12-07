@@ -8,6 +8,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
   layout  'mail'
 
   def thank_you(order)
+    return if Settings.for(:shop, :disable_order_thank_you_mail)
+
     @order = order
     mail(
       :to => order.email,
@@ -18,6 +20,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
   end
 
   def shipped(order)
+    return if Settings.for(:shop, :disable_order_shipping_mail)
+
     @order = order
     mail(
       :to => order.email,
@@ -26,6 +30,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
   end
 
   def cancelled(order)
+    return if Settings.for(:islay_shop, :disable_order_cancelled_mail)
+    
     @order = order
     mail(
       :to => order.email,
