@@ -114,12 +114,20 @@
             %td
               = promo.status.capitalize
 
+  - if @order.offer_order.present?
+    %h3.items Membership
+    %p Club member: #{link_to(@order.member.name, path(:edit, @order.member))}
+
+  - if @order.member.present?
+    %h3.items Subscription Offer
+    %p This order is part of #{link_to(@order.offer.name, path(@order.offer))}
+
   %h3.items Order contents
   %table.items
     %thead
       %tr
         %th Product/SKU
-        %th Quantity
+        %th.quantity Quantity
         %th.currency Price
         %th.currency
           - if @order.discounted?
@@ -135,18 +143,15 @@
         %tr
           %td
             = link_to(item.description, path(item.sku.product), :class => 'title')
-          %td
+          %td.quantity
             %span.numeric= item.quantity
           %td.currency
             %span.numeric= item.price_summary
           %td.currency
-            - if @order.discounted?
-              %span.numeric= item.pre_discount_total
-            - else
-              %span.numeric= item.total
+            %span.numeric= item.pre_discount_total
           %td.currency
-            - if item.discounted?
-              %span.numeric.discount #{item.discount} discount
+            - if item.adjusted?
+              = item.total
             - else
               &nbsp;
 
@@ -157,7 +162,7 @@
         %td.currency
           %span.numeric= @order.original_product_total
         %td.currency
-          - if @order.discounted_products?
+          - if @order.adjusted_products?
             %span.numeric.discount #{@order.product_total}
           - else
             &nbsp;
@@ -170,17 +175,15 @@
         %td.currency
           - if @order.free_shipping?
             FREE
-          - elsif @order.discounted_shipping?
+          - elsif @order.adjusted_shipping?
             %span.numeric= @order.shipping_total
 
       - if @order.discounted?
         %tr
           %th(colspan=3)
             Total discount
-          %td.currency
-            &nbsp;
-          %td.currency
-            %span.numeric= "-#{@order.formatted_total_discount}"
+          %td.currency{colspan: 2}
+            %span.numeric= "#{@order.formatted_total_discount}"
 
       %tr.total
         %th(colspan=3)

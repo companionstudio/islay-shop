@@ -180,18 +180,39 @@ class OrderItem < ActiveRecord::Base
     @discount ||= pre_discount_total - total
   end
 
+  # Calculates the total adjustment from the pre-discount total and total.
+  #
+  # @return SpookAndPuff::Money
+  def adjustment
+    @adjustment ||= (pre_discount_total - total).abs
+  end
+
   # @todo Deprecate this alias
   alias :formatted_discount :discount
   alias :formatted_total :total
+
+  # Checks to see if the line item has had any adjustment at all applied to it.
+  #
+  # @return [true, false]
+  def adjusted?
+    !discount.abs.zero?
+  end
 
   # Checks to see if the line item has had a discount applied to it.
   #
   # @return [true, false]
   def discounted?
-    !discount.zero?
+    (discount > SpookAndPuff::Money.zero)
   end
 
-  # Checks to see if the line item has had a discount applied to it.
+  # Checks to see if the line item has had an increase applied to it.
+  #
+  # @return [true, false]
+  def increased?
+    (discount < SpookAndPuff::Money.zero)
+  end
+
+  # Checks to see if the line item costs anything at all.
   #
   # @return [true, false]
   def free?

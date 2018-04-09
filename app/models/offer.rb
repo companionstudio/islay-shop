@@ -40,7 +40,7 @@ class Offer < ActiveRecord::Base
   end
 
   def candidates
-    Member.active.with_payment_method
+    Member.complete
   end
 
   # The number of items in the offer
@@ -66,7 +66,7 @@ class Offer < ActiveRecord::Base
    #
    # @return Money
    def display_price=(price_value)
-       self.price = price_value
+    self.price = price_value
    end
 
    # Return the 'display' price

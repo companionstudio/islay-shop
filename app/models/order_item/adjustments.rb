@@ -193,6 +193,11 @@ class OrderItem
         elsif source == "promotion"
           # Promotion adjustments can be added cumulatively
           item.adjustments.build
+        elsif source == "offer"
+          # Promotion adjustments can be added cumulatively
+          item.adjustments.build
+        else
+          raise "Don't know how to add an adjustment of type #{source}"
         end
 
         adjustment.attributes = {

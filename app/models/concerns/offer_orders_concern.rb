@@ -33,14 +33,18 @@ module OfferOrdersConcern
 
   def generate_orders!
     candidates.each do |member|
-      generate_member_order!(member)
+      generate_member_order!(member) unless member.offer_orders.find_by(offer_id: id).present?
     end
   end
 
   def generate_member_order!(member)
     raise "This is not an active member" unless member.present? and member.active?
     raise "This member already has an order for this offer" if member.offer_orders.where(offer_id: id).present?
-    raise "This member doesn't have an active payment method" unless member.default_payment_method.present?
+
+    payment_method = member.default_payment_method
+
+    raise "This member doesn't have an active payment method" unless payment_method.present?
+    raise "This member's credit card has expired" if payment_method.expired?
 
     ActiveRecord::Base.transaction do
 
@@ -64,13 +68,28 @@ module OfferOrdersConcern
       order.shipping_state    = member.shipping_address.state
       order.shipping_country  = member.shipping_address.country
 
-      # order.payment_method = member.default_payment_method
-      #
-      order.build_payment(provider_name: member.default_payment_method.provider, card_type: member.default_payment_method.type, status: 'future', provider_token: (member.default_payment_method.vault_token || 'XXX'), number: 'XXXX-XXXX-XXXX-1111', expiration_month: '12', expiration_year: '20')
 
-      offer_items.each do |offer_item|
-        order.set_quantity_and_price(offer_item.sku, offer_item.quantity, sku_unit_price * offer_item.quantity)
+      payment_provider = case payment_method.class.name.split('::').first.downcase
+      when 'braintree' then :braintree
+      when 'spreedly'  then :spreedly
+      else payment_method.class.name.split('::').first.to_sym
       end
+
+      order.build_payment(provider_name: payment_provider, card_type: payment_method.card_type, status: 'future', provider_token: payment_method.token, number: payment_method.masked_number, expiration_month: payment_method.expiration_month, expiration_year: payment_method.expiration_year)
+
+      # Items go in at their standard retail price
+      offer_items.each do |offer_item|
+        order.set_quantity(offer_item.sku, offer_item.quantity)
+      end
+
+      # Check shipping so we can add an order level adjustment on the price
+      order.calculate_shipping
+
+      # Override the total to set the price to the offer price
+      order.set_manual_order_total(price, 'offer')
+
+      # Run the total calculation to finalise the adjustments
+      order.calculate_totals
 
       order.logs.build(:action => 'add', :notes => "Created order for offer: #{name}")
       order.save!

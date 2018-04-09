@@ -13,10 +13,16 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_billing!
-    if payment.capture!
-      next!("Captured #{formatted_total}")
+    action = if payment.status == 'future'
+      payment.purchase!
     else
-      fail!("Could not capture payment due to a problem with the payment provider")
+      payment.capture!
+    end
+
+    if action
+      next!("Charged #{formatted_total}")
+    else
+      fail!("Could not take payment due to a problem with the payment provider")
     end
   end
 
@@ -86,4 +92,6 @@ class OrderProcess < Order
   def generate_reference
     "#{Time.now.strftime('%y%m')}-#{SecureRandom.hex(3).upcase}"
   end
+
+
 end

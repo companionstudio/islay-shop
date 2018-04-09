@@ -282,11 +282,26 @@ class Order < ActiveRecord::Base
     original_product_total > product_total
   end
 
+
+  # Indicates if any of the products have had an adjustment applied to them.
+  #
+  # @return Boolean
+  def adjusted_products?
+    original_product_total != product_total
+  end
+
   # Indicates if any of the products have had a discount applied to them.
   #
   # @return Boolean
   def discounted_shipping?
     original_shipping_total > shipping_total
+  end
+
+  # Indicates if any of the products have had an adjustment applied to them.
+  #
+  # @return Boolean
+  def adjusted_shipping?
+    original_shipping_total != shipping_total
   end
 
   # The total discount applied to the products in an order.
@@ -383,15 +398,20 @@ class Order < ActiveRecord::Base
   alias :formatted_shipping_total :shipping_total
   alias :formatted_original_shipping_total :original_shipping_total
 
+  def calculate_shipping
+    # Calculate shipping and add it to the order, without retriggering a
+    # recalculation of the total.
+    shipping = self.class.shipping_calculator_class.new.calculate(self)
+    set_quantity_and_price(Service.shipping_service, 1, shipping, :retotal => false)
+  end
+
   # Calculate the shipping, product and order totals. This includes both the
   # original and potentially discounted totals.
   #
   # @return nil
   def calculate_totals
-    # Calculate shipping and add it to the order, without retriggering a
-    # recalculation of the total.
-    shipping = self.class.shipping_calculator_class.new.calculate(self)
-    set_quantity_and_price(Service.shipping_service, 1, shipping, :retotal => false)
+
+    calculate_shipping
 
     # Calculate the totals
     self.product_total          = sku_items.total

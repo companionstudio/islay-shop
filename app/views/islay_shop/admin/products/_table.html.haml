@@ -13,7 +13,6 @@
         %tr
           %td.select= check_box_tag('ids[]', product.id, selected?(product.id), :class => 'toggle')
           %td.boolean
-            = product.position
             %span(class="boolean #{product.published?}")
               %span= friendly_bool(product.published?)
           %td

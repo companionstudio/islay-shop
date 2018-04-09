@@ -69,6 +69,15 @@ class OrderPayment < ActiveRecord::Base
     handle_result('capture', transaction.capture!)
   end
 
+  # Directly charges the amount to the card in the payment
+  # provider's system.
+  #
+  # @return [true, false]
+  # @raises SpookAndPay::Transaction::InvalidActionError
+  def purchase!
+    handle_result('purchase', payment_provider.purchase_via_credit_card(provider_token, order.total.raw))
+  end
+
   # Voids a pending transaction. Will only work for transactions that are
   # authorized. Captured transactions must be refunded.
   #

@@ -2,7 +2,7 @@
 # the addition of bonuses, discounting and upward adjustments at both the order
 # and the order item level.
 #
-# It relies on the OrderPurchasing and OrderItemPurchasing modules, 
+# It relies on the OrderPurchasing and OrderItemPurchasing modules,
 # specifically the logic for choosing associations and updating entries.
 module OrderAdjustmentConcern
   extend ActiveSupport::Concern
@@ -23,7 +23,7 @@ module OrderAdjustmentConcern
   def enqueue_adjustment(meth, *args)
     @adjustments_queue ||= []
     @adjustments_queue << [meth, args]
-    
+
     meth
   end
 
@@ -80,6 +80,21 @@ module OrderAdjustmentConcern
 
     nil
   end
+
+  # Set the total of the entire order to the given amount
+  #
+  # @param ActiveRecord::Base purchase
+  # @param SpookAndPuff::Money manual_total
+  # @return OrderItem
+  def set_manual_order_total(manual_total, source = 'manual')
+    amount = total - manual_total
+    if amount > SpookAndPuff::Money.zero
+      set_fixed_discount(amount.abs, source)
+    else
+      set_fixed_increase(amount.abs, source)
+    end
+  end
+
 
   private
 
@@ -154,14 +169,14 @@ module OrderAdjustmentConcern
   # @raises ExcessiveDiscountError
   def set_fixed_discount(amount, source)
     raise ExcessiveDiscountError.new(amount, total) if amount > original_total
-    
+
     create_adjustment(amount, :down, source)
 
     percentage = total.proportion(amount)
 
-    sku_items.distribute_discount(percentage, source) 
+    sku_items.distribute_discount(percentage, source)
     service_items.distribute_discount(percentage, source)
-    
+
     self
   end
 
@@ -174,7 +189,7 @@ module OrderAdjustmentConcern
   def set_percentage_discount(percentage, source)
     amount = total.percent(percentage)
     raise ExcessiveDiscountError.new(amount, total) if amount > original_total
-    sku_items.distribute_discount(percentage, source) 
+    sku_items.distribute_discount(percentage, source)
     service_items.distribute_discount(percentage, source)
     self
   end
@@ -187,8 +202,7 @@ module OrderAdjustmentConcern
   def set_fixed_increase(amount, source)
     percentage = total.proportion(amount)
     create_adjustment(amount, :up, source)
-
-    sku_items.distribute_increase(percentage, source) 
+    sku_items.distribute_increase(percentage, source)
     service_items.distribute_increase(percentage, source)
 
     self
@@ -205,7 +219,7 @@ module OrderAdjustmentConcern
   end
 
   # Set the item total of an item in the order
-  # 
+  #
   # @param ActiveRecord::Base purchase
   # @param SpookAndPuff::Money amount
   # @return OrderItem
@@ -224,6 +238,7 @@ module OrderAdjustmentConcern
     record = case source
     when 'manual'     then adjustments.manual || adjustments.build(:source => 'manual')
     when 'promotion'  then adjustments.build(:source => 'promotion')
+    when 'offer'      then adjustments.build(:source => 'offer')
     end
 
     record.adjustment = case direction
