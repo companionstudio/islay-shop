@@ -37,6 +37,14 @@ module OfferOrdersConcern
     end
   end
 
+  def generate_order_items(order, multiplier)
+    order.items.delete_all
+
+    offer_items.each do |offer_item|
+      order.set_quantity(offer_item.sku, offer_item.quantity * multiplier)
+    end
+  end
+
   def generate_member_order!(member, multiplier)
     raise "This is not an active member" unless member.present? and member.active?
     raise "This member already has an order for this offer" if member.offer_orders.where(offer_id: id).present?
@@ -106,15 +114,6 @@ module OfferOrdersConcern
       offer_order_set.delete_all
 
       generate_member_order!(member, multiplier)
-    end
-
-
-    def generate_order_items(order, multiplier)
-      order.items.delete_all
-
-      offer_items.each do |offer_item|
-        order.set_quantity(offer_item.sku, offer_item.quantity * multiplier)
-      end
     end
 
     # Regenerate the items with the multiplier,
