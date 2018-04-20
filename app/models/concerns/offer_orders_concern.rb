@@ -33,13 +33,15 @@ module OfferOrdersConcern
 
   def generate_orders!
     candidates.each do |member|
-      generate_member_order!(member) unless member.offer_orders.find_by(offer_id: id).present?
+      generate_member_order!(member, default_quantity) unless member.offer_orders.find_by(offer_id: id).present?
     end
   end
 
-  def generate_member_order!(member)
+  def generate_member_order!(member, multiplier)
     raise "This is not an active member" unless member.present? and member.active?
     raise "This member already has an order for this offer" if member.offer_orders.where(offer_id: id).present?
+    raise "Quantity multiplier must be between #{min_quantity} and #{max_quantity}" if max_quantity and !multiplier.between(min_quantity, max_quantity)
+    raise "Quantity multiplier must be at least #{min_quantity}" if !max_quantity and multiplier < min_quantity
 
     payment_method = member.default_payment_method
 
@@ -78,9 +80,7 @@ module OfferOrdersConcern
       order.build_payment(provider_name: payment_provider, card_type: payment_method.card_type, status: 'future', provider_token: payment_method.token, number: payment_method.masked_number, expiration_month: payment_method.expiration_month, expiration_year: payment_method.expiration_year)
 
       # Items go in at their standard retail price
-      offer_items.each do |offer_item|
-        order.set_quantity(offer_item.sku, offer_item.quantity)
-      end
+      generate_order_items(order, multiplier)
 
       # Check shipping so we can add an order level adjustment on the price
       order.calculate_shipping
@@ -94,12 +94,44 @@ module OfferOrdersConcern
       order.logs.build(:action => 'add', :notes => "Created order for offer: #{name}")
       order.save!
 
-      offer_order = OfferOrder.create(offer: self, order: order)
+      offer_order = OfferOrder.create(offer: self, order: order, quantity_multiplier: multiplier)
       member_order = MemberOrder.create(order: order, member: member)
 
       order
     end
 
+    def regenerate_member_order!(member, multiplier)
+      offer_order_set = member.offer_orders.where(offer_id: id)
+      offer_order_set.orders.delete_all
+      offer_order_set.delete_all
+
+      generate_member_order!(member, multiplier)
+    end
+
+
+    def generate_order_items(order, multiplier)
+      order.items.delete_all
+
+      offer_items.each do |offer_item|
+        order.set_quantity(offer_item.sku, offer_item.quantity * multiplier)
+      end
+    end
+
+    # Regenerate the items with the multiplier,
+    def regenerate_order_items!(order, multiplier)
+      generate_order_items(order, multiplier)# Check shipping so we can add an order level adjustment on the price
+
+      order.calculate_shipping
+
+      # Override the total to set the price to the offer price
+      order.set_manual_order_total(price, 'offer')
+
+      # Run the total calculation to finalise the adjustments
+      order.calculate_totals
+
+      order.logs.build(:action => 'update', :notes => "Updated quantities for offer: #{name}")
+      order.save!
+    end
   end
 
 end

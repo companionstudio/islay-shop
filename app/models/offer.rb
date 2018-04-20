@@ -1,5 +1,6 @@
 class Offer < ActiveRecord::Base
   validations_from_schema
+  include Islay::MetaData
 
   include OfferOrdersConcern
 
@@ -13,10 +14,15 @@ class Offer < ActiveRecord::Base
   attr_money :price
 
   has_many :offer_items, :autosave => true
+  has_many :skus, through: :offer_items
+  has_many :products, through: :skus
+
   has_many :offer_orders
   has_many :orders, through: :offer_orders
 
   accepts_nested_attributes_for :offer_items, allow_destroy: true, reject_if: lambda {|a| a[:sku_id].blank?}
+
+  validate :valid_date_sequence
 
   def self.filtered(filter)
     case filter
@@ -35,8 +41,54 @@ class Offer < ActiveRecord::Base
     order(sort || :name)
   end
 
+  def self.current
+    where("open_at < ? AND ship_at > ?", Date.today, Date.today)
+  end
+
+  def self.open
+    where("open_at < ? AND close_at > ?", Date.today, Date.today)
+  end
+
+  def self.pending
+    where("open_at > ?", Date.today)
+  end
+
+  def self.closed
+    where("close_at < ?", Date.today)
+  end
+
+  def self.shipped
+    where("ship_at < ?", Date.today)
+  end
+
   def destroyable?
     true
+  end
+
+  def open?
+    today = Date.today
+    close_at > today
+    open_at < today
+  end
+
+  def shipped?
+    today = Date.today
+    ship_at < today
+  end
+
+  def pending?
+    today = Date.today
+    open_at > today
+  end
+
+  # Can the offer be skipped?
+  def skippable?
+    open? and min_quantity == 0
+  end
+
+  # Can the maximum quantity be adjusted?
+  def adjustable_quantity?
+    open? and min_quantity != max_quantity
   end
 
   def candidates
@@ -60,7 +112,6 @@ class Offer < ActiveRecord::Base
    def offer_item_template(quantity = 1)
      {quantity: quantity, offer_id: self.id}
    end
-
 
    # @param [Money, Numeric, String] price
    #
@@ -87,4 +138,19 @@ class Offer < ActiveRecord::Base
      self.original_offer_items_attributes = vals
    end
 
+   def valid_date_sequence
+     begin
+       raise('The open date must be earlier than the close date.') if open_at > close_at
+     rescue => exception
+       errors.add(:close_at, exception.message)
+     end
+
+     begin
+       raise('The ship date must be after the close date.') if close_at > ship_at
+     rescue => exception
+       errors.add(:ship_at, exception.message)
+     end
+   end
+
+   check_for_extensions
 end

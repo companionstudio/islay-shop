@@ -135,6 +135,17 @@ class Order < ActiveRecord::Base
     status != 'complete' and status != 'cancelled'
   end
 
+  # Indicates if the order is editable by the provided role.
+  #
+  # @return Boolean
+  def editable_by?(role)
+    case role
+    when :admin then editable?
+    when :member then editable? and offer.present? and offer.open?
+    else false
+    end
+  end
+
   # Specifies the values that can be safely exposed to the public. This is used
   # by the #dump method to create a JSON string that can be written to session.
   dump_config(

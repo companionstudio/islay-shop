@@ -3,14 +3,30 @@
   = form_errors(@offer)
   = content do
     = f.fieldset('Offer details', :class => 'primary form-tab', :id => 'offer-details') do
-      = f.input(:name, :col => 6)
-      = f.input(:description, :as => 'text')
+      .form-block
+        = f.input(:name, :col => 6)
+        = f.input(:description, :as => 'text')
 
-      = f.input(:display_price, :label => 'Price', :autocomplete => 'off')
+      .form-block
+        = f.input(:display_price, :label => 'Price', :autocomplete => 'off')
 
-      = f.input(:open_at, :as => :date_picker, :label => 'Open date')
-      = f.input(:close_at, :as => :date_picker, :label => 'Close date')
-      = f.input(:ship_at, :as => :date_picker, :label => 'Ship date')
+        .form-block-note Set the minimum and maximum quantities for this offer. This acts as a multiplier to all the items included in the offer.
+
+        = f.input(:default_quantity, :label => 'Default quantity', :autocomplete => 'off', :hint => "A minimum of 0 means the customer will need to opt-in for this offer.")
+        = f.input(:min_quantity, :label => 'Min quantity', :autocomplete => 'off', :hint => "A minimum of 0 means the customer can skip this offer.")
+
+        = f.input(:max_quantity, :label => 'Max quantity', :autocomplete => 'off', :hint => "Clear the maximum to remove the limit on purchases.")
+
+      .form-block
+        = f.input(:open_at, :as => :date_picker, :label => 'Open date', :hint => 'When the offer will appear on the website.')
+        = f.input(:close_at, :as => :date_picker, :label => 'Close date', :hint => 'When no further changes can be made to orders.')
+        = f.input(:ship_at, :as => :date_picker, :label => 'Ship date', :hint => 'When shipping begins.')
+
+      .form-block
+        - f.metadata do |attrs|
+          - if attrs
+            - attrs.each do |name, opts|
+              = f.metadata_input(name)
 
     = f.fieldset('Items in this offer', :class => 'form-tab', :id => 'offer-items') do
 
@@ -25,8 +41,7 @@
         %tbody
           = f.fields_for(:offer_items) do |oif|
             %tr
-              %td.quantity
-                = oif.input(:quantity)
+              %td.quantity= oif.input(:quantity)
               %td= oif.input(:sku_id, :collection => @skus, :include_blank => 'Select SKU', :label => 'Product SKU')
               %td
                 - if oif.object.sku_id
