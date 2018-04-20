@@ -40,7 +40,7 @@ module OfferOrdersConcern
   def generate_member_order!(member, multiplier)
     raise "This is not an active member" unless member.present? and member.active?
     raise "This member already has an order for this offer" if member.offer_orders.where(offer_id: id).present?
-    raise "Quantity multiplier must be between #{min_quantity} and #{max_quantity}" if max_quantity and !multiplier.between(min_quantity, max_quantity)
+    raise "Quantity multiplier must be between #{min_quantity} and #{max_quantity}" if max_quantity and !multiplier.between?(min_quantity, max_quantity)
     raise "Quantity multiplier must be at least #{min_quantity}" if !max_quantity and multiplier < min_quantity
 
     payment_method = member.default_payment_method
