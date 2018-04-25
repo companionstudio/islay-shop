@@ -92,7 +92,7 @@ class Offer < ActiveRecord::Base
   end
 
   def candidates
-    Member.complete
+    Member.complete.subscribed
   end
 
   # The number of items in the offer
