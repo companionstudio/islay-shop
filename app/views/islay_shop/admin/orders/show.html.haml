@@ -114,11 +114,11 @@
             %td
               = promo.status.capitalize
 
-  - if @order.offer_order.present?
+  - if @order.member.present?
     %h3.items Membership
     %p Club member: #{link_to(@order.member.name, path(:edit, @order.member))}
 
-  - if @order.member.present?
+  - if @order.offer_order.present?
     %h3.items Subscription Offer
     %p This order is part of #{link_to(@order.offer.name, path(@order.offer))}
 

@@ -63,15 +63,16 @@
                 %td{colspan: 3} No members qualify for the offer.
             - else
               - f.object.candidates.each do |candidate|
-                %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
-                %td= link_to(candidate.name, path(candidate))
-                %td= candidate.email
-                %td
-                  - order_offer = candidate.offer_orders.find_by(offer_id: f.object.id)
-                  - if order_offer.present?
-                    = link_to(order_offer.order.reference, path(order_offer.order))
-                  - else
-                    %span.empty -
+                %tr
+                  %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
+                  %td= link_to(candidate.name, path(candidate))
+                  %td= candidate.email
+                  %td
+                    - order_offer = candidate.offer_orders.find_by(offer_id: f.object.id)
+                    - if order_offer.present?
+                      = link_to(order_offer.order.reference, path(order_offer.order))
+                    - else
+                      %span.empty -
 
       .form-block.compact
         %h2 Orders
