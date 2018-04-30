@@ -8,3 +8,5 @@ spec/dummy/config/application.yml
 spec/dummy/tmp/*
 spec/dummy/log/*
 doc
+app/.DS_Store
+app/assets/.DS_Store
