@@ -33,7 +33,7 @@
                 %ul.items
                   - order.sku_items.each do |item|
                     %li
-                      = link_to(item.sku.short_desc, path(:product, :id => item.sku.product_id))
+                      = link_to(item.sku.searchable_name, path(:product, :id => item.sku.product_id))
                       %span.numeric= item.quantity
               %td
                 %p
