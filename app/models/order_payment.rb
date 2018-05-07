@@ -60,6 +60,13 @@ class OrderPayment < ActiveRecord::Base
     self[:card_type] = type.downcase.gsub(' ', '_')
   end
 
+  # The last 4 digits of the credit card number
+  #
+  # @return String
+  def last_4_digits
+    number.last(4)
+  end
+
   # Captures the funds from the authorized transaction in the payment
   # provider's system.
   #
