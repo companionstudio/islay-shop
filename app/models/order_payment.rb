@@ -104,8 +104,6 @@ class OrderPayment < ActiveRecord::Base
   # @param SpookAndPay::Result result
   # @return [true, false]
   def handle_result(action, result)
-    @transaction = result.transaction
-    update_attributes(:status => transaction.status, :provider_token => transaction.id)
     begin
       @transaction = result.transaction
       update_attributes(:status => transaction.status, :provider_token => transaction.id)
