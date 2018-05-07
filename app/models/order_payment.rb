@@ -106,7 +106,15 @@ class OrderPayment < ActiveRecord::Base
   def handle_result(action, result)
     @transaction = result.transaction
     update_attributes(:status => transaction.status, :provider_token => transaction.id)
-    result.successful?
+    begin
+      @transaction = result.transaction
+      update_attributes(:status => transaction.status, :provider_token => transaction.id)
+      result.successful?
+    rescue ::Braintree::NotFoundError => e
+      order.logs.create(:action => 'bill', :succeeded => false, :notes => "Billing failed: #{(result.raw.transaction.status || '').humanize} - #{result.raw.transaction.processor_response_text}")
+      false
+    end
+
   end
 
   # Retrieves the transaction from the remote provider. This is memoised.

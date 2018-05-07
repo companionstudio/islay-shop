@@ -33,4 +33,9 @@
 
   = footer do
     = link_to('Cancel', path(:order, :id => @order), :class => 'button cancel')
-    = save_button('Bill')
+
+    - if @order.run?(:bill)
+      - if @order.payment_errors?
+        = save_button('Retry Billing')
+      - else
+        = save_button('Bill')

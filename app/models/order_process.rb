@@ -22,6 +22,10 @@ class OrderProcess < Order
     if action
       next!("Charged #{formatted_total}")
     else
+      # If we're trying to bill a future order (for an offer or subscription)
+      # Send the customer an email notifying them
+      IslayShop::OrderMailer.billing_failed(self).deliver if payment.status == 'future'
+
       fail!("Could not take payment due to a problem with the payment provider")
     end
   end

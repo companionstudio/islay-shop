@@ -35,21 +35,23 @@ module IslayShop::Admin::OrdersHelper
   # @return String
   def process_progression(order)
     process = [
-      {:action => 'add', :label => 'Placed'},
-      {:action => 'bill', :label => 'Billed'},
-      {:action => 'pack', :label => 'Packed'},
-      {:action => 'ship', :label => 'Shipped'}
+      {:action => 'add', :label => 'Place'},
+      {:action => 'bill', :label => 'Billing'},
+      {:action => 'pack', :label => 'Packing'},
+      {:action => 'ship', :label => 'Shipping'}
     ]
 
     order.logs.summary.reverse.each_with_index do |log, i|
       current_step = (i == order.logs.summary.length - 1)
 
       matching_process_step = process.find {|p|p[:action] == log.action}
-      if matching_process_step 
-        matching_process_step[:done] = true
+      if matching_process_step
+        matching_process_step[:done] = log.succeeded?
+        matching_process_step[:error] = !log.succeeded?
+        matching_process_step[:label] = log.succeeded? ? past_tense(matching_process_step[:label]) : matching_process_step[:label]
         matching_process_step[:current] = current_step
       else
-        process << {:action => log.action, :label => past_tense(log.action), :done => true, :current => current_step}
+        process << {:action => log.action, :label => past_tense(log.action), :error => false, :done => true, :current => current_step}
       end
     end
 

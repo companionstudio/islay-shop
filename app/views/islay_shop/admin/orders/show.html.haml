@@ -10,6 +10,11 @@
 = content(:class => 'inset') do
   #summary= process_progression(@order)
 
+  - if @order.payment_errors?
+    .panel
+      %p.note
+        There were problems billing this order. See the activity logs for more details.
+
   .panel
     .order-overview
       %ul
@@ -242,7 +247,10 @@
   %button.print Print
 
   - if @order.run?(:bill)
-    = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button primary')
+    - if @order.payment_errors?
+      = link_to('Retry Billing', path(:bill, :order_process, :id => @order), :class => 'button primary')
+    - else
+      = link_to('Bill', path(:bill, :order_process, :id => @order), :class => 'button primary')
 
   - if @order.run?(:pack)
     = form_for(@order, :url => path(:pack, :order_process, :id => @order)) do

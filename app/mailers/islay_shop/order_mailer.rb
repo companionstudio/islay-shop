@@ -33,6 +33,14 @@ class IslayShop::OrderMailer < ActionMailer::Base
     )
   end
 
+  def billing_failed(order)
+    @order = order
+    mail(
+      :to => order.email,
+      :subject => "We couldn't bill your order"
+    )
+  end
+
   def with_inline_styles(html)
     Premailer.new(html, :with_html_string => true).to_inline_css
   end

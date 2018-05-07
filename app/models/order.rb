@@ -357,6 +357,17 @@ class Order < ActiveRecord::Base
     shipping_service.nil? or shipping_service.total.zero?
   end
 
+  # If there are payment problems which prevents this order from progressing
+  #
+  # @return Boolean
+  def payment_errors
+    @payment_errors ||= (status == 'pending' and logs.where(action: 'bill', succeeded: false).exists?)
+  end
+
+  def payment_errors?
+    !!payment_errors
+  end
+
   # This bit of meta-programming generates accessors with a deprecation warning.
   # It is intended to replace the #formatted_* methods on this class.
   #
