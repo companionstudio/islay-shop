@@ -30,8 +30,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
   end
 
   def cancelled(order)
-    return if Settings.for(:islay_shop, :disable_order_cancelled_mail)
-    
+    return if Settings.for(:shop, :disable_order_cancelled_mail)
+
     @order = order
     mail(
       :to => order.email,
