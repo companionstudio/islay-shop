@@ -1,4 +1,4 @@
-class PromotionCell < IslayShop::ApplicationCell
+class PromotionCell < IslayShopCell
   def category(category)
     @promotions = Promotion.for_category(category)
     render unless @promotions.empty?

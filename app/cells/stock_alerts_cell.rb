@@ -1,4 +1,4 @@
-class StockAlertsCell < IslayShop::ApplicationCell
+class StockAlertsCell < IslayShopCell
   def index
     @alerts = Sku.alerts
     render

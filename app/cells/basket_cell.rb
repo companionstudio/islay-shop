@@ -1,4 +1,4 @@
-class BasketCell < IslayShop::ApplicationCell
+class BasketCell < IslayShopCell
   include IslayShop::ControllerExtensions::Public
 
   helper_method :parent_controller

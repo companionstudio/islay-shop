@@ -1,4 +1,4 @@
-class BuyCell < IslayShop::ApplicationCell
+class BuyCell < IslayShopCell
   def add(product)
     @product = product
     render
