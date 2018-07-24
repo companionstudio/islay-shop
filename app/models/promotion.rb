@@ -104,6 +104,14 @@ class Promotion < ActiveRecord::Base
     end
   end
 
+  # Find promotions related to the provided product
+  # @TODO Have this look at SKUs as well
+  # @param Product
+  # @return Array<Promotions>
+  def self.for_product(product)
+    joins(:conditions).where("promotion_conditions.config->'product_id' = ?::text", product.id)
+  end
+
   # The revenue is the total of all billed orders which qualified for the
   # promotion. Where this attribute doesn't exist, we'll calculate it
   # ourselves.
