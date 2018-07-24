@@ -80,7 +80,7 @@ class ProductCategory < ActiveRecord::Base
   #
   # @return ActiveRecord::Relation
   def self.summary
-    select(SUMMARY % Settings.for(:shop, :alert_level))
+    select(SUMMARY % Sku.stock_alert_level)
   end
 
   # Creates a scope for published categories.
