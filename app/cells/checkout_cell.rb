@@ -1,4 +1,4 @@
-class CheckoutCell < Cell::Rails
+class CheckoutCell < IslayShop::ApplicationCell
   include IslayShop::Payments
   helper IslayShop::Public::PromotionDisplayHelper
   helper_method :parent_controller, :input_opts, :select_opts
@@ -68,9 +68,9 @@ class CheckoutCell < Cell::Rails
 
   def select_opts(name, prompt, collection, opts = {})
     input_opts(name, opts).merge(
-      :as => :select, 
-      :collection => collection, 
-      :include_blank => :placeholder, 
+      :as => :select,
+      :collection => collection,
+      :include_blank => :placeholder,
       :prompt => prompt
     )
   end
