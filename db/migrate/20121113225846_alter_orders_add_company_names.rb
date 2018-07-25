@@ -1,4 +1,4 @@
-class AlterOrdersAddCompanyNames < ActiveRecord::Migration
+class AlterOrdersAddCompanyNames < ActiveRecord::Migration[4.2]
   def up
     add_column(:orders, :billing_company, :string, :limit => 200)
     add_column(:orders, :shipping_company, :string, :limit => 200)

@@ -1,4 +1,4 @@
-class RetireCreditCardPayments < ActiveRecord::Migration
+class RetireCreditCardPayments < ActiveRecord::Migration[4.2]
   def up
     execute(%{
       INSERT INTO order_payments (

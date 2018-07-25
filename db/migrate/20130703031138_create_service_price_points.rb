@@ -1,4 +1,4 @@
-class CreateServicePricePoints < ActiveRecord::Migration
+class CreateServicePricePoints < ActiveRecord::Migration[4.2]
   def up
     create_table :service_price_points do |t|
       t.integer :service_id,  :null => false, :on_delete => :cascade

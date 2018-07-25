@@ -1,4 +1,4 @@
-class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration
+class AlterOrderItemsForPricingRestructure < ActiveRecord::Migration[4.2]
   def up
     # Backup table
     execute(%{

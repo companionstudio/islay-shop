@@ -1,4 +1,4 @@
-class CreateSkuPricePoints < ActiveRecord::Migration
+class CreateSkuPricePoints < ActiveRecord::Migration[4.2]
   def up
     rename_table(:sku_price_logs, :legacy_sku_price_logs)
 

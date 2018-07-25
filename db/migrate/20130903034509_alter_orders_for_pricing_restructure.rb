@@ -1,4 +1,4 @@
-class AlterOrdersForPricingRestructure < ActiveRecord::Migration
+class AlterOrdersForPricingRestructure < ActiveRecord::Migration[4.2]
   def up
     execute(%{
       CREATE TABLE legacy_orders (LIKE orders INCLUDING INDEXES);

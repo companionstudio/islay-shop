@@ -1,4 +1,4 @@
-class CreateOrderLogs < ActiveRecord::Migration
+class CreateOrderLogs < ActiveRecord::Migration[4.2]
   def change
     create_table :order_logs do |t|
       t.integer   :order_id,    :null => false, :on_delete => :cascade

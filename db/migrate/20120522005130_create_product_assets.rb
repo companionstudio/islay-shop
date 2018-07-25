@@ -1,4 +1,4 @@
-class CreateProductAssets < ActiveRecord::Migration
+class CreateProductAssets < ActiveRecord::Migration[4.2]
   def change
     create_table :product_assets do |t|
       t.integer :product_id,  :null => false, :on_delete => :cascade

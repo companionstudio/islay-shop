@@ -1,4 +1,4 @@
-class CreateCreditCardPayments < ActiveRecord::Migration
+class CreateCreditCardPayments < ActiveRecord::Migration[4.2]
   def change
     create_table :credit_card_payments do |t|
       t.integer   :order_id,        :null => false, :on_delete => :cascade

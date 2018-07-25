@@ -1,4 +1,4 @@
-class CreateOrderItemComponents < ActiveRecord::Migration
+class CreateOrderItemComponents < ActiveRecord::Migration[4.2]
   def change
     create_table :order_item_components do |t|
       t.integer :order_item_id, :null => false, :on_delete  => :cascade

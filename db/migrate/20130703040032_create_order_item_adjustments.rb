@@ -1,4 +1,4 @@
-class CreateOrderItemAdjustments < ActiveRecord::Migration
+class CreateOrderItemAdjustments < ActiveRecord::Migration[4.2]
   def change
     create_table :order_item_adjustments do |t|
       t.integer :order_item_id, :null => false, :on_delete => :cascade

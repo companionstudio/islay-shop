@@ -1,4 +1,4 @@
-class CreateProductCategories < ActiveRecord::Migration
+class CreateProductCategories < ActiveRecord::Migration[4.2]
   def change
     create_table :product_categories do |t|
       t.integer     :asset_id,            :null => true

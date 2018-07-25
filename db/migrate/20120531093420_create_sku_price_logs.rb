@@ -1,4 +1,4 @@
-class CreateSkuPriceLogs < ActiveRecord::Migration
+class CreateSkuPriceLogs < ActiveRecord::Migration[4.2]
   def change
     create_table :sku_price_logs do |t|
       t.integer :sku_id,  :null => false,   :on_delete => :cascade
