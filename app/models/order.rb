@@ -59,13 +59,24 @@ class Order < ActiveRecord::Base
   # The workflow is defined here so it can be queried against this class and
   # it's sub-classes, but the actual workflow should be run against an instance
   # of OrderProcess
-  workflow(:status, :open) do
-    event :add,   {:open     => :pending},  :process_add!
-    event :bill,  {:pending  => :billed},   :process_billing!
-    event :pack,  {:billed   => :packed}
-    event :ship,  {:packed   => :complete}, :process_shipping!
+  case IslayShop::Engine.config.payments.mode
+  when :authorize
+    workflow(:status, :open) do
+      event :add,   {:open     => :pending},  :process_add!
+      event :bill,  {:pending  => :billed},   :process_billing!
+      event :pack,  {:billed   => :packed}
+      event :ship,  {:packed   => :complete}, :process_shipping!
 
-    event :cancel, {[:pending, :billed, :packed] => :cancelled}, :process_cancellation!
+      event :cancel, {[:pending, :billed, :packed] => :cancelled}, :process_cancellation!
+    end
+  when :purchase
+    workflow(:status, :open) do
+      event :add,   {:open     => :billed},  :process_purchase!
+      event :pack,  {:billed   => :packed}
+      event :ship,  {:packed   => :complete}, :process_shipping!
+
+      event :cancel, {[:pending, :billed, :packed] => :cancelled}, :process_cancellation!
+    end
   end
 
   accepts_nested_attributes_for :items

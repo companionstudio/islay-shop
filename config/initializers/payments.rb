@@ -7,6 +7,12 @@ if Settings.defined?(:shop, :payment_provider)
     IslayShop::Engine.config.payments[:currency_code] = 'AUD'
   end
 
+  if Settings.defined?(:shop, :payment_mode)
+    IslayShop::Engine.config.payments[:mode] = Settings.for(:shop, :payment_mode).to_sym
+  else
+    IslayShop::Engine.config.payments[:mode] = :authorize
+  end
+
   case Settings.for(:shop, :payment_provider)
   when 'braintree'
     %w(env merchant_id public_key private_key).each do |name|

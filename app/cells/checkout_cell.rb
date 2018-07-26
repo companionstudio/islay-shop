@@ -34,7 +34,7 @@ class CheckoutCell < Cell::Rails
 
     @config = payment_provider.prepare_payment_submission(
       public_order_checkout_payment_process_url(:host => request.host),
-      :type => :authorize,
+      :type => IslayShop::Engine.config.payments.mode,
       :amount => @order.total.raw
     )
 
@@ -68,9 +68,9 @@ class CheckoutCell < Cell::Rails
 
   def select_opts(name, prompt, collection, opts = {})
     input_opts(name, opts).merge(
-      :as => :select, 
-      :collection => collection, 
-      :include_blank => :placeholder, 
+      :as => :select,
+      :collection => collection,
+      :include_blank => :placeholder,
       :prompt => prompt
     )
   end

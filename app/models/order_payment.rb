@@ -119,7 +119,6 @@ class OrderPayment < ActiveRecord::Base
       order.logs.create(:action => 'bill', :succeeded => false, :notes => "Billing failed: #{(result.raw.transaction.status || '').humanize} - #{result.raw.transaction.processor_response_text}")
       false
     end
-
   end
 
   # Retrieves the transaction from the remote provider. This is memoised.

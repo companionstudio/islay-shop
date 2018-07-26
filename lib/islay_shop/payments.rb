@@ -1,4 +1,5 @@
 module IslayShop::Payments
+
   # Initializes a provider instance.
   #
   # @return SpookAndPay::Providers::Base
@@ -20,5 +21,12 @@ module IslayShop::Payments
         :currency_code    => IslayShop::Engine.config.payments.currency_code
       )
     end
+  end
+
+  # Whether the site is configured for auth/capture or purchase
+  #
+  # @return Symbol
+  def payment_workflow
+    IslayShop::Engine.config.payments.mode
   end
 end

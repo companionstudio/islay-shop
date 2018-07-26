@@ -28,7 +28,7 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   def payment_process
     result = payment_provider.confirm_payment_submission(
       request.env["QUERY_STRING"],
-      :execute => :authorize,
+      :execute => payment_workflow,
       :amount => order.total.raw
     )
 
