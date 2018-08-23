@@ -107,9 +107,9 @@ class ProductCategory < ActiveRecord::Base
   # @return ActiveRecord::Relation
   def self.top_level(slug = nil)
     if slug.nil?
-      where("path = ''")
+      where("path = '' OR path IS NULL")
     else
-      where("path = '' AND slug != ?", slug)
+      where("(path = '' OR path IS NULL) AND slug != ?", slug)
     end
   end
 
