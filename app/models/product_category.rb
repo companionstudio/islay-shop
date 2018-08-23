@@ -1,5 +1,6 @@
 class ProductCategory < ActiveRecord::Base
   include HierarchyConcern
+  include Islay::MetaData
   include IslayShop::Statuses
 
   extend FriendlyId
@@ -15,6 +16,10 @@ class ProductCategory < ActiveRecord::Base
 
   track_user_edits
   validations_from_schema
+
+  metadata(:metadata) do
+    boolean :hidden, :default => false
+  end
 
   # Returns a relation with information sufficient to arrange the categories
   # into a tree.
@@ -111,6 +116,14 @@ class ProductCategory < ActiveRecord::Base
     else
       where("(path = '' OR path IS NULL) AND slug != ?", slug)
     end
+  end
+
+  def self.visible
+    where("(product_categories.metadata -> 'hidden' = 'false') OR (NOT product_categories.metadata ? 'hidden')")
+  end
+
+  def self.hidden
+    where("product_categories.metadata -> 'hidden' = 'true'")
   end
 
   # Returns a collection of promotions that are related to the Category. It
