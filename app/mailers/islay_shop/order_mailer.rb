@@ -11,11 +11,12 @@ class IslayShop::OrderMailer < ActionMailer::Base
     return if Settings.for(:shop, :disable_order_thank_you_mail)
 
     @order = order
+
     mail(
       :to => order.email,
       :subject => "#{Settings.for(:islay, :name)} - Thank you for your order",
     ) do |format|
-      format.html {with_inline_styles render}
+      format.html {render}
     end
   end
 
@@ -26,7 +27,9 @@ class IslayShop::OrderMailer < ActionMailer::Base
     mail(
       :to => order.email,
       :subject => "#{Settings.for(:islay, :name)} - Your order is on its way"
-    )
+    ) do |format|
+      format.html {render}
+    end
   end
 
   def cancelled(order)
@@ -36,10 +39,8 @@ class IslayShop::OrderMailer < ActionMailer::Base
     mail(
       :to => order.email,
       :subject => "#{Settings.for(:islay, :name)} - Your order has been cancelled"
-    )
-  end
-
-  def with_inline_styles(html)
-    Premailer.new(html, :with_html_string => true).to_inline_css
+    ) do |format|
+      format.html {render}
+    end
   end
 end
