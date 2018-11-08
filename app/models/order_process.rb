@@ -1,6 +1,12 @@
 class OrderProcess < Order
   before_create :store_reference
 
+  # Ingest an order and return a wrapped OrderProcess
+  def self.from_order(order)
+    raise "An order must be supplied" unless order.is_a? Order
+    OrderProcess.find(order.id)
+  end
+
   private
 
   def process_add!
@@ -13,7 +19,7 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_billing!
-    action = if payment.status == 'future'
+    action = if payment.future?
       payment.purchase!
     else
       payment.capture!
@@ -35,7 +41,12 @@ class OrderProcess < Order
   #
   # @return Boolean
   def process_cancellation!
-    if payment.settled?
+    if payment.future?
+      # We haven't taken any money, so we don't need to refund anything.
+      return_stock
+      IslayShop::OrderMailer.cancelled(self).deliver
+      next!("Order was cancelled. No refund was processed because no payment had yet been taken.")
+    elsif payment.settled?
       # If we have the money, refund it.
       if payment.refund!
         return_stock

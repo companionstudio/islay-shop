@@ -146,6 +146,10 @@ class Order < ActiveRecord::Base
     status != 'complete' and status != 'cancelled'
   end
 
+  def cancelled?
+    status == 'cancelled'
+  end
+
   # Indicates if the order is editable by the provided role.
   #
   # @return Boolean

@@ -12,6 +12,10 @@ class OrderPayment < ActiveRecord::Base
     :settling?, :authorized?
   )
 
+  def future?
+    status == 'future'
+  end
+
   # Checks to see if the authorization has expired, meaning the funds can no
   # longer be captured. Will only be true while the payment is authorized
   # i.e. once funds are captured, no warnings will be raised.
