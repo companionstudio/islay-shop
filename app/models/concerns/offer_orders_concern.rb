@@ -94,7 +94,7 @@ module OfferOrdersConcern
       order.calculate_shipping
 
       # Override the total to set the price to the offer price
-      order.set_manual_order_total(price, 'offer')
+      order.set_manual_order_total(price * multiplier, 'offer')
 
       # Run the total calculation to finalise the adjustments
       order.calculate_totals
@@ -107,29 +107,37 @@ module OfferOrdersConcern
 
       order
     end
+  end
 
-    def regenerate_member_order!(member, multiplier)
-      offer_order_set = member.offer_orders.where(offer_id: id)
-      offer_order_set.orders.delete_all
-      offer_order_set.delete_all
+  def regenerate_member_order!(member, multiplier)
+    offer_order_set = member.offer_orders.where(offer_id: id)
+    offer_order_set.each{|oo|oo.order.delete}
+    offer_order_set.delete_all
 
-      generate_member_order!(member, multiplier)
-    end
+    generate_member_order!(member, multiplier)
+  end
 
-    # Regenerate the items with the multiplier,
-    def regenerate_order_items!(order, multiplier)
-      generate_order_items(order, multiplier)# Check shipping so we can add an order level adjustment on the price
+  # Regenerate the items with the multiplier,
+  def regenerate_order_items!(order, multiplier)
+    generate_order_items(order, multiplier)# Check shipping so we can add an order level adjustment on the price
 
-      order.calculate_shipping
+    order.calculate_shipping
 
-      # Override the total to set the price to the offer price
-      order.set_manual_order_total(price, 'offer')
+    # Override the total to set the price to the offer price
+    order.set_manual_order_total(price * multiplier, 'offer')
 
-      # Run the total calculation to finalise the adjustments
-      order.calculate_totals
+    # Run the total calculation to finalise the adjustments
+    order.calculate_totals
 
-      order.logs.build(:action => 'update', :notes => "Updated quantities for offer: #{name}")
-      order.save!
+    order.logs.build(:action => 'update', :notes => "Updated quantities for offer: #{name}")
+    order.save!
+  end
+
+  def skip!(member)
+    offer_order_set = member.offer_orders.where(offer_id: id)
+    offer_order_set.each do |offer_order|
+      processor = OrderProcess.from_order offer_order.order
+      processor.run! :cancel
     end
   end
 
