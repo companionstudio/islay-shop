@@ -380,7 +380,7 @@ class Order < ActiveRecord::Base
   end
 
   def payment_errors?
-    !!payment_errors
+    payment_errors.present?
   end
 
   # This bit of meta-programming generates accessors with a deprecation warning.
