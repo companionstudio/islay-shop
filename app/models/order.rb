@@ -376,7 +376,7 @@ class Order < ActiveRecord::Base
   #
   # @return Boolean
   def payment_errors
-    @payment_errors ||= (status == 'pending' and logs.where(action: 'bill', succeeded: false).exists?)
+    @payment_errors ||= logs.where("succeeded = false AND lower(action) IN ('bill', 'payment')")
   end
 
   def payment_errors?

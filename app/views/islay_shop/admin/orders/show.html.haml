@@ -13,6 +13,8 @@
   - if @order.payment_errors?
     .panel
       %p.note
+        %span.indicator.warning
+          %fa.fa-warning
         There were problems billing this order. See the activity logs for more details.
 
   .panel
@@ -49,12 +51,15 @@
     .billing
       %h3 Billing Details
 
-      %p.card-details
-        %span.type{:class => "card-type-#{@order.payment.card_type}"}= @order.payment.card_type
-        %span.number= @order.payment.number
-        - unless @order.payment.name.blank?
-          %span.name= @order.payment.name
-        %span.expiry Expiry: #{@order.payment.expiry}
+      - if @order.payment.present?
+        %p.card-details
+          %span.type{:class => "card-type-#{@order.payment.card_type}"}= @order.payment.card_type
+          %span.number= @order.payment.number
+          - unless @order.payment.name.blank?
+            %span.name= @order.payment.name
+          %span.expiry Expiry: #{@order.payment.expiry}
+      - else
+        %p.info.warning This order has no payment information attached. See the logs for more detail.
 
     .address
       %h3 Billing Address

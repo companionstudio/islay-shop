@@ -105,7 +105,11 @@
                 - f.object.orders.each do |order|
                   %tr
                     %td
-                      %span.indicator= order.status
+                      - if order.payment_errors
+                        %span.indicator.warning{title: order.payment_errors.map(&:notes).join(' ')}
+                          %i.fa.fa-warning
+                      - else
+                        %span.indicator= order.status
                     %td
                       = link_to(order.name, path(order), :class => 'title')
                       %span.reference.numeric= order.reference
