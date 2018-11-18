@@ -71,7 +71,8 @@ class Order < ActiveRecord::Base
     end
   when :purchase
     workflow(:status, :open) do
-      event :add,   {:open     => :billed},  :process_purchase!
+      event :add,   {:open     => :billed},   :process_purchase!
+      event :bill,  {:pending  => :billed},   :process_billing!
       event :pack,  {:billed   => :packed}
       event :ship,  {:packed   => :complete}, :process_shipping!
 
