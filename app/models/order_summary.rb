@@ -1,12 +1,12 @@
 class OrderSummary < Order
-  # Generates a scope with a bunch of fields calculated for efficiently 
-  # reporting on a bunch of orders. It is intended for listing pages and the 
+  # Generates a scope with a bunch of fields calculated for efficiently
+  # reporting on a bunch of orders. It is intended for listing pages and the
   # like.
   #
   # @return ActiveRecord::Relation
   def self.summary
     select(%{
-      id, status, name, updated_at, reference, is_gift,
+      id, status, name, updated_at, reference, is_gift, on_hold,
       total,
       CASE
         WHEN orders.updater_id IS NOT NULL THEN (SELECT name FROM users WHERE id = updater_id)
@@ -20,7 +20,7 @@ class OrderSummary < Order
        CASE
          WHEN orders.status = 'pending' AND EXISTS (
            SELECT 1 FROM order_payments AS ops
-           WHERE ops.order_id = orders.id 
+           WHERE ops.order_id = orders.id
            AND (ops.provider_expiry IS NOT NULL AND ops.provider_expiry < (NOW() - '3 days'::interval))
          ) THEN true
          ELSE false
@@ -61,7 +61,7 @@ class OrderSummary < Order
       status = 'pending'
       AND EXISTS (
         SELECT 1 FROM order_payments AS ops
-        WHERE ops.order_id = orders.id 
+        WHERE ops.order_id = orders.id
         AND (ops.provider_expiry IS NOT NULL AND ops.provider_expiry < (NOW() - '3 days'::interval))
       )
     })
