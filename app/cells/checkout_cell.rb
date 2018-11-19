@@ -1,4 +1,4 @@
-class CheckoutCell < Cell::Rails
+class CheckoutCell < IslayShopCell
   include IslayShop::Payments
   helper IslayShop::Public::PromotionDisplayHelper
   helper_method :parent_controller, :input_opts, :select_opts

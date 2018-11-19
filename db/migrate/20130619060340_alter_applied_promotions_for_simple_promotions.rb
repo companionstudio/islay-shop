@@ -1,4 +1,4 @@
-class AlterAppliedPromotionsForSimplePromotions < ActiveRecord::Migration
+class AlterAppliedPromotionsForSimplePromotions < ActiveRecord::Migration[4.2]
   def up
     #This migration assumes no promotions have been applied - no legacy table is created.
     drop_table(:applied_promotions)

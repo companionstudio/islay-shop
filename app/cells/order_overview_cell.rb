@@ -1,4 +1,4 @@
-class OrderOverviewCell < Cell::Rails
+class OrderOverviewCell < IslayShopCell
   def index
     @counts = OrderSummary.status_counts
 

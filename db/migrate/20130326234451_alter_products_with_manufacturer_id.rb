@@ -1,4 +1,4 @@
-class AlterProductsWithManufacturerId < ActiveRecord::Migration
+class AlterProductsWithManufacturerId < ActiveRecord::Migration[4.2]
   def up
     add_column(:products, :manufacturer_id, :integer, :null => true, :on_delete => :set_null)
   end

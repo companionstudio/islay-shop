@@ -1,4 +1,4 @@
-class StockAlertsCell < Cell::Rails
+class StockAlertsCell < IslayShopCell
   def index
     @alerts = Sku.alerts
     render

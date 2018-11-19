@@ -1,5 +1,5 @@
 # @todo: This migration should actually be added via a generator.
-class CreateSkuBlogEntries < ActiveRecord::Migration
+class CreateSkuBlogEntries < ActiveRecord::Migration[4.2]
   def change
     create_table :sku_blog_entries do |t|
       t.integer :sku_id,        :null => false, :on_delete => :cascade

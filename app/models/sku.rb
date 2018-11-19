@@ -55,6 +55,8 @@ class Sku < ActiveRecord::Base
   #
   # @return Array<Sku>
   def self.alerts
+    return [] unless Settings.defined?(:shop, :alert_level)
+
     Sku.summarize_product.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
   end
 
@@ -141,6 +143,10 @@ class Sku < ActiveRecord::Base
     else
       order('product_name ASC, skus.name ASC')
     end
+  end
+
+  def self.stock_alert_level
+    Settings.defined?(:shop, :alert_level) ? Settings.for(:shop, :alert_level) : 0
   end
 
   # Returns the options required for generating a URL to this model. This is

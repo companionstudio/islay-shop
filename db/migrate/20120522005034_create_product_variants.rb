@@ -1,4 +1,4 @@
-class CreateProductVariants < ActiveRecord::Migration
+class CreateProductVariants < ActiveRecord::Migration[4.2]
   def change
     create_table :product_variants do |t|
       t.integer     :product_id,  :null => false, :on_delete => :cascade

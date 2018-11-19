@@ -1,4 +1,4 @@
-class CreatePromotionConditions < ActiveRecord::Migration
+class CreatePromotionConditions < ActiveRecord::Migration[4.2]
   def change
     create_table :promotion_conditions do |t|
       t.integer :promotion_id,  :null => false, :on_delete => :cascade

@@ -1,4 +1,4 @@
-class AlterSkusForPricingRestructure < ActiveRecord::Migration
+class AlterSkusForPricingRestructure < ActiveRecord::Migration[4.2]
   def up
     # Backup existing SKUs
     execute(%{

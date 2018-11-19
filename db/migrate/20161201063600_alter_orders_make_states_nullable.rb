@@ -1,4 +1,4 @@
-class AlterOrdersMakeStatesNullable < ActiveRecord::Migration
+class AlterOrdersMakeStatesNullable < ActiveRecord::Migration[4.2]
   def change
     change_column_null(:orders, :billing_state, true)
     change_column_null(:orders, :shipping_state, true)

@@ -1,4 +1,4 @@
-class CreateManufacturers < ActiveRecord::Migration
+class CreateManufacturers < ActiveRecord::Migration[4.2]
   def up
     create_table :manufacturers do |t|
       t.integer     :position,            :null => false, :limit => 3, :default => 1

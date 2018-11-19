@@ -1,4 +1,4 @@
-class AlterPromotionsWithUserTracking < ActiveRecord::Migration
+class AlterPromotionsWithUserTracking < ActiveRecord::Migration[4.2]
   def up
     add_column(:promotions, :creator_id, :integer, :references => :users)
     add_column(:promotions, :updater_id, :integer, :references => :users)

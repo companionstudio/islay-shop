@@ -1,4 +1,4 @@
-class CreateAppliedPromotions < ActiveRecord::Migration
+class CreateAppliedPromotions < ActiveRecord::Migration[4.2]
   def change
     create_table :applied_promotions do |t|
       t.integer :promotion_id,              :null => false

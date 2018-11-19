@@ -1,4 +1,4 @@
-class BuyCell < Cell::Rails
+class BuyCell < IslayShopCell
   def add(product)
     @product = product
     render

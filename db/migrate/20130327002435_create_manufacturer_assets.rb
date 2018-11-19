@@ -1,4 +1,4 @@
-class CreateManufacturerAssets < ActiveRecord::Migration
+class CreateManufacturerAssets < ActiveRecord::Migration[4.2]
   def change
     create_table :manufacturer_assets do |t|
       t.integer :manufacturer_id, :null => false, :on_delete => :cascade

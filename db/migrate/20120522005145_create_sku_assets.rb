@@ -1,4 +1,4 @@
-class CreateSkuAssets < ActiveRecord::Migration
+class CreateSkuAssets < ActiveRecord::Migration[4.2]
   def change
     create_table :sku_assets do |t|
       t.integer :sku_id,    :null => false, :on_delete => :cascade
