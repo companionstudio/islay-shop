@@ -65,7 +65,7 @@
               - f.object.candidates.sort_by(&:name).each do |candidate|
                 %tr
                   %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
-                  %td= link_to(candidate.name, path(candidate))
+                  %td= link_to(candidate.name, path(:edit, candidate))
                   %td= candidate.email
                   %td
                     - order_offer = candidate.offer_orders.find_by(offer_id: f.object.id)
