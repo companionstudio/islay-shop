@@ -92,7 +92,7 @@ class Offer < ActiveRecord::Base
   end
 
   def candidates
-    Member.complete.subscribed
+    Member.includes(:offer_orders => {:order => :member_order}).complete.subscribed.where('member_orders.member_id IS NULL')
   end
 
   # The number of items in the offer
