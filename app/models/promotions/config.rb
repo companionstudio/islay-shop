@@ -30,8 +30,9 @@ module Promotions
             new_without_cast(*a, &b)
           end
         end
-
-        alias_method_chain :new, :cast
+        
+        alias_method :new_without_cast, :new
+        alias_method :new, :new_with_cast
       end
 
       nil

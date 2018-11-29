@@ -3,8 +3,8 @@ class IslayShop::Admin::OrderProcessesController < IslayShop::Admin::Application
   nav_scope :orders
   helper 'islay_shop/admin/orders'
 
-  before_filter :status_counts
-  before_filter :find_order, :only => [:review_billing, :bill, :review_cancellation, :cancel, :pack, :ship, :review_cancellation, :cancel, :update]
+  before_action :status_counts
+  before_action :find_order, :only => [:review_billing, :bill, :review_cancellation, :cancel, :pack, :ship, :review_cancellation, :cancel, :update]
 
   def index
     redirect_to path(:billing, :order_processes)

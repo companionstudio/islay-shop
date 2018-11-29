@@ -1,6 +1,6 @@
 class IslayShop::Admin::ReportsController < IslayShop::Admin::ApplicationController
-  before_filter :parse_dates, :only => [:index, :orders, :product, :sku]
-  before_filter :parse_resolution
+  before_action :parse_dates, :only => [:index, :orders, :product, :sku]
+  before_action :parse_resolution
   nav_scope :reports
 
   def index

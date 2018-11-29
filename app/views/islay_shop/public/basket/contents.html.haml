@@ -1,6 +1,6 @@
 %h2 Your basket
 
 - if order.empty?
-  %p.note You don't have anything in your basket.  
+  %p.note You don't have anything in your basket.
 - else
-  = render_cell(:checkout, :basket, order)
+  = cell(:checkout, :basket, order)

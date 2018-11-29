@@ -1,5 +1,5 @@
 %h2 Your basket
-= render_cell(:checkout, :basket, order)
+= cell(:checkout, order).(:basket)
 
 %h2 Order Details
-= render_cell(:checkout, :form, order)
+= cell(:checkout, :form).(:order)

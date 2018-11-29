@@ -3,8 +3,8 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
   include IslayShop::ControllerExtensions::Public
 
   use_https
-  before_filter :check_for_order_contents,   :except => [:thank_you]
-  before_filter :configure_countries
+  before_action :check_for_order_contents,   :except => [:thank_you]
+  before_action :configure_countries
 
   def details
 
