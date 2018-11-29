@@ -381,7 +381,8 @@ class Order < ActiveRecord::Base
   end
 
   def payment_errors?
-    payment_errors.present?
+    @payment_errors_present ||= logs.where("lower(action) IN ('bill', 'payment')").order('created_at DESC').first
+    @payment_errors_present.present? and !@payment_errors_present.succeeded?
   end
 
   # This bit of meta-programming generates accessors with a deprecation warning.
