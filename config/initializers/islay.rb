@@ -21,7 +21,7 @@ Islay::Engine.extensions.register do |e|
   e.add_item_entry('Promotion', :promotion, 'bullhorn')
 
   e.nav_section(:catalogue) do |s|
-    s.root('Catalogue', :catalogue, 'gift')
+    s.root('Catalogue', :products, 'gift')
     s.sub_nav('Products', :products)
     s.sub_nav('Categories', :product_categories)
     s.sub_nav('Ranges', :product_ranges)

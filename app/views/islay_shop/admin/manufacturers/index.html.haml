@@ -1,6 +1,4 @@
-- breadcrumb('Manufacturers', :manufacturers)
-
-= record_name('Manufacturers', 'book')
+- breadcrumb('Manufacturers')
 
 - if @manufacturers.empty?
   = content do
@@ -30,4 +28,3 @@
 
   = footer do
     = new_button('Manufacturer', :manufacturer)
-

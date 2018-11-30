@@ -4,9 +4,8 @@
       %tr
         %th.select= check_box_tag('table_select_all', 1, nil, :class => 'toggle')
         %th.boolean Published
+        %th.boolean For Sale
         %th Product
-        %th Status
-        %th.indicator Stock Level
         %th.meta Updated At
     %tbody
       - @products.each do |product|
@@ -15,16 +14,22 @@
           %td.boolean
             %span(class="boolean #{product.published?}")
               %span= friendly_bool(product.published?)
-          %td
+          %td.boolean
+            %span(class="boolean #{product.for_sale?}")
+              %span= friendly_bool(product.for_sale?)
+          %td.collapsible.collapsed
             = link_to(product.name, path(product), :class => 'title product')
-            %ul.children
+            - if product.stock_level_warning?
+              %span(class="indicator stock-level-#{product.stock_level_notice}")
+                - if product.in_stock?
+                  Low stock
+                - else
+                  Out of stock
+            %ul.children.details
               - product.skus.short_desc_only.each do |sku|
                 %li= link_to(sku.short_desc, path(:edit, product, sku))
-          %td
-            %span.indicator= product.status.humanize
-          %td.indicator
-            %span(class="indicator #{product.stock_level_notice}")
-              = product.stock_level_notice
+            %span.collapsible-toggle
+              %i.fa.fa-chevron-right
           %td.meta
             %span.time= product.updated_at
             by #{product.updater_name}

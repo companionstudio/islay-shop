@@ -93,8 +93,11 @@
   .billing,
   .address,
   .order-overview
-    margin: 1.5em 3em 0 0
+    box-sizing: border-box
     float: left
+    padding-right: 1.5rem
+    margin: 1.5em 0 0 0
+    width: 30%
 
     h3
       font-size: 1em
@@ -104,9 +107,7 @@
     h3
       margin-top: 1.5em
 
-
-  .billing,
-    width: 20em
+  .billing
 
   .order-overview
     margin-left: 0
@@ -154,49 +155,6 @@
     .value
       font-size: 1.2em
 
-
-  .order-progression
-    // +background-image($dimension-raised-subtle)
-    +clear-fix
-    background-color: $very-light-grey
-    clear: both
-    padding: 0.5em 3.5em
-    position: relative
-    z-index: 1
-
-    li
-      // background: right center no-repeat image-url('islay_shop/admin/progression_entry_standard.png')
-      border: 1px solid #D5DAE1
-      border-width: 1px 0
-      display: inline-block
-      margin: 0 0 0 -3em
-      padding: 0.65em 3em 0.45em 3em
-      position: relative
-
-      @for $i from 1 through 10
-        &:nth-child(#{10 - $i})
-          z-index: $i
-
-      &:first-child
-        +border-radius(0.3em 0 0 0.3em)
-        border-left-width: 1px
-        padding-left: 1em
-
-      &:last-child
-        +border-radius(0 0.3em 0.3em 0)
-        background-position: left center
-        border-right-width: 1px
-        padding-right: 1.5em
-
-      &.done
-        +icon-ok
-          padding-right: 0.3em
-
-      &.current
-        +islay-text-shadow
-        // background-image: image-url('islay_shop/admin/progression_entry_current.png')
-        color: #FFF
-
   .order-info-bar
     float: left
     margin-top: 1rem
@@ -205,6 +163,68 @@
     .indicator
       margin-right: 0.66rem
       margin-top: -0.25rem
+
+$order-progression-marker-dimension: 1.25rem
+
+.order-progression
+  +display-flex
+  clear: both
+  padding: 0
+  position: relative
+  width: 100%
+  z-index: 1
+
+  li
+    +flex(1 1 auto)
+    position: relative
+    padding-top: $order-progression-marker-dimension * 1.75!important
+    text-align: center
+
+    &:before
+      content: ''
+      +pos-absolute($order-progression-marker-dimension * 0.25, 0, false, 0)
+      background: #DDD
+      height: $order-progression-marker-dimension * 0.5
+
+    &.done
+      &:after
+        +pos-absolute($order-progression-marker-dimension * 0.25, 0, false, 0)
+        background: lighten($sage-green, 15)
+        content: ''
+        height: $order-progression-marker-dimension * 0.5
+        z-index: 1
+
+    &.current
+      &:after
+        right: 50%
+
+    &:first-child
+      &:before,
+      &:after
+        +border-radius($order-progression-marker-dimension * 0.5 0 0 $order-progression-marker-dimension * 0.5)
+
+    &:last-child
+      &:before,
+      &:after
+        +border-radius(0 $order-progression-marker-dimension * 0.5 $order-progression-marker-dimension * 0.5 0)
+
+.order-progression-el-indicator
+  +border-radius(50%)
+  +pos-absolute(0, false, false, 50%)
+  height: $order-progression-marker-dimension
+  margin-left: $order-progression-marker-dimension * -0.5
+  width: $order-progression-marker-dimension
+  background: #DDD
+  z-index: 2
+
+  .done &
+    background: lighten($sage-green, 15)
+
+  .current &
+    background: $sage-green
+
+.order-progression-el-label
+
 /* -------------------------------------------------------------------------- */
 /* ORDER - REVIEW BILLING
 /* -------------------------------------------------------------------------- */
@@ -648,22 +668,16 @@ table
 
   /* CHILD RECORDS */
   .children
-    margin-left: 1.8em
+    margin: 1.25rem 0 0 0
     width: 100%
-    float: left
+    clear: both
+    float: none
 
     li
-      border-right: 0.1em solid #DDD
-      float: left
-      padding-right: 0.4em
-      margin: 0.5em 0.4em 0 0!important
-      &:last-child
-        border-right: 0
+      margin-bottom: 0.25rem!important
 
     a
-      +border-radius(0.3em)
       display: inline-block
-      padding: 0 0.4em
 
       &:hover
         background: $widget-hover-background-color
@@ -690,8 +704,7 @@ table
 /* -------------------------------------------------------------------------- */
 .numeric
   font-family: $alternate-font-family
-  letter-spacing: 0.1em
-  font-size: 1.1em
+  font-size: 1rem
 
 /* -------------------------------------------------------------------------- */
 /* PRICE POINTS
@@ -1107,10 +1120,7 @@ table
 /* -------------------------------------------------------------------------- */
 
 .dashboard-order-processing
-  padding-top: 1em
-  background: $alt-body-color
-  &.with-processing-required
-    background-color: $attention-color
+  padding-top: 1rem
 
   .notice
     +icon-shopping-cart
@@ -1128,7 +1138,7 @@ table
     +type-base
     display: inline-block
     margin-bottom: 0
-    margin-left: 1em
+    margin-right: 1rem
     min-height: 0 !important
 
   a
@@ -1175,3 +1185,16 @@ table.editable-grid
     tr:last-child
       td
         border-bottom: 0
+
+table
+  .stock-level-low,
+  .stock-level-out
+    vertical-align: 0.1em
+    
+  .stock-level-low
+    color: rgb(167, 51, 35)
+    background-color: #ffdad6
+
+  .stock-level-out
+    color: #ffdad6
+    background-color: rgb(167, 51, 35)

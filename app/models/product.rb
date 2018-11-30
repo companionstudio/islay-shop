@@ -65,22 +65,22 @@ class Product < ActiveRecord::Base
   end
 
   def self.filtered(f)
-    if f
-      where :published => case f
-      when 'published' then true
-      when 'unpublished' then false
-      end
+    case f
+    when 'published'    then where(published: true)
+    when 'unpublished'  then where(published: false)
+    when 'for_sale'     then where(published: true, status: 'for_sale')
+    when 'not_for_sale' then where(status: 'not_for_sale')
     else
-      # This is a replacement for 'scoped' from Rails 3
       where(nil)
     end
   end
 
   def self.sorted(s)
-    if s
+    case s
+    when 'position', 'published', 'sale_status'
       order(s)
     else
-      order(:position)
+      order(:name)
     end
   end
 
@@ -142,8 +142,13 @@ class Product < ActiveRecord::Base
     end
   end
 
+  # This check if there's a stock warning
+  def stock_level_warning?
+    for_sale? and (!in_stock? or stock_low?)
+  end
+
   def for_sale?
-    status == 'for_sale'
+    published? and status == 'for_sale'
   end
 
   def destroyable?

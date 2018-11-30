@@ -5,7 +5,7 @@ module IslayShop
 
       resourceful :offer
       header 'Offers'
-      nav_scope :shop
+      nav_scope :orders
 
       def index
         @offers = Offer.page(params[:page]).filtered(params[:filter]).sorted(params[:sort])

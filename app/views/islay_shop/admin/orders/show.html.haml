@@ -48,19 +48,6 @@
               - else
                 %span.value.indicator.warning Expires Soon!
 
-    .billing
-      %h3 Billing Details
-
-      - if @order.payment.present?
-        %p.card-details
-          %span.type{:class => "card-type-#{@order.payment.card_type}"}= @order.payment.card_type
-          %span.number= @order.payment.number
-          - unless @order.payment.name.blank?
-            %span.name= @order.payment.name
-          %span.expiry Expiry: #{@order.payment.expiry}
-      - else
-        %p.info.warning This order has no payment information attached. See the logs for more detail.
-
     .address
       %h3 Billing Address
 
@@ -92,6 +79,19 @@
         %span.city= @order.shipping_city
         %br/
         %span.state #{@order.shipping_state} #{@order.shipping_postcode}
+
+    .billing
+      %h3 Billing Details
+
+      - if @order.payment.present?
+        %p.card-details
+          %span.type{:class => "card-type-#{@order.payment.card_type}"}= @order.payment.card_type
+          %span.number= @order.payment.number
+          - unless @order.payment.name.blank?
+            %span.name= @order.payment.name
+          %span.expiry Expiry: #{@order.payment.expiry}
+      - else
+        %p.info.warning This order has no payment information attached. See the logs for more detail.
 
   - unless @order.shipping_instructions.blank?
     .shipping-instructions

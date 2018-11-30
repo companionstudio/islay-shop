@@ -48,7 +48,7 @@ module IslayShop::Admin::OrdersHelper
       if matching_process_step
         matching_process_step[:done] = log.succeeded?
         matching_process_step[:error] = !log.succeeded?
-        matching_process_step[:label] = log.succeeded? ? past_tense(matching_process_step[:label]) : matching_process_step[:label]
+        matching_process_step[:label] = log.succeeded? ? past_tense(matching_process_step[:action]) : matching_process_step[:label]
         matching_process_step[:current] = current_step
       else
         process << {:action => log.action, :label => past_tense(log.action), :error => false, :done => true, :current => current_step}
