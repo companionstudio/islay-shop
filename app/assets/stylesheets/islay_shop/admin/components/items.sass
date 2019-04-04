@@ -1,0 +1,22 @@
+table.items
+  +for-phone
+    thead
+      display: none
+    tbody
+      tr
+        +display-flex
+        +flex-wrap(wrap)
+
+      td
+        +flex(1 0 auto)
+        box-sizing: border-box
+        font-size: 0.85rem
+        &:first-child
+          +flex(1 0 100%)
+
+        &.quantity
+          &:before
+            content: 'Qty'
+
+    tfoot
+      display: block

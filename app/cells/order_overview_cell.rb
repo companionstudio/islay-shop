@@ -1,15 +1,17 @@
 class OrderOverviewCell < IslayShopCell
   def index
-    @counts = OrderSummary.status_counts
-
-    @processing_required = @counts[:processable] > 0
 
     finish = Date.today
     start = Date.today.beginning_of_month
-    @series = OrderOverviewReport.series(
-      :mode => :none,
-      :days => (start..finish).map {|d| "#{d.mday}/#{d.month}/#{d.year}"}
-    )
+
+    @counts = OrderSummary.status_counts
+    @popularity = OrderOverviewReport.top_ten({mode: :none})
+
+    @month_sales = OrderOverviewReport.sales(Date.today.beginning_of_month..Date.today)
+    @year_sales = OrderOverviewReport.sales(Date.today.beginning_of_year..Date.today)
+    @all_time_sales = OrderOverviewReport.grand_totals.symbolize_keys
+
+    @processing_required = @counts[:processable] > 0
 
     render
   end

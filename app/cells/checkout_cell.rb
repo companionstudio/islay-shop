@@ -1,7 +1,9 @@
 class CheckoutCell < IslayShopCell
   include IslayShop::Payments
   helper IslayShop::Public::PromotionDisplayHelper
-  helper_method :parent_controller, :input_opts, :select_opts
+  include SimpleForm::ActionViewExtensions::FormHelper
+
+  helper_method :parent_controller, :input_opts, :select_opts, :simple_form_for
 
   # Seriously Ruby, screw you for making me do this. Y U NO NO DATES?
   MONTH_NAMES = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec).freeze
@@ -10,14 +12,14 @@ class CheckoutCell < IslayShopCell
     ["#{index} - #{m}", index]
   end.freeze
 
-  def basket(order)
-    @order = order
+  def basket
+    @order = @model
     fetch_promotions
     render
   end
 
-  def form(order)
-    @order = order
+  def form
+    @order =  @model
     render
   end
 
@@ -28,9 +30,9 @@ class CheckoutCell < IslayShopCell
   # @param OrderBasket order
   # @param PaymentSubmission payment
   # @return String
-  def payment(order, payment)
-    @order = order
-    @payment = payment
+  def payment
+    @order = options[:order]
+    @payment = options[:payment]
 
     @config = payment_provider.prepare_payment_submission(
       public_order_checkout_payment_process_url(:host => request.host),

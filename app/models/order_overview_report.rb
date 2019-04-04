@@ -37,7 +37,7 @@ class OrderOverviewReport < Report
         a << {'day' => k, 'value' => week_value, 'volume' => week_volume, 'sku_volume' => week_sku_volume}
         a
       end
-      
+
     when :monthly, 'month'
       months = days.group_by do |d|
         Date.strptime(d['day'], '%d/%m/%Y').at_beginning_of_month.strftime('%d/%m/%Y')
@@ -68,7 +68,30 @@ class OrderOverviewReport < Report
   #
   # @return Hash
   def self.grand_totals
-    select_all(GRAND_TOTALS).first || {}
+    totals = (select_all(GRAND_TOTALS).first || {}).symbolize_keys
+
+    totals.reduce({}) do |a, (k, v)|
+      case k
+      when :total_value, :average_order_value, :best_day_revenue then
+        a[k] = SpookAndPuff::Money.new(v)
+      else
+        a[k] = v
+      end
+      a
+    end
+  end
+
+  # Totals the revenue for the given range
+  #
+  # @return Hash
+  def self.sales(range)
+    result = select_all(SALES_IN_RANGE, {start: range.first, end: range.last}).first.symbolize_keys
+
+    result[:revenue] = SpookAndPuff::Money.new(result[:revenue] || SpookAndPuff::Money.zero)
+    result[:volume] = result[:volume].to_i
+    result[:sku_volume] = result[:sku_volume].to_i
+
+    result
   end
 
   TOP_TEN = %{
@@ -141,6 +164,21 @@ class OrderOverviewReport < Report
     ) AS os
     GROUP BY os.day
     }.freeze
+
+
+  SALES_IN_RANGE = %{
+    SELECT
+      SUM(os.total) AS revenue,
+      COUNT(os.*) AS volume,
+      SUM(sku_volume) AS sku_volume
+    FROM (
+      SELECT
+        total,
+        (SELECT SUM(quantity) FROM order_items WHERE order_id = os.id) AS sku_volume
+      FROM orders AS os
+      WHERE is_revenue(os.status) AND os.created_at BETWEEN :start AND :end
+    ) AS os
+  }.freeze
 
   AGGREGATES = %{
     WITH totals AS (
@@ -230,6 +268,7 @@ class OrderOverviewReport < Report
       (SELECT SUM(total) FROM os) AS total_value,
       (SELECT SUM(quantity) FROM os) AS total_volume,
       (SELECT SUM(total) / SUM(quantity) FROM os) AS average_order_value,
+      (SELECT COUNT(*) FROM os) AS total_order_count,
       (SELECT revenue FROM revenue_month) AS best_month_revenue,
       (SELECT month FROM revenue_month) AS best_month_for_revenue,
       (SELECT volume FROM volume_month) AS best_month_volume,

@@ -736,18 +736,18 @@ $SP.where('#islay-shop-admin-product-categories.show, #islay-shop-admin-products
 });
 
 $SP.where('#islay-admin-dashboard.index').run(function() {
-  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  // var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
 });
 
 $SP.where('#islay-shop-admin-reports.index').run(function() {
-  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  // var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var topTen = new $SP.GUI.Tabs({el: $("#top-ten"), tabs: 'table', labels: 'caption'});
   var dates = new $SP.GUI.DateSelection({action: window.location.href, soloMode: true});
   $('.date-controls').append(dates.render().el);
 });
 
 $SP.where('#islay-shop-admin-reports.orders').run(function() {
-  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  // var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var orders = new $SP.GUI.SortableTable({el: $("#orders-summary")});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
@@ -759,7 +759,7 @@ $SP.where('#islay-shop-admin-reports.products').run(function() {
 });
 
 $SP.where('#islay-shop-admin-reports.product').run(function() {
-  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  // var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var skus = new $SP.GUI.SortableTable({el: $("#skus-summary")});
   var orders = new $SP.GUI.SortableTable({el: $("#orders-summary")});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
@@ -769,7 +769,7 @@ $SP.where('#islay-shop-admin-reports.product').run(function() {
 });
 
 $SP.where('#islay-shop-admin-reports.sku').run(function() {
-  var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
+  // var graph = new $SP.GUI.SeriesGraph({table: $('.series-graph')});
   var dates = new $SP.GUI.DateSelection({action: window.location.href});
   var tabs = new $SP.GUI.Tabs({el: $("#bests"), tabs: 'div.day, div.month', labels: 'h4'});
   $('.date-controls').append(dates.render().el);

@@ -5,20 +5,20 @@
 
   = content do
     = f.fieldset('Details', :class => 'form-tab', :id => 'sku-details') do
-      = f.input(:published, :col => 'first-inline')
-      = f.input(:status, :col => 'inline', :collection => f.object.statuses, :as => 'radio_buttons')
+      = f.input(:published)
+      = f.input(:status, :collection => f.object.statuses, :as => 'radio_buttons')
       = f.input(:name)
       = f.input(:stock_level)
 
       = f.fieldset do
-        = f.input(:purchase_limiting, :label => 'Limit purchases', :col => 'first-inline')
-        = f.input(:purchase_limit, :label => 'to', :class => 'small', :col => 'inline')
+        = f.input(:purchase_limiting, :label => 'Limit purchases')
+        = f.input(:purchase_limit, :label => 'to', :class => 'small')
 
       = f.fieldset do
-        = f.input(:volume, :class => 'small', :label => 'Volume (ml)', :col => 'first-inline')
-        = f.input(:weight, :class => 'small', :label => 'Weight (g)', :col => 'inline')
-        = f.input(:size, :class => 'small', :col => 'inline')
-        = f.input(:unit_count, :class => 'small', :col => 'inline')
+        = f.input(:volume, :class => 'small', :label => 'Volume (ml)')
+        = f.input(:weight, :class => 'small', :label => 'Weight (g)')
+        = f.input(:size, :class => 'small')
+        = f.input(:unit_count, :class => 'small')
 
     = f.fieldset('Images & Docs', :class => 'form-tab', :id => 'sku-assets') do
       = f.input(:asset_ids, :collection => @assets, :as => 'multi_asset', :label => 'Images and Documents')

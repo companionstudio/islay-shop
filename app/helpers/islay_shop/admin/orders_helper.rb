@@ -20,10 +20,11 @@ module IslayShop::Admin::OrdersHelper
   # @return String
   def past_tense(action)
     case action
-      when 'add' then 'Placed'
-      when 'bill' then 'Billed'
-      when 'pack' then 'Packed'
-      when 'ship' then 'Shipped'
+      when 'add'    then 'Placed'
+      when 'bill'   then 'Billed'
+      when 'pack'   then 'Packed'
+      when 'ship'   then 'Shipped'
+      when 'cancel' then 'Cancelled'
       else action
     end
   end
@@ -34,24 +35,39 @@ module IslayShop::Admin::OrdersHelper
   #
   # @return String
   def process_progression(order)
-    process = [
-      {:action => 'add', :label => 'Place'},
-      {:action => 'bill', :label => 'Billing'},
-      {:action => 'pack', :label => 'Packing'},
-      {:action => 'ship', :label => 'Shipping'}
-    ]
+    if order.cancelled?
+      process = [
+        {action: 'cancel', label: 'Cancelled', done: true}
+      ]
+    else
+      process = case IslayShop::Engine.config.payments.mode
+      when :authorize
+        [
+          {:action => 'add', :label => 'Place'},
+          {:action => 'bill', :label => 'Billing'},
+          {:action => 'pack', :label => 'Packing'},
+          {:action => 'ship', :label => 'Shipping'}
+        ]
+      when :purchase
+        [
+          {:action => 'add', :label => 'Place'},
+          {:action => 'pack', :label => 'Packing'},
+          {:action => 'ship', :label => 'Shipping'}
+        ]
+      end
 
-    order.logs.summary.reverse.each_with_index do |log, i|
-      current_step = (i == order.logs.summary.length - 1)
+      order.logs.summary.reverse.each_with_index do |log, i|
+        current_step = (i == order.logs.summary.length - 1)
 
-      matching_process_step = process.find {|p|p[:action] == log.action}
-      if matching_process_step
-        matching_process_step[:done] = log.succeeded?
-        matching_process_step[:error] = !log.succeeded?
-        matching_process_step[:label] = log.succeeded? ? past_tense(matching_process_step[:action]) : matching_process_step[:label]
-        matching_process_step[:current] = current_step
-      else
-        process << {:action => log.action, :label => past_tense(log.action), :error => false, :done => true, :current => current_step}
+        matching_process_step = process.find {|p|p[:action] == log.action}
+        if matching_process_step
+          matching_process_step[:done] = log.succeeded?
+          matching_process_step[:error] = !log.succeeded?
+          matching_process_step[:label] = log.succeeded? ? past_tense(matching_process_step[:action]) : matching_process_step[:label]
+          matching_process_step[:current] = current_step
+        else
+          process << {:action => log.action, :label => past_tense(log.action), :error => false, :done => true, :current => current_step}
+        end
       end
     end
 

@@ -1,41 +1,70 @@
-%h3 Order Processing
-
 .dashboard-order-processing{class:  @processing_required ? 'with-processing-required' : ''}
+  %h3
+    - if @processing_required
+      %i.fa.fa-shopping-cart
+      #{pluralize(@counts[:processable], 'order')} #{'need'.pluralize(@counts[:processable] > 1 ? 1 : 2)} processing
+    - else
+      Order Processing
+
   - if @processing_required
-    %p.notice There #{@counts[:processable] == 1 ? 'is' : 'are'} #{pluralize(@counts[:processable], 'order')} waiting to be processed.
     %ul#dashboard-order-counts
       - if @counts[:billing] > 0
         %li
           %a{:href => billing_admin_order_processes_url}
-            %span.value= @counts[:billing]
-            %span.key ready to bill
+            %span.value Bill #{pluralize(@counts[:billing], 'order')}
       - if @counts[:packing] > 0
         %li
           %a{:href => packing_admin_order_processes_url}
-            %span.value= @counts[:packing]
-            %span.key ready to pack
+            %span.value Pack #{pluralize(@counts[:packing], 'order')}
+
       - if @counts[:shipping] > 0
         %li
           %a{:href => shipping_admin_order_processes_url}
-            %span.value= @counts[:shipping]
-            %span.key ready to ship
+            %span.value Ship #{pluralize(@counts[:shipping], 'order')}
   - else
     %p.notice.complete No orders are waiting to be processed.
 
-%h3 This Month's Sales
+%h3 Sales overview
 
-%table.series-graph
-  %thead
-    %tr
-      %th Day
-      %th Order Value
-      %th Order Volume
-      %th SKU Volume
+.dashboard-compact-reports
+  .dashboard-compact-report
+    %h4.dashboard-compact-report-el-title This month
+    %table
+      %tbody
+        %tr
+          %th.dashboard-compact-report-el-label Revenue
+          %td.dashboard-compact-report-el-value= @month_sales[:revenue]
+        %tr
+          %th.dashboard-compact-report-el-label Orders
+          %td.dashboard-compact-report-el-value= @month_sales[:volume]
+        %tr
+          %th.dashboard-compact-report-el-label SKUs sold
+          %td.dashboard-compact-report-el-value= @month_sales[:sku_volume]
 
-  %tbody
-    - @series.each do |entry|
-      %tr
-        %th= entry['day']
-        %td= entry['value']
-        %td= entry['volume']
-        %td= entry['sku_volume']
+  .dashboard-compact-report
+    %h4.dashboard-compact-report-el-title This year
+    %table
+      %tbody
+        %tr
+          %th.dashboard-compact-report-el-label Revenue
+          %td.dashboard-compact-report-el-value= @year_sales[:revenue]
+        %tr
+          %th.dashboard-compact-report-el-label Orders
+          %td.dashboard-compact-report-el-value= @year_sales[:volume]
+        %tr
+          %th.dashboard-compact-report-el-label SKUs sold
+          %td.dashboard-compact-report-el-value= @year_sales[:sku_volume]
+
+  .dashboard-compact-report
+    %h4.dashboard-compact-report-el-title All time
+    %table
+      %tbody
+        %tr
+          %th.dashboard-compact-report-el-label Revenue
+          %td.dashboard-compact-report-el-value= @all_time_sales[:total_value]
+        %tr
+          %th.dashboard-compact-report-el-label Orders
+          %td.dashboard-compact-report-el-value= @all_time_sales[:total_order_count]
+        %tr
+          %th.dashboard-compact-report-el-label SKUs sold
+          %td.dashboard-compact-report-el-value= @all_time_sales[:average_order_value]

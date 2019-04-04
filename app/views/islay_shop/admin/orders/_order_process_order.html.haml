@@ -1,5 +1,5 @@
 %ol.order-progression.inset
   - process.each do |step|
     %li{:class => "#{step[:action]} #{step[:done] ? 'done' : ''} #{step[:current] ? 'current' : ''} #{step[:error] ? 'error' : ''}"}
-      %span.order-progression-el-label= step[:label]
+      %span.order-progression-el-label= step[:label].titleize
       %span.order-progression-el-indicator
