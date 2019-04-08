@@ -3,6 +3,10 @@ class OrderLog < ActiveRecord::Base
 
   track_user_edits
 
+  def url_params
+    [order]
+  end
+
   # Creates a select statement with calculated fields to be used when
   # summarising the logs
   #
