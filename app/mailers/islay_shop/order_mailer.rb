@@ -44,4 +44,14 @@ class IslayShop::OrderMailer < ActionMailer::Base
   def with_inline_styles(html)
     Premailer.new(html, :with_html_string => true).to_inline_css
   end
+
+	def mail_asset_url(path)
+    if Rails.env == "development"
+      Rails.application.assets.find_asset(path)
+    elsif Rails.env == "production"
+      Rails.application.assets_manifest.find_sources("#{path}.css").first
+    end
+  end
+
+  helper_method :mail_asset_url
 end
