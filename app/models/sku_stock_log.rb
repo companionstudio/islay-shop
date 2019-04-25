@@ -2,8 +2,12 @@ class SkuStockLog < ActiveRecord::Base
   include SkuDescription
 
   belongs_to :sku
+  has_one :product, through: :sku
 
   track_user_edits
+
+  action_log_url_params :product
+  action_log_description :description
 
   # Returns a scope with calculated fields for who created the log and also,
   # all the fields necessary to summarize a SKU.
@@ -44,5 +48,19 @@ class SkuStockLog < ActiveRecord::Base
     else
       'up'
     end
+  end
+
+  def description
+    move = if before.blank?
+      "Set stock to #{movement}"
+    elsif after.blank?
+      "Cleared stock"
+    elsif before > after
+      "Decreased stock by #{movement}"
+    else
+      "Increased stock by #{movement}"
+    end
+
+    "#{move} on #{sku.long_desc}"
   end
 end

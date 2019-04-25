@@ -1,4 +1,6 @@
 class Sku < ActiveRecord::Base
+  track_user_edits
+
   include Islay::MetaData
   include IslayShop::Statuses
   include Islay::Publishable
@@ -21,6 +23,9 @@ class Sku < ActiveRecord::Base
   has_many   :documents,  -> {order('position ASC')},  :through => :sku_assets, :source => :asset, :class_name => 'DocumentAsset'
 
   positioned :product_id
+
+  action_log_url_params :product
+  action_log_description :long_desc
 
   if defined?(::IslayBlog)
     has_many :sku_blog_entries
