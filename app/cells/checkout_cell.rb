@@ -1,9 +1,10 @@
 class CheckoutCell < IslayShopCell
+  include ApplicationHelper
   include IslayShop::Payments
   helper IslayShop::Public::PromotionDisplayHelper
   include SimpleForm::ActionViewExtensions::FormHelper
 
-  helper_method :parent_controller, :input_opts, :select_opts, :simple_form_for
+  helper_method :parent_controller, :input_opts, :select_opts, :simple_form_for, :collection_select
 
   # Seriously Ruby, screw you for making me do this. Y U NO NO DATES?
   MONTH_NAMES = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec).freeze
@@ -31,7 +32,7 @@ class CheckoutCell < IslayShopCell
   # @param PaymentSubmission payment
   # @return String
   def payment
-    @order = options[:order]
+    @order = @model
     @payment = options[:payment]
 
     @config = payment_provider.prepare_payment_submission(

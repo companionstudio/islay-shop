@@ -77,4 +77,15 @@ class IslayShop::Public::CheckoutController < IslayShop::Public::ApplicationCont
     @billable_countries = IslayShop::Engine.config.billable_countries
     @shippable_countries = IslayShop::Engine.config.shippable_countries
   end
+
+  def fetch_promotions
+    #Any promotions that can be qualified for at the checkout (code based)
+    @checkout_promotions = Promotion.active.code_based
+
+    #Any promotions ready to be applied to the order
+    if @order and !@order.pending_promotions.empty?
+      @promotions = @order.pending_promotions
+    end
+
+  end
 end

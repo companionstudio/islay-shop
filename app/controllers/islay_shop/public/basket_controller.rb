@@ -41,7 +41,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
   def update
     unless params[:items].blank?
-      unpromoted_order.update_quantities(params[:items])
+      unpromoted_order.update_quantities(permitted_params[:items].to_h)
     end
 
     unless params[:promo_code].blank?
@@ -66,6 +66,10 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   private
+
+  def permitted_params
+    params.permit!
+  end
 
   # Dumps a JSON representation of an order into the user's session.
   #
