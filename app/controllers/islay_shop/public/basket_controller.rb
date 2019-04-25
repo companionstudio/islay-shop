@@ -6,9 +6,9 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def add
-    sku = Sku.find(params[:sku_id])
+    sku = Sku.find(permitted_params[:sku_id])
     original_quantity = unpromoted_order.quantity_of_sku(sku)
-    requested_quantity = params[:quantity].to_i
+    requested_quantity = permitted_params[:quantity].to_i
 
     item = unpromoted_order.increment_quantity(sku, requested_quantity)
 
@@ -21,7 +21,7 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
 
       render :json => {
         :result         => (unpromoted_order.errors.blank? ? 'success' : 'failure'),
-        :sku            => params[:sku_id],
+        :sku            => permitted_params[:sku_id],
         :added          => added_quantity,
         :max_available  => unpromoted_order.find_item(sku).maximum_quantity_allowed - item.quantity,
         :quantity       => unpromoted_order.sku_items.quantity,
@@ -35,21 +35,21 @@ class IslayShop::Public::BasketController < IslayShop::Public::ApplicationContro
   end
 
   def remove
-    item = unpromoted_order.remove_item(params[:sku_id])
+    item = unpromoted_order.remove_item(permitted_params[:sku_id])
     store_and_redirect(:order_item_removed, {:message => item.sku.long_desc})
   end
 
   def update
-    unless params[:items].blank?
+    unless permitted_params[:items].blank?
       unpromoted_order.update_quantities(permitted_params[:items].to_h)
     end
 
-    unless params[:promo_code].blank?
-      unpromoted_order.promo_code = params[:promo_code]
+    unless permitted_params[:promo_code].blank?
+      unpromoted_order.promo_code = permitted_params[:promo_code]
     end
 
-    unless params[:billing_postcode].blank?
-      unpromoted_order.billing_postcode = params[:billing_postcode]
+    unless permitted_params[:billing_postcode].blank?
+      unpromoted_order.billing_postcode = permitted_params[:billing_postcode]
     end
 
     store_and_redirect(:order_updated, {:message => "Your order has been updated"})
