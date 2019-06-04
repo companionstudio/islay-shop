@@ -2,10 +2,13 @@ class SkuPricePoint < ActiveRecord::Base
   extend SpookAndPuff::MoneyAttributes
   attr_money :price
   belongs_to  :sku
+  has_one  :product, through: :sku
   validates :volume, :presence   => true, :numericality => {:only_integer => true, :greater_than => 0}
   validates :mode,   :inclusion  => {:in => %w(single boxed bracketed)}
   validate :validates_price
   track_user_edits
+
+  action_log_url_params :url_params
 
   # Returns an ActiveRecord::Relation with a bunch of joins and calculated
   # fields necessary for summarising each price point e.g. SKU, if it's
@@ -164,6 +167,10 @@ class SkuPricePoint < ActiveRecord::Base
   # @return String
   def unit_saving_percentage(point)
     "#{100 - point.price.proportion(price).round(1)}%"
+  end
+
+  def url_params
+    [product, sku]
   end
 
   private
