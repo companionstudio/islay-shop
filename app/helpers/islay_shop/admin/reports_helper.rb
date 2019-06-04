@@ -13,6 +13,6 @@ module IslayShop::Admin::ReportsHelper
     when :next_month then current_date + 1.month
     end
 
-    url_for(params.merge(year: new_date.year, month: new_date.month))
+    url_for(params.permit!.to_h.merge(year: new_date.year, month: new_date.month))
   end
 end
