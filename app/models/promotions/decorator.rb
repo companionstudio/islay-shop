@@ -355,12 +355,12 @@ module Promotions
 
       case c.requested
       when :general_text
-        "buy #{quantity} #{c.part.sku.short_desc}"
+        "buy #{quantity}✕ #{c.part.sku.long_desc}"
       when :general_html
-        name = link_to(c.part.sku.short_desc, c.part.sku.product)
-        "buy #{quantity} #{name}"
+        name = link_to(c.part.sku.long_desc, c.part.sku.product)
+        "buy #{quantity}✕ #{name}"
       when :specific_text, :specific_html
-        "buy #{quantity}"
+        "buy #{quantity}✕"
       end
     end
 
