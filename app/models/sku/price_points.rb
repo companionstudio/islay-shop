@@ -167,7 +167,7 @@ class Sku
     #
     # @return nil
     def validate_boxed_and_bracketed_overlap
-      point = price_points.select {|p| p.mode != 'bracketed'}.sort_by(&:volume).reverse.first
+      point = price_points.select(&:current).select {|p| p.mode != 'bracketed'}.sort_by(&:volume).reverse.first
 
       if point
         violations = price_points.by_mode('bracketed').select {|p| p.volume < point.volume}
