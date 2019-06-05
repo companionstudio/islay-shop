@@ -86,10 +86,10 @@ module Promotions
     def reassign
       case mode
       when 'percentage'
-        self.dollar = nil
+        self.dollar = "0"
         self.percentage = @amount || self.percentage
       when 'dollar'
-        self.percentage = nil
+        self.percentage = "0"
         self.dollar = @amount || self.dollar
       end
 
