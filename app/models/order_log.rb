@@ -3,6 +3,8 @@ class OrderLog < ActiveRecord::Base
 
   track_user_edits
 
+  action_log_url_params :url_params
+
   def url_params
     [order]
   end
