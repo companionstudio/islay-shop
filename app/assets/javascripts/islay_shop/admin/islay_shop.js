@@ -786,4 +786,5 @@ $SP.where('#islay-shop-admin-skus.[edit, new, update, create]').run(function() {
 
 $SP.where('#islay-shop-admin-offers.[edit, new, update, create]').run(function() {
   $('.islay-offer-items table').islayOfferEditing();
+  $('table.islay-offer-candidates').islayOfferCandidates();
 });

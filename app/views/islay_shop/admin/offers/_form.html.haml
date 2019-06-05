@@ -4,7 +4,7 @@
   = content do
     = f.fieldset('Offer details', :class => 'primary form-tab', :id => 'offer-details') do
       .form-block
-        = f.input(:name, :col => 6)
+        = f.input(:name)
         = f.input(:description, :as => 'text')
 
       .form-block
@@ -63,16 +63,23 @@
                 %td{colspan: 3} No members qualify for the offer.
             - else
               - f.object.candidates.sort_by(&:name).each do |candidate|
+                - order_offer = candidate.offer_orders.find_by(offer_id: f.object.id)
                 %tr
-                  %td.select= check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
+                  %td.select
+                    - unless order_offer.present?
+                      = check_box_tag('ids[]', candidate.id, nil, :class => 'toggle')
                   %td= link_to(candidate.name, path(:edit, candidate))
                   %td= candidate.email
                   %td
-                    - order_offer = candidate.offer_orders.find_by(offer_id: f.object.id)
                     - if order_offer.present?
-                      = link_to(order_offer.order.reference, path(order_offer.order))
+                      = link_to(order_offer.order.reference, path(order_offer.order), class: 'order-link')
                     - else
                       %span.empty -
+          %tfoot
+            %tr
+              %td{colspan: 2}
+                = link_to('Generate orders', generate_admin_offer_path(id: @offer.id), class: 'button', data: {action: 'generate-orders'})
+              %td.status{colspan: 2}
 
       .form-block.compact
         %h2 Orders
@@ -89,7 +96,6 @@
                 %td{colspan: 4} You'll need to save this offer before you can generate orders for it.
 
         - else
-          %p= link_to('Generate orders', generate_admin_offer_path(id: @offer.id))
           %table.islay-offer-candidates.sortable
             %thead
               %tr

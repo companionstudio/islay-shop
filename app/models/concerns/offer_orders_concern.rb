@@ -43,8 +43,14 @@ module OfferOrdersConcern
     end
   end
 
-  def generate_orders!
-    candidates.each do |member|
+  def generate_orders!(*member_ids)
+    members = if member_ids.present?
+      candidates.where(id: member_ids)
+    else
+      candidates
+    end
+
+    members.each do |member|
       generate_member_order!(member, default_quantity) unless member.offer_orders.find_by(offer_id: id).present?
     end
   end

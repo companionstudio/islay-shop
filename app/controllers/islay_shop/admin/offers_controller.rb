@@ -17,7 +17,7 @@ module IslayShop
 
       def generate
         set_ivar(find_record)
-        @offer.generate_orders!
+        @offer.generate_orders!(params[:member_ids].split(','))
         redirect_to edit_admin_offer_path(id: params[:id])
       end
 
