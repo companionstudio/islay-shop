@@ -144,8 +144,9 @@ module OfferOrdersConcern
     if order.payment.present?
       order.payment.update_column(:status, 'failed')
       order.reload
-      order.logs.build(action: 'Payment', succeeded: true, notes: "Recreated order payment with new details.")
     end
+    
+    order.logs.build(action: 'Payment', succeeded: true, notes: "Recreated order payment with new details.")
 
     generate_payment(member, order)
     order.save!
