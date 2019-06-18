@@ -35,7 +35,10 @@ class Order < ActiveRecord::Base
   self.shipment_tracker = :default_shipment_tracker
 
   belongs_to  :person
-  has_one     :payment,       :class_name => 'OrderPayment'
+
+  has_one     :payment,         -> {where.not(status: 'failed')},  :class_name => 'OrderPayment'
+  has_many    :failed_payments, -> {where(status: 'failed')},      :class_name => 'OrderPayment'
+
   has_many    :logs,          :class_name => 'OrderLog'
   has_many    :items,         :class_name => 'OrderItem'
   has_many    :sku_items,     :class_name => 'OrderSkuItem',      :extend => [OrderItem::SkuPurchasing, OrderItem::Adjustments]

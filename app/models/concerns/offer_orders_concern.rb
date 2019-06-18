@@ -140,6 +140,17 @@ module OfferOrdersConcern
     end
   end
 
+  def regenerate_payment!(member, order)
+    if order.payment.present?
+      order.payment.update_column(:status, 'failed')
+      order.reload
+      order.logs.build(action: 'Payment', succeeded: true, notes: "Recreated order payment with new details.")
+    end
+
+    generate_payment(member, order)
+    order.save!
+  end
+
   def regenerate_member_order!(member, multiplier)
     offer_order_set = member.offer_orders.where(offer_id: id)
     offer_order_set.each{|oo|oo.order.delete}
