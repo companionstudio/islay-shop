@@ -15,16 +15,15 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'islay',                 '>= 2.0.0', ' < 3'
-  s.add_dependency 'spook_and_pay',         '~> 1.1', '>= 1.1.2'
+  s.add_dependency 'islay',                 '>= 2.1.4', ' < 3'
+  s.add_dependency 'spook_and_pay',         '~> 1.1', '>= 1.1.4'
   s.add_dependency 'spook_and_puff_money',  '~> 1.0.0'
   s.add_dependency 'country_select',        '~> 2.5', '>= 2.5.2'
-  s.add_dependency 'rails-observers',       '~> 0.1.2'
 
   s.add_development_dependency 'rspec-rails',         '2.14.0'
   s.add_development_dependency 'factory_girl_rails',  '4.2.1'
   s.add_development_dependency 'vcr',                 '2.5.0'
   s.add_development_dependency 'ffaker',              '~> 1.16.1'
   s.add_development_dependency 'webmock',             '~> 1.8.7'
-  s.add_development_dependency 'figaro',              '0.7.0'
+  s.add_development_dependency 'figaro',              '~> 1.1'
 end
