@@ -110,6 +110,8 @@ class Product < ActiveRecord::Base
   end
 
   def stock_low?
+    return false unless Settings.defined?(:shop, :alert_level)
+    
     skus.map {|s| s.stock_level <= Settings.for(:shop, :alert_level)}.any?
   end
 

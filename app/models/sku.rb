@@ -62,7 +62,7 @@ class Sku < ActiveRecord::Base
   def self.alerts
     return [] unless Settings.defined?(:shop, :alert_level)
 
-    Sku.summarize_product.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
+    Sku.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
   end
 
   # Produces a scope with calculated fields for stock alerts, updater_name etc.
@@ -167,6 +167,10 @@ class Sku < ActiveRecord::Base
   # @return String
   def searchable_name
     "#{product.name} - #{short_desc}"
+  end
+
+  def product_name
+    @product_name ||= attributes[:product_name] || product.name
   end
 
   # Returns a collection of promotions that are related to the Sku. It
