@@ -62,7 +62,7 @@ class Sku < ActiveRecord::Base
   def self.alerts
     return [] unless Settings.defined?(:shop, :alert_level)
 
-    Sku.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level')
+    Sku.filter('saleable').where(["stock_level <= ?", Settings.for(:shop, :alert_level)]).order('stock_level').summarize_product
   end
 
   # Produces a scope with calculated fields for stock alerts, updater_name etc.

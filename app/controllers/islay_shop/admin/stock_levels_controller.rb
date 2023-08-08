@@ -4,7 +4,7 @@ class IslayShop::Admin::StockLevelsController < IslayShop::Admin::ApplicationCon
   nav_scope :catalogue
 
   def index
-    @skus = Sku.full_summary.filter(permitted_params[:filter]).sorted(permitted_params[:sort])
+    @skus = Sku.filter(permitted_params[:filter]).sorted(permitted_params[:sort]).full_summary
   end
 
   def update
